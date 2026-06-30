@@ -161,7 +161,6 @@ PadelGo.UI = {
     document.querySelectorAll('.nav-admin-link').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
     document.querySelectorAll('.nav-dashboard-link').forEach(el => el.classList.toggle('hidden', !hasSession));
     document.querySelectorAll('.nav-login-link, .nav-register-link').forEach(el => el.classList.toggle('hidden', hasSession));
-    document.querySelectorAll('.nav-settings-link').forEach(el => el.classList.toggle('hidden', !hasSession));
     document.querySelectorAll('.nav-user-menu').forEach(el => {
       el.classList.toggle('hidden', !hasSession);
       el.classList.toggle('flex', hasSession);
