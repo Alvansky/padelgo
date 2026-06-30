@@ -45,6 +45,7 @@ update public.bookings set status = 'confirmed' where status is null;
 
 alter table public.profiles alter column role set default 'user';
 alter table public.profiles alter column role set not null;
+alter table public.profiles add column if not exists avatar_url text;
 alter table public.courts alter column available set default true;
 alter table public.courts alter column available set not null;
 alter table public.bookings alter column status set default 'confirmed';
