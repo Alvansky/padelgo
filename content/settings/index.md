@@ -163,6 +163,10 @@ async function handleSaveSettings(e) {
     }
   }
 
+  const submitBtn = document.querySelector('#settingsForm button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Menyimpan...';
+
   try {
     const supabase = await PadelGo.Supabase.init();
     if (!supabase) throw new Error('Supabase belum dikonfigurasi');
@@ -194,13 +198,12 @@ async function handleSaveSettings(e) {
       if (reauthError) throw new Error('Password saat ini salah.');
     }
 
-    const updateData = { name, updated_at: new Date().toISOString() };
+    const updateData = { id: userId, name, updated_at: new Date().toISOString() };
     if (avatarUrl) updateData.avatar_url = avatarUrl;
 
     const { error: profileError } = await supabase
       .from('profiles')
-      .update(updateData)
-      .eq('id', userId);
+      .upsert(updateData, { onConflict: 'id' });
     if (profileError) throw new Error(profileError.message || 'Gagal menyimpan profil');
 
     if (newPassword) {
@@ -210,10 +213,13 @@ async function handleSaveSettings(e) {
 
     const user = PadelGo.Auth.getUser();
     user.name = name;
-    if (avatarUrl) user.avatar = avatarUrl;
     PadelGo.Auth.setUser(user);
-    PadelGo.UI.updateNav(user);
+    if (avatarUrl) {
+      PadelGo.Storage.setAvatar(avatarUrl);
+      PadelGo.UI.updateNav(user);
+    }
 
+    PadelGo.UI.toast('Perubahan berhasil disimpan.', 'success');
     successEl.textContent = 'Perubahan berhasil disimpan dan tervalidasi.';
     successEl.classList.remove('hidden');
     setTimeout(() => successEl.classList.add('hidden'), 3000);
@@ -222,9 +228,13 @@ async function handleSaveSettings(e) {
     document.getElementById('newPassword').value = '';
     document.getElementById('passwordRules').innerHTML = '';
     avatarInput.value = '';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Simpan Perubahan';
   } catch (err) {
     errorEl.textContent = err.message || 'Gagal menyimpan perubahan.';
     errorEl.classList.remove('hidden');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Simpan Perubahan';
   }
 }
 
@@ -233,8 +243,9 @@ async function loadProfile() {
   if (!user) { window.location.href = '/login/?next=/settings/'; return; }
   document.getElementById('name').value = user.name || '';
   document.getElementById('email').value = user.email || '';
-  const avatar = user.avatar || '';
-  document.getElementById('avatarPreview').src = avatar || getAvatarDataUrl(user.name || user.email || 'U');
+  const storedAvatar = PadelGo.Storage.getAvatar();
+  const dbAvatar = storedAvatar || user.avatar || '';
+  document.getElementById('avatarPreview').src = dbAvatar || getAvatarDataUrl(user.name || user.email || 'U');
 
   try {
     const supabase = await PadelGo.Supabase.init();
@@ -243,9 +254,7 @@ async function loadProfile() {
       if (session) {
         const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', session.user.id).single();
         if (profile?.avatar_url) {
-          const updatedUser = PadelGo.Auth.getUser();
-          updatedUser.avatar = profile.avatar_url;
-          PadelGo.Auth.setUser(updatedUser);
+          PadelGo.Storage.setAvatar(profile.avatar_url);
           document.getElementById('avatarPreview').src = profile.avatar_url;
         }
       }

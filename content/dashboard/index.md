@@ -5,61 +5,90 @@ draft: false
 layout: "dashboard"
 ---
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-8">
-<div class="h-32 bg-teal-900"></div>
-<div class="px-8 pb-8">
-<div class="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-16">
-<div class="relative">
-<img id="userAvatar" src="" alt="Profile" class="w-32 h-32 rounded-full border-4 border-white shadow-2xl object-cover bg-blue-100">
-<div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></div>
-</div>
-<div class="text-center md:text-left flex-1">
-<h1 id="userName" class="text-3xl font-extrabold text-slate-950 dark:text-white">User</h1>
-<p id="userEmail" class="text-slate-500 dark:text-slate-400 mt-1">user@example.com</p>
-<div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4">
-<span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-Verified Player
-</span>
-<span class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-Gold Member
-</span>
-</div>
-</div>
-<div class="text-center md:text-right">
-<div class="text-3xl font-extrabold text-slate-950 dark:text-white" id="totalBookings">0</div>
-<div class="text-sm text-slate-500 dark:text-slate-400">Total Bookings</div>
-</div>
-</div>
-</div>
-</div>
+<div class="min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-8">
+      <div class="h-36 bg-gradient-to-br from-teal-800 to-teal-950 relative">
+        <div class="absolute inset-0 bg-black/20"></div>
+      </div>
+      <div class="px-6 pb-8 md:px-10">
+        <div class="flex flex-col md:flex-row items-center md:items-end gap-6 -mt-20">
+          <div class="relative flex-shrink-0">
+            <img id="userAvatar" src="" alt="Profile" class="w-36 h-36 rounded-full border-4 border-white shadow-2xl object-cover bg-slate-100 dark:border-slate-900">
+            <div class="absolute bottom-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900">
+              <svg class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+            </div>
+          </div>
+          <div class="text-center md:text-left flex-1 pt-4 md:pt-0">
+            <h1 id="userName" class="text-3xl font-extrabold text-slate-950 dark:text-white">User</h1>
+            <p id="userEmail" class="text-slate-500 dark:text-slate-400 mt-1 text-sm">user@example.com</p>
+            <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
+              <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Verified Player
+              </span>
+              <span id="memberBadge" class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-700 rounded-full text-xs font-bold dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                Active Member
+              </span>
+            </div>
+          </div>
+          <div class="text-center md:text-right pb-2">
+            <div class="inline-flex flex-col items-center md:items-end">
+              <div class="text-4xl font-extrabold text-slate-950 dark:text-white" id="totalBookings">0</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">Total Bookings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="grid md:grid-cols-2 gap-6 mb-8">
-  <a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 hover:border-teal-200 dark:hover:border-teal-900 transition">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-        <svg class="w-6 h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Kelola</p>
+            <a href="/settings/" class="text-2xl font-extrabold text-slate-950 dark:text-white hover:text-teal-700 transition">Pengaturan</a>
+          </div>
+        </div>
       </div>
-      <div>
-        <p class="text-sm text-slate-500 dark:text-slate-400">Kelola</p>
-        <p class="text-2xl font-extrabold text-slate-950 dark:text-white">Pengaturan Akun</p>
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Booking Anda</p>
+            <p id="userBookingCount" class="text-2xl font-extrabold text-slate-950 dark:text-white">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Total Biaya</p>
+            <p id="totalSpent" class="text-2xl font-extrabold text-slate-950 dark:text-white">Rp 0</p>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Member Since</p>
+            <p id="memberSince" class="text-lg font-extrabold text-slate-950 dark:text-white">-</p>
+          </div>
+        </div>
       </div>
     </div>
-  </a>
-  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-        <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-      </div>
-      <div>
-        <p class="text-sm text-slate-500 dark:text-slate-400">Booking Anda</p>
-        <p id="userBookingCount" class="text-2xl font-extrabold text-slate-950 dark:text-white">0</p>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
 <div class="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -78,6 +107,7 @@ Gold Member
 <th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Time</th>
 <th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
 <th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
+<th class="text-right py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
 </tr>
 </thead>
 <tbody id="historyTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
@@ -99,14 +129,17 @@ async function loadDashboard() {
   const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
 
   try {
-    const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('name, avatar_url, created_at').eq('id', user.id).single();
     const profileName = profile?.name || displayName;
     document.getElementById('userName').textContent = profileName;
     const avatar = profile?.avatar_url || user.user_metadata?.avatar || PadelGo.UI.avatar(profileName);
     document.getElementById('userAvatar').src = avatar;
+    if (profile?.avatar_url) PadelGo.Storage.setAvatar(profile.avatar_url);
+    if (profile?.created_at) {
+      document.getElementById('memberSince').textContent = PadelGo.Format.date(profile.created_at);
+    }
     const cookieUser = PadelGo.Auth.getUser();
     cookieUser.name = profileName;
-    cookieUser.avatar = avatar;
     PadelGo.Auth.setUser(cookieUser);
     PadelGo.UI.updateNav(cookieUser);
   } catch {
@@ -127,25 +160,31 @@ async function loadDashboard() {
     const list = bookings || [];
     document.getElementById('userBookingCount').textContent = list.length;
     document.getElementById('totalBookings').textContent = list.length;
+    const totalSpent = list.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
+    document.getElementById('totalSpent').textContent = 'Rp ' + totalSpent.toLocaleString('id-ID');
     const tbody = document.getElementById('historyTable');
     tbody.innerHTML = '';
     if (list.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-slate-500 dark:text-slate-400">Belum ada booking.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-slate-500 dark:text-slate-400">Belum ada booking. <a href="/order/" class="text-teal-700 font-extrabold hover:underline">Buat booking sekarang</a></td></tr>';
       return;
     }
-    const statusColors = {'confirmed': 'bg-green-100 text-green-800', 'pending': 'bg-yellow-100 text-yellow-800', 'cancelled': 'bg-red-100 text-red-800'};
+    const statusColors = {'confirmed': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200', 'pending': 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200', 'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'};
     list.forEach(b => {
       const tr = document.createElement('tr');
-      tr.className = 'hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
+      tr.className = 'group hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
       tr.innerHTML = `
-        <td class="py-4 px-6"><span class="font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(b.court_name || b.court_id)}</span></td>
-        <td class="py-4 px-6 text-slate-700 font-medium dark:text-slate-300">${b.date}</td>
-        <td class="py-4 px-6 text-slate-700 font-medium dark:text-slate-300">${b.start_time || ''} - ${b.end_time || ''}</td>
-        <td class="py-4 px-6"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${statusColors[b.status] || 'bg-gray-100 text-gray-800'}">${escapeHtml(b.status)}</span></td>
-        <td class="py-4 px-6 font-bold text-slate-900 dark:text-slate-100">Rp ${(b.amount || 0).toLocaleString('id-ID')}</td>
+        <td class="py-4 px-6"><span class="font-extrabold text-slate-900 dark:text-slate-100">${escapeHtml(b.court_name || b.court_id)}</span></td>
+        <td class="py-4 px-6 text-slate-700 font-medium dark:text-slate-300">${escapeHtml(b.date)}</td>
+        <td class="py-4 px-6 text-slate-700 font-medium dark:text-slate-300">${escapeHtml(b.start_time || '')} - ${escapeHtml(b.end_time || '')}</td>
+        <td class="py-4 px-6"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${statusColors[b.status] || 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300'}">${escapeHtml(b.status)}</span></td>
+        <td class="py-4 px-6 font-extrabold text-slate-900 dark:text-slate-100">Rp ${(b.amount || 0).toLocaleString('id-ID')}</td>
+        <td class="py-4 px-6">
+          <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-300 dark:hover:text-red-100" onclick="cancelBooking('${escapeHtml(b.id)}')">Batalkan</button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
+  
   } catch (err) {
     document.getElementById('dashError').textContent = err.message || 'Gagal memuat data.';
     document.getElementById('dashError').classList.remove('hidden');
@@ -155,6 +194,22 @@ async function loadDashboard() {
 function escapeHtml(text) {
   const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
   return String(text || '').replace(/[&<>"']/g, m => map[m]);
+}
+
+async function cancelBooking(bookingId) {
+  if (!confirm('Batalkan booking ini?')) return;
+  const errorEl = document.getElementById('dashError');
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
+    const { error } = await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', bookingId);
+    if (error) throw new Error(error.message || 'Gagal membatalkan booking');
+    PadelGo.UI.toast('Booking berhasil dibatalkan.');
+    loadDashboard();
+  } catch (err) {
+    errorEl.textContent = err.message || 'Gagal membatalkan booking.';
+    errorEl.classList.remove('hidden');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', loadDashboard);

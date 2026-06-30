@@ -277,6 +277,11 @@ create policy "Users create bookings"
   for insert
   with check (auth.uid() = user_id);
 
+create policy "Users update own bookings"
+  on public.bookings
+  for update
+  using (auth.uid() = user_id);
+
 create policy "Admins view all bookings"
   on public.bookings
   for select

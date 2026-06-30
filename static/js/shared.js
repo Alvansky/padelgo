@@ -104,6 +104,12 @@ PadelGo.Auth = {
   },
 };
 
+PadelGo.Storage = {
+  setAvatar(url) { try { localStorage.setItem('padelgo_avatar', url); } catch { /* quota exceeded */ } },
+  getAvatar() { try { return localStorage.getItem('padelgo_avatar') || ''; } catch { return ''; } },
+  clearAvatar() { try { localStorage.removeItem('padelgo_avatar'); } catch {} },
+};
+
 PadelGo.Format = {
   rupiah(value) {
     return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
@@ -135,18 +141,19 @@ PadelGo.UI = {
     this.applyTheme();
   },
   async hydrateAuthNav() {
-    const client = await PadelGo.Supabase.init();
+    const client = await this.init();
     let user = PadelGo.Auth.getUser() || {};
     if (client) {
       const { data: { session } } = await client.auth.getSession();
       if (session) {
         PadelGo.Auth.setSession(session);
         const { data: profile } = await client.from('profiles').select('name, role, avatar_url').eq('id', session.user.id).single();
+        const avatar = profile?.avatar_url || session.user.user_metadata?.avatar || '';
+        if (avatar) PadelGo.Storage.setAvatar(avatar);
         user = {
           email: session.user.email,
           name: profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
           role: profile?.role || 'user',
-          avatar: profile?.avatar_url || session.user.user_metadata?.avatar || '',
         };
         PadelGo.Auth.setUser(user);
       }
@@ -168,7 +175,8 @@ PadelGo.UI = {
     document.querySelectorAll('.nav-user-name').forEach(el => { el.textContent = displayName; });
     document.querySelectorAll('.nav-user-link').forEach(el => { el.href = role === 'admin' ? '/admin/' : '/dashboard/'; });
     document.querySelectorAll('.nav-user-avatar').forEach(el => {
-      el.src = user.avatar || this.avatar(displayName);
+      const stored = PadelGo.Storage.getAvatar();
+      el.src = stored || user.avatar || this.avatar(displayName);
       el.alt = displayName;
     });
   },
