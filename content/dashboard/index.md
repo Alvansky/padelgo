@@ -36,18 +36,29 @@ Gold Member
 </div>
 </div>
 
-<div class="grid md:grid-cols-3 gap-6 mb-8">
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center gap-4">
-<div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-<svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-</div>
-<div>
-<p class="text-sm text-slate-500 dark:text-slate-400">Booking Anda</p>
-<p id="userBookingCount" class="text-2xl font-extrabold text-slate-950 dark:text-white">0</p>
-</div>
-</div>
-</div>
+<div class="grid md:grid-cols-2 gap-6 mb-8">
+  <a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 hover:border-teal-200 dark:hover:border-teal-900 transition">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Kelola</p>
+        <p class="text-2xl font-extrabold text-slate-950 dark:text-white">Pengaturan Akun</p>
+      </div>
+    </div>
+  </a>
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+        <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      </div>
+      <div>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Booking Anda</p>
+        <p id="userBookingCount" class="text-2xl font-extrabold text-slate-950 dark:text-white">0</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -86,9 +97,25 @@ async function loadDashboard() {
   if (!session) { window.location.href = '/login/?next=/dashboard/'; return; }
   const user = session.user;
   const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
-  document.getElementById('userName').textContent = displayName;
+
+  try {
+    const { data: profile } = await supabase.from('profiles').select('name, avatar_url').eq('id', user.id).single();
+    const profileName = profile?.name || displayName;
+    document.getElementById('userName').textContent = profileName;
+    const avatar = profile?.avatar_url || user.user_metadata?.avatar || PadelGo.UI.avatar(profileName);
+    document.getElementById('userAvatar').src = avatar;
+    const cookieUser = PadelGo.Auth.getUser();
+    cookieUser.name = profileName;
+    cookieUser.avatar = avatar;
+    PadelGo.Auth.setUser(cookieUser);
+    PadelGo.UI.updateNav(cookieUser);
+  } catch {
+    document.getElementById('userName').textContent = displayName;
+    document.getElementById('userAvatar').src = user.user_metadata?.avatar || PadelGo.UI.avatar(displayName);
+  }
+
   document.getElementById('userEmail').textContent = user.email || '';
-  document.getElementById('userAvatar').src = user.user_metadata?.avatar || PadelGo.UI.avatar(displayName);
+
   try {
     const { data: bookings, error } = await supabase
       .from('bookings')

@@ -141,11 +141,12 @@ PadelGo.UI = {
       const { data: { session } } = await client.auth.getSession();
       if (session) {
         PadelGo.Auth.setSession(session);
-        const { data: profile } = await client.from('profiles').select('name, role').eq('id', session.user.id).single();
+        const { data: profile } = await client.from('profiles').select('name, role, avatar_url').eq('id', session.user.id).single();
         user = {
           email: session.user.email,
           name: profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
           role: profile?.role || 'user',
+          avatar: profile?.avatar_url || session.user.user_metadata?.avatar || '',
         };
         PadelGo.Auth.setUser(user);
       }
@@ -160,6 +161,7 @@ PadelGo.UI = {
     document.querySelectorAll('.nav-admin-link').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
     document.querySelectorAll('.nav-dashboard-link').forEach(el => el.classList.toggle('hidden', !hasSession));
     document.querySelectorAll('.nav-login-link, .nav-register-link').forEach(el => el.classList.toggle('hidden', hasSession));
+    document.querySelectorAll('.nav-settings-link').forEach(el => el.classList.toggle('hidden', !hasSession));
     document.querySelectorAll('.nav-user-menu').forEach(el => {
       el.classList.toggle('hidden', !hasSession);
       el.classList.toggle('flex', hasSession);
