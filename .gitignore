@@ -22,3 +22,5 @@ Thumbs.db
 
 # Supabase local (jika ada)
 .supabase/
+
+.vercel
