@@ -1,0 +1,36 @@
+version = 0.1
+
+[default.global.parameters]
+stack_name = "padelgo-backend"
+s3_bucket = "padelgo-sam-artifacts"
+s3_prefix = "padelgo"
+region = "ap-southeast-1"
+profile = "default"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.deploy.parameters]
+stack_name = "padelgo-backend"
+s3_bucket = "padelgo-sam-artifacts"
+s3_prefix = "padelgo"
+region = "ap-southeast-1"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+tags = "Project=padelgo Environment=dev"
+
+[dev.deploy.parameters]
+stack_name = "padelgo-backend-dev"
+s3_prefix = "padelgo-dev"
+parameter_overrides = "Environment=dev"
+
+[staging.deploy.parameters]
+stack_name = "padelgo-backend-staging"
+s3_prefix = "padelgo-staging"
+parameter_overrides = "Environment=staging"
+
+[prod.deploy.parameters]
+stack_name = "padelgo-backend-prod"
+s3_prefix = "padelgo-prod"
+parameter_overrides = "Environment=prod"

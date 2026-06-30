@@ -1,0 +1,9 @@
+baseURL = 'https://padelgo.vercel.app/'
+languageCode = 'en-us'
+title = 'PadelGo'
+theme = ''
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

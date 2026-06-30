@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' /api https: https://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self' /api;">
+  <script>window.PadelGo = window.PadelGo || {}; window.PadelGo.Config = { SUPABASE_URL: '{{ getenv "NEXT_PUBLIC_SUPABASE_URL" }}', SUPABASE_ANON_KEY: '{{ getenv "NEXT_PUBLIC_SUPABASE_ANON_KEY" }}' };</script>
+  <script src="/js/shared.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-sans antialiased bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+<nav class="fixed w-full z-50 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 transition-colors duration-300">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-14">
+<a href="/" class="flex items-center gap-2">
+<div class="w-7 h-7 bg-gradient-to-br from-blue-600 to-purple-600 rounded flex items-center justify-center">
+<svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+</div>
+<span class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">PadelGo</span>
+</a>
+<div class="flex items-center gap-6">
+<a href="/" class="nav-link text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" data-path="/">Home</a>
+<a href="/order/" class="nav-link text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" data-path="/order/">Book Court</a>
+<a href="/admin/" class="nav-link hidden nav-admin-link text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" data-path="/admin/">Admin</a>
+<a href="/dashboard/" class="nav-link text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" data-path="/dashboard/">Dashboard</a>
+<a href="/settings/" class="nav-link text-sm font-medium text-blue-600 dark:text-blue-400 font-semibold" data-path="/settings/">Settings</a>
+<div class="hidden nav-user-menu items-center gap-3">
+<a href="/dashboard/" class="nav-user-link flex items-center gap-2 rounded-full border border-gray-200 dark:border-slate-700 pl-1 pr-3 py-1 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+<img class="nav-user-avatar w-8 h-8 rounded-full object-cover bg-blue-100" alt="Profile">
+<span class="nav-user-name max-w-[8rem] truncate text-sm font-semibold text-gray-700 dark:text-gray-200">User</span>
+</a>
+<button onclick="logout()" class="text-sm font-semibold text-red-600 hover:text-red-700 transition">Logout</button>
+</div>
+<button onclick="toggleDarkMode()" class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" title="Toggle dark mode">
+<svg id="sunIcon" class="w-5 h-5 text-yellow-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+<svg id="moonIcon" class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+</button>
+</div>
+</div>
+</div>
+</nav>
+
+<script src="/js/shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"><\/script>
+<script>
+  (async function() {
+    const supabase = await PadelGo.Supabase.init();
+    if (supabase) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+        const user = { ...session.user, role: profile?.role || 'user' };
+        PadelGo.Auth.setUser({
+          email: user.email,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          role: user.role
+        });
+      }
+    }
+    updateUserNav();
+    const path = window.location.pathname;
+    document.querySelectorAll('.nav-link').forEach(link => {
+      const linkPath = link.getAttribute('data-path');
+      if (!linkPath) return;
+      if (path === linkPath || path.startsWith(linkPath.replace('/', ''))) {
+        link.classList.add('text-blue-600', 'font-semibold');
+      }
+    });
+
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+      const sun = document.getElementById('sunIcon');
+      const moon = document.getElementById('moonIcon');
+      if (sun) sun.classList.remove('hidden');
+      if (moon) moon.classList.add('hidden');
+    }
+  })();
+
+function getStoredUser() {
+  try {
+    return PadelGo.Auth.getUser() || {};
+  } catch {
+    return {};
+  }
+}
+
+function getAvatarDataUrl(name) {
+  const initials = String(name || 'U').trim().split(/\s+/).map(part => part[0]).join('').toUpperCase().slice(0, 2) || 'U';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" rx="48" fill="#2563eb"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="white">${initials}</text></svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+}
+
+function updateUserNav() {
+  const token = PadelGo.Cookies.get('sess');
+  const user = PadelGo.Auth.getUser() || {};
+  const role = (user.role || 'user');
+  const displayName = user.name || user.email || (role === 'admin' ? 'Admin' : 'User');
+
+  document.querySelectorAll('.nav-admin-link').forEach(el => {
+    el.classList.toggle('hidden', role !== 'admin');
+  });
+
+  if (!token) return;
+
+  document.querySelectorAll('.nav-dashboard-link').forEach(el => el.classList.remove('hidden'));
+  document.querySelectorAll('.nav-login-link').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.nav-register-link').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.nav-user-menu').forEach(el => {
+    el.classList.remove('hidden');
+    el.classList.add('flex');
+  });
+  document.querySelectorAll('.nav-user-name').forEach(el => { el.textContent = displayName; });
+  document.querySelectorAll('.nav-user-link').forEach(el => { el.href = role === 'admin' ? '/admin/' : '/dashboard/'; });
+  document.querySelectorAll('.nav-user-avatar').forEach(el => {
+    el.src = user.avatar || getAvatarDataUrl(displayName);
+    el.alt = displayName;
+  });
+}
+
+function logout() {
+  PadelGo.Auth.clear();
+  window.location.href = '/login/';
+}
+
+function toggleDarkMode() {
+  const html = document.documentElement;
+  const sun = document.getElementById('sunIcon');
+  const moon = document.getElementById('moonIcon');
+  html.classList.toggle('dark');
+  const isDark = html.classList.contains('dark');
+  localStorage.setItem('darkMode', isDark);
+  if (isDark) {
+    if (sun) sun.classList.remove('hidden');
+    if (moon) moon.classList.add('hidden');
+  } else {
+    if (sun) sun.classList.add('hidden');
+    if (moon) moon.classList.remove('hidden');
+  }
+}
+</script>
+
+<div class="pt-14">
+  {{ .Content }}
+</div>
+</body>
+</html>

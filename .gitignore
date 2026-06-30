@@ -1,0 +1,24 @@
+# Hugo generated files
+/public/
+/resources/_gen/
+/assets/jsconfig.json
+/hugo_stats.json
+
+# Node modules (jika ada)
+/node_modules/
+.pnpm-store/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Env vars (jangan upload secret!)
+.env
+.env.local
+
+# Supabase local (jika ada)
+.supabase/
