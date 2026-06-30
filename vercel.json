@@ -2,7 +2,7 @@
   "buildCommand": "hugo --minify --baseURL=$VERCEL_URL",
   "outputDirectory": "public",
   "installCommand": "echo 'No build dependencies'",
-  "framework": null,
+  "framework": "hugo",
   "env": {
     "HUGO_VERSION": "0.139.4"
   }
