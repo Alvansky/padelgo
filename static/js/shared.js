@@ -1,9 +1,9 @@
 window.PadelGo = window.PadelGo || {};
 
 PadelGo.Config = {
-  SUPABASE_URL: 'https://YOUR_PROJECT.supabase.co',
-  SUPABASE_ANON_KEY: 'YOUR_ANON_KEY',
-  API_BASE: '/api',
+  SUPABASE_URL: window.PadelGo.Config?.SUPABASE_URL || 'https://YOUR_PROJECT.supabase.co',
+  SUPABASE_ANON_KEY: window.PadelGo.Config?.SUPABASE_ANON_KEY || 'YOUR_ANON_KEY',
+  API_BASE: window.PadelGo.Config?.API_BASE || '/api',
 };
 
 // Supabase will be loaded dynamically
@@ -28,6 +28,12 @@ PadelGo.Supabase = {
     }
     this.client = window.supabase.createClient(url, key);
     return this.client;
+  },
+  async getSession() {
+    const client = await this.init();
+    if (!client) return null;
+    const { data } = await client.auth.getSession();
+    return data?.session || null;
   }
 };
 
@@ -84,6 +90,11 @@ PadelGo.Auth = {
   setUser(user) {
     PadelGo.Cookies.set('padelgo_user', JSON.stringify(user), 2 * 60 * 60);
   },
+  setSession(session) {
+    if (session?.access_token) {
+      PadelGo.Cookies.set('sess', 'active', 2 * 60 * 60, { secure: location.protocol === 'https:' });
+    }
+  },
   clear() {
     PadelGo.Cookies.remove('sess');
     PadelGo.Cookies.remove('padelgo_user');
@@ -91,6 +102,108 @@ PadelGo.Auth = {
   isLoggedIn() {
     return !!PadelGo.Cookies.get('sess');
   },
+};
+
+PadelGo.Format = {
+  rupiah(value) {
+    return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
+  },
+  date(value) {
+    if (!value) return '-';
+    return new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value + 'T00:00:00'));
+  },
+};
+
+PadelGo.UI = {
+  avatar(name) {
+    const initials = String(name || 'U').trim().split(/\s+/).map(part => part[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" rx="24" fill="#0f766e"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="white">${initials}</text></svg>`;
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+  },
+  applyTheme() {
+    const preferred = localStorage.getItem('theme') || localStorage.getItem('darkMode');
+    const isDark = preferred === 'dark' || preferred === 'true' || (!preferred && window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', isDark);
+    document.querySelectorAll('[data-theme-icon="sun"]').forEach(el => el.classList.toggle('hidden', !isDark));
+    document.querySelectorAll('[data-theme-icon="moon"]').forEach(el => el.classList.toggle('hidden', isDark));
+  },
+  toggleTheme() {
+    const isDark = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('darkMode', String(isDark));
+    this.applyTheme();
+  },
+  async hydrateAuthNav() {
+    const client = await PadelGo.Supabase.init();
+    let user = PadelGo.Auth.getUser() || {};
+    if (client) {
+      const { data: { session } } = await client.auth.getSession();
+      if (session) {
+        PadelGo.Auth.setSession(session);
+        const { data: profile } = await client.from('profiles').select('name, role').eq('id', session.user.id).single();
+        user = {
+          email: session.user.email,
+          name: profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+          role: profile?.role || 'user',
+        };
+        PadelGo.Auth.setUser(user);
+      }
+    }
+    this.updateNav(user);
+  },
+  updateNav(user = PadelGo.Auth.getUser() || {}) {
+    const hasSession = !!PadelGo.Cookies.get('sess');
+    const role = user.role || 'user';
+    const displayName = user.name || user.email || 'User';
+
+    document.querySelectorAll('.nav-admin-link').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
+    document.querySelectorAll('.nav-dashboard-link').forEach(el => el.classList.toggle('hidden', !hasSession));
+    document.querySelectorAll('.nav-login-link, .nav-register-link').forEach(el => el.classList.toggle('hidden', hasSession));
+    document.querySelectorAll('.nav-user-menu').forEach(el => {
+      el.classList.toggle('hidden', !hasSession);
+      el.classList.toggle('flex', hasSession);
+    });
+    document.querySelectorAll('.nav-user-name').forEach(el => { el.textContent = displayName; });
+    document.querySelectorAll('.nav-user-link').forEach(el => { el.href = role === 'admin' ? '/admin/' : '/dashboard/'; });
+    document.querySelectorAll('.nav-user-avatar').forEach(el => {
+      el.src = user.avatar || this.avatar(displayName);
+      el.alt = displayName;
+    });
+  },
+  toast(message, type = 'success') {
+    let holder = document.getElementById('toastHost');
+    if (!holder) {
+      holder = document.createElement('div');
+      holder.id = 'toastHost';
+      holder.className = 'fixed right-4 top-20 z-[80] space-y-3';
+      document.body.appendChild(holder);
+    }
+    const node = document.createElement('div');
+    const color = type === 'error' ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200' : 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200';
+    node.className = `max-w-sm rounded-xl border px-4 py-3 text-sm font-bold shadow-xl ${color}`;
+    node.textContent = message;
+    holder.appendChild(node);
+    window.setTimeout(() => node.remove(), 3600);
+  },
+};
+
+window.toggleDarkMode = function toggleDarkMode() {
+  PadelGo.UI.toggleTheme();
+};
+
+window.getAvatarDataUrl = function getAvatarDataUrl(name) {
+  return PadelGo.UI.avatar(name);
+};
+
+window.logout = async function logout() {
+  try {
+    const client = await PadelGo.Supabase.init();
+    if (client) await client.auth.signOut();
+  } finally {
+    PadelGo.Auth.clear();
+    window.location.href = '/login/';
+  }
 };
 
 PadelGo.PasswordStrength = {
@@ -110,4 +223,26 @@ PadelGo.PasswordStrength = {
     result.valid = result.missing.length === 0;
     return result;
   },
+  renderUI(password, targetId) {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    const result = this.check(password || '');
+    const score = result.met.length;
+    const color = score <= 2 ? 'bg-red-500' : score <= 4 ? 'bg-amber-500' : 'bg-emerald-500';
+    target.innerHTML = `
+      <div class="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+        <div class="h-full ${color} transition-all" style="width:${(score / this.RULES.length) * 100}%"></div>
+      </div>
+      <div class="mt-2 grid gap-1 text-xs text-slate-500 dark:text-slate-400 sm:grid-cols-2">
+        ${this.RULES.map(rule => {
+          const ok = rule.test(password || '');
+          return `<span class="${ok ? 'text-emerald-600 dark:text-emerald-300' : ''}">${ok ? 'OK' : '-'} ${rule.label}</span>`;
+        }).join('')}
+      </div>`;
+  },
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  PadelGo.UI.applyTheme();
+  PadelGo.UI.hydrateAuthNav().catch(() => PadelGo.UI.updateNav());
+});

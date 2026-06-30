@@ -83,7 +83,7 @@ function extractToken(e: APIGatewayProxyEventV2): string | null {
 }
 
 function makeCookie(value: string, max = COOKIE_MAX) {
-  const p = [`${COOKIE}=${value}`, `Max-Age=${max}`, "Path=/", "SameSite=Strict"];
+  const p = [`${COOKIE}=${value}`, `Max-Age=${max}`, "Path=/", "HttpOnly", "SameSite=Strict"];
   if (env.NODE_ENV !== "test") p.push("Secure");
   return p.join("; ");
 }
@@ -103,7 +103,8 @@ async function getUser(id: string) {
 // ─── Handlers ────────────────────────────────────────────────────────────────
 
 async function register(body: Record<string, unknown>) {
-  const { name, email, password, phone, role } = z.object({ name: z.string().min(1), email: z.string().email(), password: z.string().min(8), phone: z.string().optional(), role: z.enum(["user", "admin"]).default("user") }).parse(body);
+  const { name, email, password, phone } = z.object({ name: z.string().min(1), email: z.string().email(), password: z.string().min(8), phone: z.string().optional() }).parse(body);
+  const role = "user";
   if (!/[a-z]/.test(password)) throw new Error("Password harus ada huruf kecil a-z");
   if (!/[A-Z]/.test(password)) throw new Error("Password harus ada huruf besar A-Z");
   if (!/\d/.test(password)) throw new Error("Password harus ada angka 0-9");

@@ -11,7 +11,7 @@ layout: "order"
 <div>
 <p class="mb-2 text-sm font-extrabold uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Booking</p>
 <h1 class="text-4xl font-extrabold text-slate-950 dark:text-white">Book Your Court</h1>
-<p class="mt-3 max-w-2xl text-slate-600 dark:text-slate-400">Pilih tanggal, durasi, waktu, dan lapangan. Booking dikonfirmasi.</p>
+<p class="mt-3 max-w-2xl text-slate-600 dark:text-slate-400">Pilih tanggal, durasi, waktu, dan lapangan.</p>
 </div>
 <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
 <span class="font-extrabold text-slate-950 dark:text-white">Jam operasional:</span> 24 Jam
@@ -20,6 +20,9 @@ layout: "order"
 
 <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="mb-6 rounded-xl border border-teal-100 bg-teal-50 p-4 text-sm text-teal-900 dark:border-teal-900/60 dark:bg-teal-950/40 dark:text-teal-100">
+Login diperlukan agar tanggal dan durasi status dapat disesuaikan.
+</div>
 <form id="orderForm" class="space-y-6" onsubmit="handleBooking(event)" novalidate>
 <div>
 <label for="date" class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">Tanggal</label>
@@ -66,7 +69,7 @@ layout: "order"
 
 <p id="bookingError" class="hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></p>
 <p id="bookingSuccess" class="hidden rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></p>
-<button type="submit" class="w-full rounded-xl bg-emerald-600 py-3.5 text-lg font-extrabold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-500/25">Konfirmasi Booking</button>
+<button type="submit" class="w-full rounded-xl bg-teal-700 py-3.5 text-lg font-extrabold text-white shadow-lg shadow-teal-700/20 transition hover:bg-teal-800 focus:outline-none focus:ring-4 focus:ring-teal-500/25">Konfirmasi Booking</button>
 </form>
 </div>
 
@@ -87,9 +90,9 @@ layout: "order"
 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 <h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Booking Rules</h3>
 <div class="mt-4 grid gap-3 sm:grid-cols-3">
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Login required</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Booking butuh sesi login.</p></div>
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Choose Date and Time</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Pilih tanggal dan jam bermain.</p></div>
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Payment</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Melakukan Pembayaran.</p></div>
+<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Login required</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Booking butuh sesi Supabase aktif.</p></div>
+<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Anti double-book</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Slot bentrok dicek sebelum insert.</p></div>
+<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Confirmed</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Status awal mengikuti schema: confirmed.</p></div>
 </div>
 </div>
 </div>
@@ -148,12 +151,10 @@ async function loadAvailability() {
   try {
     const supabase = await PadelGo.Supabase.init();
     if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-    const { data, error } = await supabase
-      .from('bookings')
-      .select('start_time, end_time, duration_hours, status')
-      .eq('court_id', selectedCourt)
-      .eq('date', date)
-      .neq('status', 'cancelled');
+    const { data, error } = await supabase.rpc('get_booked_slots', {
+      p_court_id: selectedCourt,
+      p_date: date
+    });
     if (error) throw new Error(error.message || 'availability failed');
     bookedSlots[selectedCourt] = [];
     (data || []).forEach(b => {
@@ -167,7 +168,7 @@ async function loadAvailability() {
     status.textContent = 'Availability updated';
   } catch (err) {
     bookedSlots[selectedCourt] = bookedSlots[selectedCourt] || [];
-    status.textContent = 'Availability checked on submit';
+    status.textContent = 'Availability checked by database';
   }
   renderTimeSlots();
 }
@@ -240,8 +241,15 @@ btn.classList.add('border-slate-200', 'dark:border-slate-700');
 document.querySelectorAll('.court-map-card').forEach(card => card.classList.remove('ring-4', 'ring-emerald-400'));
 document.getElementById('selectedSummary').classList.add('hidden');
 document.getElementById('bookingError').classList.add('hidden');
-document.getElementById('bookingSuccess').classList.add('hidden');
 renderTimeSlots();
+}
+
+function getTodayLocalDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 async function handleBooking(e) {
@@ -272,6 +280,11 @@ async function handleBooking(e) {
     errorEl.classList.remove('hidden');
     return;
   }
+  if (!document.getElementById('date').value) {
+    errorEl.textContent = 'Pilih tanggal booking terlebih dahulu.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
 
   const submitBtn = document.querySelector('#orderForm button[type="submit"]');
   submitBtn.disabled = true;
@@ -282,19 +295,6 @@ async function handleBooking(e) {
     const startHour = Number(selectedTime.split(':')[0]);
     const endHour = startHour + selectedDuration;
     const endTime = String(endHour).padStart(2, '0') + ':00';
-
-    const { data: conflicting, error: conflictError } = await supabase
-      .from('bookings')
-      .select('id')
-      .eq('court_id', selectedCourt)
-      .eq('date', dateVal)
-      .neq('status', 'cancelled')
-      .or(`and(start_time.lt.${endTime},end_time.gt.${selectedTime})`);
-
-    if (conflictError) throw new Error(conflictError.message || 'Gagal cek ketersediaan');
-    if (conflicting && conflicting.length > 0) {
-      throw new Error('Slot sudah dipesan. Pilih waktu lain.');
-    }
 
     const { data: court } = await supabase.from('courts').select('price_per_hour').eq('id', selectedCourt).single();
     const pricePerHour = court?.price_per_hour || 150000;
@@ -315,9 +315,11 @@ async function handleBooking(e) {
     });
 
     if (insertError) throw new Error(insertError.message || 'Booking gagal');
-    successEl.textContent = 'Booking berhasil dikonfirmasi.';
-    successEl.classList.remove('hidden');
+    const successMessage = `Booking berhasil: Court ${selectedCourt}, ${dateVal} pukul ${selectedTime}-${endTime}.`;
     resetFormState();
+    successEl.textContent = successMessage;
+    successEl.classList.remove('hidden');
+    PadelGo.UI.toast('Booking berhasil dikonfirmasi.');
     loadAvailability();
   } catch (err) {
     errorEl.textContent = err.message || 'Booking gagal. Cek koneksi backend atau slot mungkin sudah dipesan.';
@@ -338,7 +340,7 @@ document.querySelectorAll('.court-map-card').forEach(button => {
 button.addEventListener('click', () => selectCourt(button.dataset.court, button));
 });
 document.getElementById('date').addEventListener('change', loadAvailability);
-document.getElementById('date').setAttribute('min', new Date().toISOString().split('T')[0]);
+document.getElementById('date').setAttribute('min', getTodayLocalDate());
 selectDuration(1, document.querySelector('.duration-btn[data-hours="1"]'));
 renderTimeSlots();
 </script>

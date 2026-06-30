@@ -13,16 +13,16 @@ draft: false
 <div class="relative mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
 <div class="grid w-full gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
 <div class="max-w-3xl">
-<div class="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 dark:border-white/15 dark:bg-white/10 dark:text-blue-100">
+<div class="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-bold text-teal-800 dark:border-white/15 dark:bg-white/10 dark:text-teal-100">
 <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Padel court booking platform
 </div>
-<h1 class="text-5xl font-extrabold leading-tight sm:text-6xl lg:text-7xl text-gray-900 dark:text-white">Book a premium court without friction.</h1>
-<p class="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-slate-300">PadelGo membantu pemain memilih jadwal, melihat ketersediaan, dan melakukan booking lapangan dengan pengalaman yang cepat, jelas, dan siap terhubung.</p>
+<h1 class="text-5xl font-extrabold leading-tight sm:text-6xl lg:text-7xl text-gray-900 dark:text-white">Booking lapangan padel lebih cepat dan jelas.</h1>
+<p class="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-slate-300">PadelGo membantu pemain memilih jadwal, melihat ketersediaan, dan menyimpan booking Anda.</p>
 <div class="mt-8 flex flex-wrap gap-3">
-<a href="/order/" class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-extrabold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700">Book Court
+<a href="/order/" class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-6 py-3 font-extrabold text-white shadow-lg shadow-teal-700/25 transition hover:bg-teal-800">Book Court
 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
 </a>
-<a href="#courts" class="inline-flex items-center justify-center rounded-xl border border-blue-300 bg-blue-50 px-6 py-3 font-extrabold text-blue-700 transition hover:bg-blue-100 dark:border-white/25 dark:bg-white/10 dark:text-white dark:hover:bg-white/15">View Courts</a>
+<a href="#courts" class="inline-flex items-center justify-center rounded-xl border border-teal-300 bg-teal-50 px-6 py-3 font-extrabold text-teal-800 transition hover:bg-teal-100 dark:border-white/25 dark:bg-white/10 dark:text-white dark:hover:bg-white/15">View Courts</a>
 </div>
 <div class="mt-12 grid max-w-2xl grid-cols-3 gap-3">
 <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/10">
@@ -68,11 +68,11 @@ draft: false
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 <div class="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
 <div>
-<p class="mb-2 text-sm font-extrabold uppercase tracking-wide text-blue-600 dark:text-blue-400">Courts</p>
+<p class="mb-2 text-sm font-extrabold uppercase tracking-wide text-teal-700 dark:text-teal-300">Courts</p>
 <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">Lapangan yang siap dipesan</h2>
 <p class="mt-3 max-w-2xl text-gray-600 dark:text-slate-400">Setiap court dirancang untuk sesi latihan, friendly match, dan booking rutin dengan harga yang jelas.</p>
 </div>
-<a href="/order/" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 font-extrabold text-white transition hover:bg-blue-700">Book Court</a>
+<a href="/order/" class="inline-flex items-center justify-center rounded-xl bg-teal-700 px-5 py-3 font-extrabold text-white transition hover:bg-teal-800">Book Court</a>
 </div>
 <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
@@ -99,7 +99,7 @@ draft: false
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 <div class="mx-auto mb-12 max-w-3xl text-center">
 <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white md:text-4xl">A cleaner booking flow for serious players</h2>
-<p class="mt-4 text-lg text-gray-600 dark:text-slate-400">Tampilan dibuat sederhana dan siap menjadi bagian dari PadlGo</p>
+<p class="mt-4 text-lg text-gray-600 dark:text-slate-400">Tampilan dibuat sederhana, konsisten, dan siap menjadi bagian dari PadelGo.</p>
 </div>
 <div class="grid gap-6 md:grid-cols-3">
 <div class="rounded-2xl border border-gray-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-950"><div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3 class="text-xl font-extrabold text-gray-900 dark:text-white">Fast booking</h3><p class="mt-3 leading-7 text-gray-600 dark:text-slate-400">Pilih tanggal, court, durasi, lalu konfirmasi dengan status yang jelas.</p></div>
@@ -115,7 +115,7 @@ draft: false
 <h2 class="text-3xl font-extrabold md:text-4xl text-white">Ready to hit the court?</h2>
 <p class="mx-auto mt-4 max-w-2xl text-slate-300">Mulai dari booking court. Fitur login yang privacy kini anda siap bermain.</p>
 <div class="mt-8 flex flex-wrap justify-center gap-3">
-<a href="/order/" class="rounded-xl bg-blue-600 px-6 py-3 font-extrabold text-white transition hover:bg-blue-700">Book a Court</a>
+<a href="/order/" class="rounded-xl bg-teal-700 px-6 py-3 font-extrabold text-white transition hover:bg-teal-800">Book a Court</a>
 <a href="/register/" class="rounded-xl bg-white px-6 py-3 font-extrabold text-slate-900 transition hover:bg-slate-100">Create Account</a>
 </div>
 </div>

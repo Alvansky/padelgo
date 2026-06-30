@@ -7,17 +7,17 @@ layout: "login"
 
 <section class="min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950">
 <div class="mx-auto grid min-h-[calc(100vh-3.5rem)] max-w-7xl lg:grid-cols-[1.05fr_0.95fr]">
-<div class="hidden lg:flex flex-col justify-between bg-slate-900 text-white px-12 py-10">
+<div class="hidden lg:flex flex-col justify-between bg-teal-950 text-white px-12 py-10">
 <div>
-<div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-blue-100"><span class="h-2 w-2 rounded-full bg-emerald-400"></span>Court booking made simple</div>
+<div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-teal-100"><span class="h-2 w-2 rounded-full bg-lime-300"></span>LOGIN</div>
 <div class="mt-16 max-w-xl">
-<h1 class="text-5xl font-extrabold leading-tight">Masuk dan kelola jadwal padel Anda.</h1>
-<p class="mt-5 text-lg leading-8 text-slate-300">Akses dashboard personal, cek riwayat booking, dan lanjutkan reservasi lapangan favorit tanpa ribet.</p>
+<h1 class="text-5xl font-extrabold leading-tight">Masuk, lanjut booking, dan pantau jadwal main.</h1>
+<p class="mt-5 text-lg leading-8 text-teal-100">Akses dashboard personal, cek riwayat booking, dan lanjutkan reservasi lapangan favorit.</p>
 </div>
 </div>
 <div class="grid grid-cols-3 gap-4 text-sm">
 <div class="rounded-2xl bg-white/10 p-4"><p class="text-2xl font-extrabold">4</p><p class="mt-1 text-slate-300">Court aktif</p></div>
-<div class="rounded-2xl bg-white/10 p-4"><p class="text-2xl font-extrabold">08-21</p><p class="mt-1 text-slate-300">Jam bermain</p></div>
+<div class="rounded-2xl bg-white/10 p-4"><p class="text-2xl font-extrabold">24</p><p class="mt-1 text-slate-300">Jam bermain</p></div>
 <div class="rounded-2xl bg-white/10 p-4"><p class="text-2xl font-extrabold">24/7</p><p class="mt-1 text-slate-300">Booking online</p></div>
 </div>
 </div>
@@ -43,9 +43,10 @@ layout: "login"
 </div>
 </div>
 <div id="loginError" class="hidden rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></div>
-<button type="submit" class="w-full rounded-xl bg-blue-600 py-3.5 text-base font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/25">Masuk</button>
+<div id="loginSuccess" class="hidden rounded-xl bg-emerald-50 p-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></div>
+<button id="loginSubmit" type="submit" class="w-full rounded-xl bg-teal-700 py-3.5 text-base font-extrabold text-white shadow-lg shadow-teal-700/20 transition hover:bg-teal-800 focus:outline-none focus:ring-4 focus:ring-teal-500/25">Masuk</button>
 </form>
-<p class="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">Belum punya akun? <a href="/register/" class="font-extrabold text-blue-600 hover:text-blue-700 dark:text-blue-400">Daftar sekarang</a></p>
+<p class="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">Belum punya akun? <a href="/register/" class="font-extrabold text-teal-700 hover:text-teal-800 dark:text-teal-300">Daftar sekarang</a></p>
 </div>
 </div>
 </div>
@@ -58,8 +59,12 @@ async function handleLogin(e) {
   const email = document.getElementById('email').value.trim().toLowerCase();
   const password = document.getElementById('password').value;
   const errorEl = document.getElementById('loginError');
+  const successEl = document.getElementById('loginSuccess');
+  const submitBtn = document.getElementById('loginSubmit');
   errorEl.classList.add('hidden');
+  successEl.classList.add('hidden');
   errorEl.textContent = '';
+  successEl.textContent = '';
   if (!email || !password) {
     errorEl.textContent = 'Email dan password wajib diisi.';
     errorEl.classList.remove('hidden');
@@ -72,22 +77,42 @@ async function handleLogin(e) {
     return;
   }
   try {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Memeriksa akun...';
     const supabase = await PadelGo.Supabase.init();
     if (!supabase) throw new Error('Supabase belum dikonfigurasi');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message || 'Login gagal');
+    PadelGo.Auth.setSession(data.session);
+    const { data: profileRow } = await supabase.from('profiles').select('name, role').eq('id', data.user.id).single();
     const profile = data.user;
     PadelGo.Auth.setUser({
       email: profile.email || email,
-      name: profile.user_metadata?.name || profile.email?.split('@')[0] || email.split('@')[0],
-      role: profile.user_metadata?.role || 'user'
+      name: profileRow?.name || profile.user_metadata?.name || profile.email?.split('@')[0] || email.split('@')[0],
+      role: profileRow?.role || profile.user_metadata?.role || 'user'
     });
     const params = new URLSearchParams(window.location.search);
-    const next = params.get('next') || '/dashboard/';
-    window.location.href = next;
+    const requestedNext = params.get('next') || '/dashboard/';
+    const next = requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/dashboard/';
+    successEl.textContent = 'Login berhasil. Mengarahkan ke dashboard...';
+    successEl.classList.remove('hidden');
+    PadelGo.UI.toast('Login berhasil.');
+    window.setTimeout(() => { window.location.href = next; }, 700);
   } catch (err) {
     errorEl.textContent = err.message || 'Terjadi kesalahan. Coba lagi.';
     errorEl.classList.remove('hidden');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Masuk';
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('registered') === '1') {
+    const successEl = document.getElementById('loginSuccess');
+    successEl.textContent = 'Pendaftaran berhasil. Silakan login untuk melanjutkan.';
+    successEl.classList.remove('hidden');
+  }
+});
 </script>

@@ -1,0 +1,34 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ .Title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' /api https: https://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self' /api;">
+<script>
+  window.PadelGo = window.PadelGo || {};
+  window.PadelGo.Config = {
+    SUPABASE_URL: '{{ .Site.Params.supabaseUrl }}',
+    SUPABASE_ANON_KEY: '{{ .Site.Params.supabaseAnonKey }}',
+    API_BASE: '/api'
+  };
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        colors: { brand: { 600: '#0f766e', 700: '#0f5f59', 900: '#12312f' } }
+      }
+    }
+  };
+</script>
+<script src="/js/shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  html { color-scheme: light; }
+  html.dark { color-scheme: dark; }
+  body { letter-spacing: 0; }
+</style>
