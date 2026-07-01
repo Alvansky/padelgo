@@ -75,10 +75,10 @@
 </div>
 
 <!-- Mobile Menu Overlay -->
-<div id="mobileMenuOverlay" class="fixed inset-0 z-40 bg-black/50 opacity-0 invisible transition-all duration-300 lg:hidden" onclick="toggleMobileMenu()"></div>
+<div id="mobileMenuOverlay" class="fixed inset-0 z-40 bg-black/50 opacity-0 invisible transition-all duration-300 lg:hidden pointer-events-none" onclick="toggleMobileMenu()"></div>
 
 <!-- Mobile Menu Panel -->
-<div id="mobileMenu" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] -translate-x-full bg-white transition-transform duration-300 ease-out dark:bg-slate-950 lg:hidden safe-top safe-bottom">
+<div id="mobileMenu" class="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] translate-x-[-100%] bg-white transition-transform duration-300 ease-out dark:bg-slate-950 lg:hidden safe-top safe-bottom" data-open="false">
   <div class="flex h-14 items-center justify-between border-b border-slate-100 px-5 dark:border-slate-800">
     <span class="text-lg font-bold text-slate-900 dark:text-white">Menu</span>
     <button onclick="toggleMobileMenu()" class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95 transition dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
@@ -163,32 +163,58 @@
 </div>
 
 <script>
-// Mobile menu state
-let mobileMenuOpen = false;
+// Mobile menu toggle - using data attribute for reliable state tracking
 function toggleMobileMenu() {
   const menu = document.getElementById('mobileMenu');
   const overlay = document.getElementById('mobileMenuOverlay');
   const iconOpen = document.getElementById('menuIconOpen');
   const iconClose = document.getElementById('menuIconClose');
 
-  mobileMenuOpen = !mobileMenuOpen;
+  const isOpen = menu.getAttribute('data-open') === 'true';
 
-  if (mobileMenuOpen) {
-    menu.classList.remove('-translate-x-full');
-    overlay.classList.remove('opacity-0', 'invisible');
-    overlay.classList.add('opacity-100', 'visible');
-    document.body.classList.add('overflow-hidden');
-    iconOpen.classList.add('hidden');
-    iconClose.classList.remove('hidden');
-  } else {
-    menu.classList.add('-translate-x-full');
-    overlay.classList.add('opacity-0', 'invisible');
+  if (isOpen) {
+    // Close menu
+    menu.setAttribute('data-open', 'false');
+    menu.classList.add('translate-x-[-100%]');
+    menu.classList.remove('translate-x-0');
+    overlay.classList.add('opacity-0', 'invisible', 'pointer-events-none');
     overlay.classList.remove('opacity-100', 'visible');
     document.body.classList.remove('overflow-hidden');
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
+  } else {
+    // Open menu
+    menu.setAttribute('data-open', 'true');
+    menu.classList.remove('translate-x-[-100%]');
+    menu.classList.add('translate-x-0');
+    overlay.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+    overlay.classList.add('opacity-100', 'visible');
+    document.body.classList.add('overflow-hidden');
+    iconOpen.classList.add('hidden');
+    iconClose.classList.remove('hidden');
   }
 }
+
+// Close mobile menu on escape key
+document.addEventListener('keydown', (e) => {
+  const menu = document.getElementById('mobileMenu');
+  if (e.key === 'Escape' && menu.getAttribute('data-open') === 'true') {
+    toggleMobileMenu();
+  }
+});
+
+// Close mobile menu when clicking on a link inside
+document.querySelectorAll('#mobileMenu a, #mobileMenu button').forEach(el => {
+  el.addEventListener('click', (e) => {
+    const menu = document.getElementById('mobileMenu');
+    if (menu.getAttribute('data-open') === 'true') {
+      // Don't close for logout button (it has its own logic)
+      if (!el.onclick?.toString().includes('logout')) {
+        toggleMobileMenu();
+      }
+    }
+  });
+});
 
 // User dropdown for desktop
 function toggleUserDropdown() {
@@ -202,13 +228,6 @@ document.addEventListener('click', (e) => {
   const toggle = e.target.closest('[onclick="toggleUserDropdown()"]');
   if (!toggle && !dropdown.contains(e.target)) {
     dropdown.classList.add('hidden');
-  }
-});
-
-// Close mobile menu on escape key
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mobileMenuOpen) {
-    toggleMobileMenu();
   }
 });
 
