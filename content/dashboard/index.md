@@ -7,45 +7,48 @@ layout: "dashboard"
 
 <div class="min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950">
 
-<!-- Profile Header -->
+<!-- Profile Header - Clean design with white background -->
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 mb-4 sm:mb-6">
-<div class="h-24 sm:h-32 bg-gradient-to-br from-teal-700 via-teal-800 to-teal-900 relative">
-<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIi8+PGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMSIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSIvPjwvZz48L3N2Zz4=')]"></div>
-</div>
+<div class="h-20 sm:h-24 bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 relative"></div>
 <div class="px-4 sm:px-6 pb-5 sm:pb-6 md:px-8">
-<div class="flex flex-col sm:flex-row items-center sm:items-end gap-3 sm:gap-5 -mt-12 sm:-mt-16">
-<div class="relative flex-shrink-0">
-<img id="userAvatar" src="" alt="Profile" class="w-20 h-20 sm:w-28 sm:h-28 rounded-full border-4 border-white shadow-2xl object-cover bg-slate-100 dark:border-slate-900">
-<div class="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900">
-<svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-</div>
-</div>
-<div class="min-w-0 text-center sm:text-left flex-1 pt-1.5 sm:pt-0">
-<h1 id="userName" class="max-w-xl break-words text-xl sm:text-2xl md:text-3xl font-extrabold leading-tight text-slate-950 dark:text-white sm:text-white sm:drop-shadow-lg">User</h1>
-<p id="userEmail" class="mt-0.5 max-w-xl text-slate-500 dark:text-slate-400 text-[11px] sm:text-sm break-all"></p>
-<div class="flex flex-wrap justify-center sm:justify-start gap-2 mt-2 sm:mt-3">
-<span class="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] sm:text-xs font-bold dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-Verified Player
-</span>
-<span class="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] sm:text-xs font-bold dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-Active Member
-</span>
-</div>
-</div>
-<div class="text-center sm:text-right pb-1 sm:pb-2 flex flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
-<div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
-<a href="/settings/" class="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-extrabold text-slate-700 hover:bg-slate-200 transition dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
-<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-<span class="hidden xs:inline">Settings</span>
-</a>
-</div>
-<div class="bg-white/90 dark:bg-slate-800/90 rounded-xl px-4 py-2 shadow-sm mt-2">
-<div class="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white" id="totalBookings">0</div>
-<div class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium">Total Bookings</div>
-</div>
-</div>
+<!-- Profile Header - Rapi dengan Avatar di kiri, Info di kanan -->
+<div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 -mt-12 sm:-mt-16">
+  <!-- Avatar -->
+  <div class="relative flex-shrink-0">
+    <img id="userAvatar" src="" alt="Profile" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white shadow-2xl object-cover bg-slate-100 dark:border-slate-900">
+    <div class="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-emerald-500 ring-4 ring-white dark:ring-slate-900">
+      <svg class="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+    </div>
+  </div>
+  
+  <!-- User Info -->
+  <div class="text-center sm:text-left flex-1 min-w-0">
+    <h1 id="userName" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-950 dark:text-white">User</h1>
+    <p id="userEmail" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5"></p>
+    <!-- Badges -->
+    <div class="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        Verified Player
+      </span>
+      <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        Active Member
+      </span>
+    </div>
+  </div>
+  
+  <!-- Settings & Stats -->
+  <div class="flex flex-col sm:items-end gap-3 w-full sm:w-auto">
+    <a href="/settings/" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-200 transition dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Settings
+    </a>
+    <div class="bg-white/90 dark:bg-slate-800/90 rounded-xl px-5 py-3 shadow-sm">
+      <div class="text-3xl font-extrabold text-slate-950 dark:text-white" id="totalBookings">0</div>
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Bookings</div>
+    </div>
+  </div>
 </div>
 </div>
 </div>
@@ -346,16 +349,6 @@ function createBookingCard(booking, isUpcoming) {
         ` : ''}
       </div>
     </div>
-
-    ${isUpcoming && booking.status !== 'cancelled' ? `
-      <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50 flex justify-end">
-        <button type="button" onclick="event.stopPropagation(); cancelBooking('${escapeHtml(booking.id)}')"
-          class="text-xs font-bold text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex items-center gap-1 transition">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          Batalkan
-        </button>
-      </div>
-    ` : ''}
   `;
 
   return card;
@@ -368,25 +361,6 @@ function rupiah(value) {
 function escapeHtml(text) {
   const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
   return String(text || '').replace(/[&<>"']/g, m => map[m]);
-}
-
-async function cancelBooking(bookingId) {
-  if (!confirm('Batalkan booking ini?')) return;
-
-  const errorEl = document.getElementById('dashError');
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-
-    const { error } = await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', bookingId);
-    if (error) throw new Error(error.message || 'Gagal membatalkan booking');
-
-    PadelGo.UI.toast('Booking berhasil dibatalkan.');
-    loadDashboard();
-  } catch (err) {
-    errorEl.textContent = err.message || 'Gagal membatalkan booking.';
-    errorEl.classList.remove('hidden');
-  }
 }
 
 document.addEventListener('DOMContentLoaded', loadDashboard);

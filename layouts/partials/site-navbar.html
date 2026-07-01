@@ -127,13 +127,46 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Update mobile nav visibility alongside desktop
-const origUpdateNav = PadelGo.UI.updateNav;
-PadelGo.UI.updateNav = function(user) {
-  origUpdateNav(user);
+// Hide Login/Get Started if session exists (run immediately)
+(function initNavAuth() {
+  const hasSession = document.cookie.includes('sess=');
+  // Desktop
+  document.querySelectorAll('.nav-login-link, .nav-register-link').forEach(el => {
+    if (hasSession) el.classList.add('hidden');
+  });
+  document.querySelectorAll('.nav-user-menu').forEach(el => {
+    if (hasSession) el.classList.remove('hidden');
+    if (hasSession) el.classList.add('flex');
+  });
+  // Mobile
+  document.querySelectorAll('.nav-login-link-mobile, .nav-register-link-mobile').forEach(el => {
+    if (hasSession) el.classList.add('hidden');
+    if (hasSession) el.classList.remove('flex');
+  });
+  document.querySelectorAll('.nav-logout-btn-mobile').forEach(el => {
+    if (hasSession) el.classList.remove('hidden');
+    if (hasSession) el.classList.add('flex');
+  });
+  document.querySelectorAll('.nav-dashboard-link-mobile, .nav-settings-link-mobile').forEach(el => {
+    if (hasSession) el.classList.remove('hidden');
+    if (hasSession) el.classList.add('flex');
+  });
+})();
+
+// Initialize mobile nav visibility
+function initMobileNav() {
   const hasSession = !!PadelGo.Cookies.get('sess');
+  const user = PadelGo.Auth.getUser();
   const role = (user && user.role) || 'user';
 
+  document.querySelectorAll('.nav-login-link-mobile, .nav-register-link-mobile').forEach(el => {
+    el.classList.toggle('hidden', hasSession);
+    el.classList.toggle('flex', !hasSession);
+  });
+  document.querySelectorAll('.nav-logout-btn-mobile').forEach(el => {
+    el.classList.toggle('hidden', !hasSession);
+    el.classList.toggle('flex', hasSession);
+  });
   document.querySelectorAll('.nav-dashboard-link-mobile').forEach(el => {
     el.classList.toggle('hidden', !hasSession);
     el.classList.toggle('flex', hasSession);
@@ -146,13 +179,18 @@ PadelGo.UI.updateNav = function(user) {
     el.classList.toggle('hidden', !hasSession);
     el.classList.toggle('flex', hasSession);
   });
-  document.querySelectorAll('.nav-login-link-mobile, .nav-register-link-mobile').forEach(el => {
-    el.classList.toggle('hidden', hasSession);
-    el.classList.toggle('flex', !hasSession);
-  });
-  document.querySelectorAll('.nav-logout-btn-mobile').forEach(el => {
-    el.classList.toggle('hidden', !hasSession);
-    el.classList.toggle('flex', hasSession);
-  });
+}
+
+// Update mobile nav visibility alongside desktop
+const origUpdateNav = PadelGo.UI.updateNav;
+PadelGo.UI.updateNav = function(user) {
+  origUpdateNav(user);
+  initMobileNav();
 };
+
+// Initialize on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Small delay to ensure cookies are loaded
+  setTimeout(initMobileNav, 50);
+});
 </script>
