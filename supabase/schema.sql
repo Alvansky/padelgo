@@ -1,509 +1,549 @@
--- Supabase schema for PadelGo
--- Run this from the Supabase SQL editor. It is intentionally rerunnable.
+-- ============================================================================
+-- PadelGo Database Schema
+-- Frontend: Hugo (Vercel) | Backend: Supabase (PostgreSQL)
+-- ============================================================================
+-- Run this from Supabase SQL Editor. Intentionally rerunnable.
+-- ============================================================================
+
+-- Drop existing objects (for clean reinstall - order matters!)
+DROP TRIGGER IF EXISTS bookings_validate ON public.bookings;
+DROP TRIGGER IF EXISTS profiles_touch_updated_at ON public.profiles;
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
+
+-- Drop policies first (they depend on functions)
+DROP POLICY IF EXISTS "Users view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins update all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Anyone view courts" ON public.courts;
+DROP POLICY IF EXISTS "Admins manage courts" ON public.courts;
+DROP POLICY IF EXISTS "Users view own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users create bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users update own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins view all bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins manage all bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users can upload avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can view court images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can upload court images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can update court images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can delete court images" ON storage.objects;
+
+-- Now drop functions
+DROP FUNCTION IF EXISTS public.validate_booking();
+DROP FUNCTION IF EXISTS public.touch_updated_at();
+DROP FUNCTION IF EXISTS public.handle_new_user();
+DROP FUNCTION IF EXISTS public.handle_updated_user();
+DROP FUNCTION IF EXISTS public.is_admin();
+DROP FUNCTION IF EXISTS public.get_booked_slots(TEXT, TEXT);
+DROP FUNCTION IF EXISTS public.storage_filepath_matches_user(TEXT);
+
+-- ============================================================================
+-- TABLES
+-- ============================================================================
 
 -- Profiles table (extends auth.users)
-create table if not exists public.profiles (
-  id uuid references auth.users on delete cascade primary key,
-  name text,
-  email text,
-  phone text,
-  avatar_url text,
-  role text default 'user' not null check (role in ('user', 'admin')),
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  name TEXT,
+  email TEXT,
+  phone TEXT,
+  avatar_url TEXT,
+  role TEXT DEFAULT 'user' NOT NULL CHECK (role IN ('user', 'admin')),
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Courts table
-create table if not exists public.courts (
-  id text primary key,
-  name text not null,
-  type text not null,
-  price_per_hour integer not null check (price_per_hour > 0),
-  surface text,
-  image_url text,
-  available boolean default true not null,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+CREATE TABLE IF NOT EXISTS public.courts (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  price_per_hour INTEGER NOT NULL CHECK (price_per_hour > 0),
+  surface TEXT,
+  image_url TEXT,
+  available BOOLEAN DEFAULT true NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Bookings table
-create table if not exists public.bookings (
-  id text primary key,
-  user_id uuid references auth.users on delete cascade not null,
-  court_id text not null references public.courts(id),
-  court_name text not null,
-  date text not null,
-  start_time text not null,
-  end_time text not null,
-  duration_hours integer not null check (duration_hours between 1 and 4),
-  amount integer not null check (amount > 0),
-  status text default 'pending' not null check (status in ('pending', 'approved', 'confirmed', 'cancelled')),
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+CREATE TABLE IF NOT EXISTS public.bookings (
+  id TEXT PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  court_id TEXT NOT NULL REFERENCES public.courts(id),
+  court_name TEXT NOT NULL,
+  date TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  duration_hours INTEGER NOT NULL CHECK (duration_hours BETWEEN 1 AND 4),
+  amount INTEGER NOT NULL CHECK (amount > 0),
+  status TEXT DEFAULT 'pending' NOT NULL CHECK (status IN ('pending', 'approved', 'cancelled')),
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Keep existing databases aligned when this file is rerun.
-alter table public.bookings drop constraint if exists bookings_status_check;
+-- ============================================================================
+-- INDEXES (for performance)
+-- ============================================================================
 
-update public.profiles set role = 'user' where role is null;
-update public.profiles set avatar_url = null where avatar_url = '';
-update public.courts set available = true where available is null;
-update public.bookings set status = 'pending' where status is null;
-update public.bookings set status = 'approved' where status = 'confirmed';
-update public.profiles p
-set email = u.email
-from auth.users u
-where p.id = u.id
-  and (p.email is null or p.email <> u.email);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
+CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON public.bookings(user_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_court_date ON public.bookings(court_id, date);
+CREATE INDEX IF NOT EXISTS idx_bookings_date ON public.bookings(date);
+CREATE INDEX IF NOT EXISTS idx_bookings_status ON public.bookings(status);
 
-alter table public.profiles alter column role set default 'user';
-alter table public.profiles alter column role set not null;
-alter table public.profiles add column if not exists email text;
-alter table public.profiles add column if not exists avatar_url text;
-alter table public.profiles alter column avatar_url drop default;
-alter table public.courts add column if not exists image_url text;
-alter table public.courts alter column available set default true;
-alter table public.courts alter column available set not null;
-alter table public.bookings alter column status set default 'pending';
-alter table public.bookings alter column status set not null;
+-- ============================================================================
+-- HELPER FUNCTIONS
+-- ============================================================================
 
-do $$
-begin
-  alter table public.bookings
-    add constraint bookings_status_check
-    check (status in ('pending', 'approved', 'confirmed', 'cancelled'));
-end;
-$$;
-
--- Indexes
-create index if not exists idx_bookings_user_id on public.bookings(user_id);
-create index if not exists idx_bookings_court_date on public.bookings(court_id, date);
-create index if not exists idx_profiles_role on public.profiles(role);
-
--- Helper functions avoid recursive RLS checks on profiles.
-create or replace function public.is_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1
-    from public.profiles
-    where id = auth.uid()
-      and role = 'admin'
+-- Check if current user is admin
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.profiles
+    WHERE id = auth.uid()
+      AND role = 'admin'
   );
 $$;
 
-create or replace function public.touch_updated_at()
-returns trigger
-language plpgsql
-set search_path = public
-as $$
-begin
+-- Auto-update updated_at timestamp
+CREATE OR REPLACE FUNCTION public.touch_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
   new.updated_at = timezone('utc'::text, now());
-  return new;
-end;
+  RETURN new;
+END;
 $$;
 
-drop trigger if exists profiles_touch_updated_at on public.profiles;
-create trigger profiles_touch_updated_at
-  before update on public.profiles
-  for each row execute procedure public.touch_updated_at();
+-- Create profile on new user signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.profiles (id, name, email, avatar_url, role)
+  VALUES (
+    new.id,
+    COALESCE(NULLIF(new.raw_user_meta_data->>'name', ''), 'Player'),
+    new.email,
+    COALESCE(
+      NULLIF(new.raw_user_meta_data->>'avatar_url', ''),
+      NULLIF(new.raw_user_meta_data->>'avatar', '')
+    ),
+    'user'
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    email = excluded.email,
+    name = COALESCE(public.profiles.name, excluded.name),
+    avatar_url = COALESCE(public.profiles.avatar_url, excluded.avatar_url);
+  RETURN new;
+END;
+$$;
 
--- Server-side booking validation. Frontend checks are convenience only.
-create or replace function public.validate_booking()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  court_record public.courts%rowtype;
-  start_hour integer;
-  end_hour integer;
-begin
-  if new.status is null then
+-- Update profile on user metadata change
+CREATE OR REPLACE FUNCTION public.handle_updated_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE public.profiles
+  SET
+    email = new.email,
+    name = COALESCE(NULLIF(new.raw_user_meta_data->>'name', ''), name),
+    avatar_url = COALESCE(
+      NULLIF(new.raw_user_meta_data->>'avatar_url', ''),
+      NULLIF(new.raw_user_meta_data->>'avatar', ''),
+      avatar_url
+    )
+  WHERE id = new.id;
+  RETURN new;
+END;
+$$;
+
+-- Get booked slots for a court on specific date (public safe)
+CREATE OR REPLACE FUNCTION public.get_booked_slots(
+  p_court_id TEXT,
+  p_date TEXT
+)
+RETURNS TABLE (
+  start_time TEXT,
+  end_time TEXT,
+  duration_hours INTEGER,
+  status TEXT
+)
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT b.start_time, b.end_time, b.duration_hours, b.status
+  FROM public.bookings b
+  WHERE b.court_id = p_court_id
+    AND b.date = p_date
+    AND b.status != 'cancelled'
+  ORDER BY b.start_time;
+$$;
+
+-- Validate booking before insert/update
+CREATE OR REPLACE FUNCTION public.validate_booking()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  court_record RECORD;
+  start_hour INTEGER;
+  end_hour INTEGER;
+BEGIN
+  -- Set default status
+  IF new.status IS NULL THEN
     new.status := 'pending';
-  end if;
+  END IF;
 
-  if tg_op = 'INSERT' and not public.is_admin() then
+  -- Non-admin users can only create pending bookings
+  IF tg_op = 'INSERT' AND NOT public.is_admin() THEN
     new.status := 'pending';
-  end if;
+  END IF;
 
-  if tg_op = 'UPDATE' and not public.is_admin() then
-    if old.user_id = auth.uid()
-      and new.user_id = old.user_id
-      and new.court_id = old.court_id
-      and new.court_name = old.court_name
-      and new.date = old.date
-      and new.start_time = old.start_time
-      and new.end_time = old.end_time
-      and new.duration_hours = old.duration_hours
-      and new.amount = old.amount
-      and old.status <> 'cancelled'
-      and new.status = 'cancelled'
-    then
-      return new;
-    end if;
+  -- User can only cancel their own bookings
+  IF tg_op = 'UPDATE' AND NOT public.is_admin() THEN
+    -- Allow user to cancel their own booking
+    IF old.user_id = auth.uid()
+      AND new.user_id = old.user_id
+      AND old.status != 'cancelled'
+      AND new.status = 'cancelled'
+    THEN
+      RETURN new;
+    END IF;
+    -- Block any other updates by non-admin users
+    RAISE EXCEPTION 'User hanya dapat membatalkan booking miliknya sendiri.';
+  END IF;
 
-    raise exception 'User hanya dapat membatalkan booking miliknya sendiri.';
-  end if;
+  -- Validate date format (YYYY-MM-DD)
+  IF new.date !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN
+    RAISE EXCEPTION 'Tanggal booking tidak valid. Format: YYYY-MM-DD';
+  END IF;
 
-  if new.date !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' then
-    raise exception 'Tanggal booking tidak valid.';
-  end if;
+  -- Prevent past date booking
+  IF new.date::date < current_date THEN
+    RAISE EXCEPTION 'Tanggal booking tidak boleh di masa lalu.';
+  END IF;
 
-  if new.date::date < current_date then
-    raise exception 'Tanggal booking tidak boleh di masa lalu.';
-  end if;
+  -- Validate time format (HH:00)
+  IF new.start_time !~ '^([01][0-9]|2[0-3]):00$' THEN
+    RAISE EXCEPTION 'Jam mulai harus memakai format HH:00';
+  END IF;
 
-  if new.start_time !~ '^([01][0-9]|2[0-3]):00$' then
-    raise exception 'Jam mulai harus memakai format HH:00.';
-  end if;
+  IF new.end_time !~ '^([01][0-9]|2[0-4]):00$' THEN
+    RAISE EXCEPTION 'Jam selesai harus memakai format HH:00';
+  END IF;
 
-  if new.end_time !~ '^([01][0-9]|2[0-4]):00$' then
-    raise exception 'Jam selesai harus memakai format HH:00.';
-  end if;
+  -- Parse hours
+  start_hour := split_part(new.start_time, ':', 1)::INTEGER;
+  end_hour := split_part(new.end_time, ':', 1)::INTEGER;
 
-  start_hour := split_part(new.start_time, ':', 1)::integer;
-  end_hour := split_part(new.end_time, ':', 1)::integer;
+  -- Validate time range
+  IF end_hour <= start_hour OR end_hour > 24 THEN
+    RAISE EXCEPTION 'Rentang jam booking tidak valid';
+  END IF;
 
-  if end_hour <= start_hour or end_hour > 24 then
-    raise exception 'Rentang jam booking tidak valid.';
-  end if;
+  -- Validate duration (1-4 hours)
+  IF (end_hour - start_hour) NOT BETWEEN 1 AND 4 THEN
+    RAISE EXCEPTION 'Durasi booking harus 1 sampai 4 jam';
+  END IF;
 
-  if not ((end_hour - start_hour) between 1 and 4) then
-    raise exception 'Durasi booking harus 1 sampai 4 jam.';
-  end if;
+  -- Verify court exists and is available
+  SELECT * INTO court_record
+  FROM public.courts
+  WHERE id = new.court_id
+    AND available = true;
 
-  select *
-  into court_record
-  from public.courts
-  where id = new.court_id
-    and available = true;
+  IF NOT found THEN
+    RAISE EXCEPTION 'Court tidak tersedia';
+  END IF;
 
-  if not found then
-    raise exception 'Court tidak tersedia.';
-  end if;
-
-  -- Trust the database for derived fields, not client input.
+  -- Trust database for derived fields
   new.duration_hours := end_hour - start_hour;
   new.court_name := court_record.name;
   new.amount := court_record.price_per_hour * new.duration_hours;
 
-  -- Prevent race-condition double bookings per court/date.
-  perform pg_advisory_xact_lock(hashtext(new.court_id || ':' || new.date));
+  -- Prevent double booking (race condition safe)
+  PERFORM pg_advisory_xact_lock(hashtext(new.court_id || ':' || new.date));
 
-  if new.status <> 'cancelled' and exists (
-    select 1
-    from public.bookings b
-    where b.court_id = new.court_id
-      and b.date = new.date
-      and b.status <> 'cancelled'
-      and b.id <> new.id
-      and split_part(b.start_time, ':', 1)::integer < end_hour
-      and split_part(b.end_time, ':', 1)::integer > start_hour
-  ) then
-    raise exception 'Slot sudah dipesan. Pilih waktu lain.';
-  end if;
+  IF new.status != 'cancelled' AND EXISTS (
+    SELECT 1
+    FROM public.bookings b
+    WHERE b.court_id = new.court_id
+      AND b.date = new.date
+      AND b.status != 'cancelled'
+      AND b.id != COALESCE(new.id, '')
+      AND split_part(b.start_time, ':', 1)::INTEGER < end_hour
+      AND split_part(b.end_time, ':', 1)::INTEGER > start_hour
+  ) THEN
+    RAISE EXCEPTION 'Slot sudah dipesan. Pilih waktu lain';
+  END IF;
 
-  return new;
-end;
+  RETURN new;
+END;
 $$;
 
-drop trigger if exists bookings_validate on public.bookings;
-create trigger bookings_validate
-  before insert or update on public.bookings
-  for each row execute procedure public.validate_booking();
+-- ============================================================================
+-- TRIGGERS
+-- ============================================================================
 
--- Public-safe availability endpoint. It exposes only slot timing, not user data.
-create or replace function public.get_booked_slots(p_court_id text, p_date text)
-returns table (
-  start_time text,
-  end_time text,
-  duration_hours integer,
-  status text
-)
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select b.start_time, b.end_time, b.duration_hours, b.status
-  from public.bookings b
-  where b.court_id = p_court_id
-    and b.date = p_date
-    and b.status <> 'cancelled'
-  order by b.start_time;
-$$;
+-- Profile auto-update timestamp
+CREATE TRIGGER profiles_touch_updated_at
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE PROCEDURE public.touch_updated_at();
 
--- Trigger to create profile on signup.
--- New users intentionally start with avatar_url = null; the UI renders a shared green default avatar.
-create or replace function public.handle_new_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  insert into public.profiles (id, name, email, avatar_url, role)
-  values (
-    new.id,
-    new.raw_user_meta_data->>'name',
-    new.email,
-    coalesce(
-      nullif(new.raw_user_meta_data->>'avatar_url', ''),
-      nullif(new.raw_user_meta_data->>'avatar', '')
-    ),
-    'user'
-  )
-  on conflict (id) do update set
-    email = excluded.email,
-    name = coalesce(public.profiles.name, excluded.name),
-    avatar_url = coalesce(public.profiles.avatar_url, excluded.avatar_url);
-  return new;
-end;
-$$;
+-- Create profile on signup
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+-- Update profile on metadata change
+CREATE TRIGGER on_auth_user_updated
+  AFTER UPDATE OF email, raw_user_meta_data ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_user();
 
-create or replace function public.handle_updated_user()
-returns trigger
-language plpgsql
-security definer
-set search_path = public
-as $$
-begin
-  update public.profiles
-  set
-    email = new.email,
-    name = coalesce(nullif(new.raw_user_meta_data->>'name', ''), name),
-    avatar_url = coalesce(
-      nullif(new.raw_user_meta_data->>'avatar_url', ''),
-      nullif(new.raw_user_meta_data->>'avatar', ''),
-      avatar_url
-    )
-  where id = new.id;
-  return new;
-end;
-$$;
+-- Validate booking
+CREATE TRIGGER bookings_validate
+  BEFORE INSERT OR UPDATE ON public.bookings
+  FOR EACH ROW EXECUTE PROCEDURE public.validate_booking();
 
-drop trigger if exists on_auth_user_updated on auth.users;
-create trigger on_auth_user_updated
-  after update of email, raw_user_meta_data on auth.users
-  for each row execute procedure public.handle_updated_user();
+-- ============================================================================
+-- ROW LEVEL SECURITY (RLS)
+-- ============================================================================
 
--- Admin bootstrap.
--- Create this login in Supabase Auth first:
---   email: admin@padelgo.com
---   password: Hanyaadmin!
--- Re-running this schema promotes that Auth user to admin without exposing a password in public tables.
-insert into public.profiles (id, name, email, role)
-select id, coalesce(raw_user_meta_data->>'name', 'PadelGo Admin'), email, 'admin'
-from auth.users
-where email = 'admin@padelgo.com'
-on conflict (id) do update set
-  name = coalesce(public.profiles.name, excluded.name),
-  email = excluded.email,
-  role = 'admin';
-
--- RLS
-alter table public.profiles enable row level security;
-alter table public.courts enable row level security;
-alter table public.bookings enable row level security;
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.courts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
-drop policy if exists "Users view own profile" on public.profiles;
-drop policy if exists "Users insert own profile" on public.profiles;
-drop policy if exists "Users update own profile" on public.profiles;
-drop policy if exists "Admins view all profiles" on public.profiles;
-drop policy if exists "Admins update all profiles" on public.profiles;
+DROP POLICY IF EXISTS "Users view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins update all profiles" ON public.profiles;
 
-create policy "Users view own profile"
-  on public.profiles
-  for select
-  using (auth.uid() = id);
+CREATE POLICY "Users view own profile"
+  ON public.profiles FOR SELECT
+  USING (auth.uid() = id);
 
-create policy "Users insert own profile"
-  on public.profiles
-  for insert
-  with check (auth.uid() = id and coalesce(role, 'user') = 'user');
+CREATE POLICY "Users insert own profile"
+  ON public.profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
 
-create policy "Users update own profile"
-  on public.profiles
-  for update
-  using (auth.uid() = id)
-  with check (auth.uid() = id and role = 'user');
+CREATE POLICY "Users update own profile"
+  ON public.profiles FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id AND (role IS NULL OR role = 'user'));
 
-create policy "Admins view all profiles"
-  on public.profiles
-  for select
-  using (public.is_admin());
+CREATE POLICY "Admins view all profiles"
+  ON public.profiles FOR SELECT
+  USING (public.is_admin());
 
-create policy "Admins update all profiles"
-  on public.profiles
-  for update
-  using (public.is_admin())
-  with check (public.is_admin());
+CREATE POLICY "Admins update all profiles"
+  ON public.profiles FOR ALL
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- Courts policies (public read, admin write)
-drop policy if exists "Anyone view courts" on public.courts;
-drop policy if exists "Admins manage courts" on public.courts;
+DROP POLICY IF EXISTS "Anyone view courts" ON public.courts;
+DROP POLICY IF EXISTS "Admins manage courts" ON public.courts;
 
-create policy "Anyone view courts"
-  on public.courts
-  for select
-  using (true);
+CREATE POLICY "Anyone view courts"
+  ON public.courts FOR SELECT
+  USING (true);
 
-create policy "Admins manage courts"
-  on public.courts
-  for all
-  using (public.is_admin())
-  with check (public.is_admin());
+CREATE POLICY "Admins manage courts"
+  ON public.courts FOR ALL
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- Bookings policies
-drop policy if exists "Users view own bookings" on public.bookings;
-drop policy if exists "Users create bookings" on public.bookings;
-drop policy if exists "Users update own bookings" on public.bookings;
-drop policy if exists "Admins view all bookings" on public.bookings;
-drop policy if exists "Admins manage all bookings" on public.bookings;
+DROP POLICY IF EXISTS "Users view own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users create bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Users update own bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins view all bookings" ON public.bookings;
+DROP POLICY IF EXISTS "Admins manage all bookings" ON public.bookings;
 
-create policy "Users view own bookings"
-  on public.bookings
-  for select
-  using (auth.uid() = user_id);
+CREATE POLICY "Users view own bookings"
+  ON public.bookings FOR SELECT
+  USING (auth.uid() = user_id);
 
-create policy "Users create bookings"
-  on public.bookings
-  for insert
-  with check (auth.uid() = user_id);
+CREATE POLICY "Users create bookings"
+  ON public.bookings FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
 
-create policy "Users update own bookings"
-  on public.bookings
-  for update
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id and status = 'cancelled');
+-- Users can only cancel their own non-cancelled bookings (handled by trigger)
+CREATE POLICY "Users update own bookings"
+  ON public.bookings FOR UPDATE
+  USING (auth.uid() = user_id);
 
-create policy "Admins view all bookings"
-  on public.bookings
-  for select
-  using (public.is_admin());
+CREATE POLICY "Admins view all bookings"
+  ON public.bookings FOR SELECT
+  USING (public.is_admin());
 
-create policy "Admins manage all bookings"
-  on public.bookings
-  for all
-  using (public.is_admin())
-  with check (public.is_admin());
+CREATE POLICY "Admins manage all bookings"
+  ON public.bookings FOR ALL
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
-grant execute on function public.get_booked_slots(text, text) to anon, authenticated;
-grant execute on function public.is_admin() to authenticated;
+-- ============================================================================
+-- GRANTS
+-- ============================================================================
 
--- Storage bucket for avatars (requires supabase client library, run once)
--- To create the bucket: Run this in Supabase SQL editor or use Dashboard > Storage
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-select 'avatars', 'avatars', true, 2097152, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-where not exists (select 1 from storage.buckets where id = 'avatars');
+GRANT EXECUTE ON FUNCTION public.get_booked_slots(TEXT, TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-select 'court-images', 'court-images', true, 5242880, array['image/jpeg', 'image/png', 'image/webp']
-where not exists (select 1 from storage.buckets where id = 'court-images');
+-- ============================================================================
+-- STORAGE BUCKETS & POLICIES
+-- ============================================================================
 
--- Allow authenticated users to upload their own avatars
-drop policy if exists "Users can upload their own avatar" on storage.objects;
-drop policy if exists "Users can view avatars" on storage.objects;
-drop policy if exists "Users can update their own avatar" on storage.objects;
-drop policy if exists "Users can delete their own avatar" on storage.objects;
+-- Helper function to check folder ownership (create first!)
+CREATE OR REPLACE FUNCTION public.storage_filepath_matches_user(filepath TEXT)
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT filepath LIKE auth.uid()::TEXT || '/%';
+$$;
 
-create policy "Users can upload their own avatar"
-  on storage.objects
-  for insert
-  to authenticated
-  with check (
-    bucket_id = 'avatars' and
-    (
-      (storage.foldername(name))[1] = auth.uid()::text or
-      ((storage.foldername(name))[1] = 'avatars' and (storage.foldername(name))[2] = auth.uid()::text)
-    )
+GRANT EXECUTE ON FUNCTION public.storage_filepath_matches_user(TEXT) TO authenticated;
+
+-- Avatars bucket (2MB limit)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+SELECT 'avatars', 'avatars', true, 2097152, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'avatars');
+
+-- Court images bucket (5MB limit)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+SELECT 'court-images', 'court-images', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp']
+WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'court-images');
+
+-- Avatar storage policies
+DROP POLICY IF EXISTS "Users can upload avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Users can view avatars" ON storage.objects;
+DROP POLICY IF EXISTS "Users can update avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Users can delete avatar" ON storage.objects;
+DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
+
+CREATE POLICY "Users can upload avatar"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    bucket_id = 'avatars'
+    AND public.storage_filepath_matches_user(name)
   );
 
-create policy "Users can view avatars"
-  on storage.objects
-  for select
-  using (bucket_id = 'avatars');
+CREATE POLICY "Users can view avatars"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'avatars');
 
-create policy "Users can update their own avatar"
-  on storage.objects
-  for update
-  to authenticated
-  using (
-    bucket_id = 'avatars' and
-    (
-      (storage.foldername(name))[1] = auth.uid()::text or
-      ((storage.foldername(name))[1] = 'avatars' and (storage.foldername(name))[2] = auth.uid()::text)
-    )
+CREATE POLICY "Users can update avatar"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (
+    bucket_id = 'avatars'
+    AND public.storage_filepath_matches_user(name)
+  )
+  WITH CHECK (
+    bucket_id = 'avatars'
+    AND public.storage_filepath_matches_user(name)
   );
 
-create policy "Users can delete their own avatar"
-  on storage.objects
-  for delete
-  to authenticated
-  using (
-    bucket_id = 'avatars' and
-    (
-      (storage.foldername(name))[1] = auth.uid()::text or
-      ((storage.foldername(name))[1] = 'avatars' and (storage.foldername(name))[2] = auth.uid()::text)
-    )
+CREATE POLICY "Users can delete avatar"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (
+    bucket_id = 'avatars'
+    AND public.storage_filepath_matches_user(name)
   );
 
--- Allow public reads for avatars (since bucket is public)
-drop policy if exists "Anyone can view avatars" on storage.objects;
+CREATE POLICY "Anyone can view avatars"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'avatars');
 
-create policy "Anyone can view avatars"
-  on storage.objects
-  for select
-  using (bucket_id = 'avatars');
+-- Court images storage policies
+DROP POLICY IF EXISTS "Anyone can view court images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can upload court images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can update court images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can delete court images" ON storage.objects;
 
-drop policy if exists "Anyone can view court images" on storage.objects;
-drop policy if exists "Admins can upload court images" on storage.objects;
-drop policy if exists "Admins can update court images" on storage.objects;
-drop policy if exists "Admins can delete court images" on storage.objects;
+CREATE POLICY "Anyone can view court images"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'court-images');
 
-create policy "Anyone can view court images"
-  on storage.objects
-  for select
-  using (bucket_id = 'court-images');
+CREATE POLICY "Admins can upload court images"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    bucket_id = 'court-images'
+    AND public.is_admin()
+  );
 
-create policy "Admins can upload court images"
-  on storage.objects
-  for insert
-  to authenticated
-  with check (bucket_id = 'court-images' and public.is_admin());
+CREATE POLICY "Admins can update court images"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (
+    bucket_id = 'court-images'
+    AND public.is_admin()
+  )
+  WITH CHECK (
+    bucket_id = 'court-images'
+    AND public.is_admin()
+  );
 
-create policy "Admins can update court images"
-  on storage.objects
-  for update
-  to authenticated
-  using (bucket_id = 'court-images' and public.is_admin());
+CREATE POLICY "Admins can delete court images"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (
+    bucket_id = 'court-images'
+    AND public.is_admin()
+  );
 
-create policy "Admins can delete court images"
-  on storage.objects
-  for delete
-  to authenticated
-  using (bucket_id = 'court-images' and public.is_admin());
+-- ============================================================================
+-- SEED DATA
+-- ============================================================================
 
--- Seed courts.
-insert into public.courts (id, name, type, price_per_hour, surface, image_url, available) values
+-- Seed courts
+INSERT INTO public.courts (id, name, type, price_per_hour, surface, image_url, available) VALUES
   ('A1', 'Court A1', 'Premium indoor court', 150000, 'Artificial Grass', '/images/padel1.jpg', true),
   ('A2', 'Court A2', 'Standard indoor court', 100000, 'Artificial Grass', '/images/padel2.jpg', true),
   ('B1', 'Court B1', 'Premium glass court', 150000, 'Panoramic Glass', '/images/padel3.jpg', true),
   ('B2', 'Court B2', 'Standard glass court', 100000, 'Panoramic Glass', '/images/padel4.jpg', true)
-on conflict (id) do update set
+ON CONFLICT (id) DO UPDATE SET
   name = excluded.name,
   type = excluded.type,
   price_per_hour = excluded.price_per_hour,
   surface = excluded.surface,
-  image_url = coalesce(public.courts.image_url, excluded.image_url),
+  image_url = COALESCE(public.courts.image_url, excluded.image_url),
   available = excluded.available;
+
+-- Admin bootstrap (create auth user first, then run this)
+-- 1. Go to Supabase Dashboard > Authentication > Add User
+-- 2. Email: admin@padelgo.com
+-- 3. Run: UPDATE public.profiles SET role = 'admin' WHERE email = 'admin@padelgo.com';
