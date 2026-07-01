@@ -48,11 +48,11 @@ Active Member
 <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 <div class="flex items-center gap-3 sm:gap-4">
 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-teal-100 rounded-xl flex items-center justify-center flex-shrink-0">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+<svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
 </div>
 <div class="min-w-0">
-<p class="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400 truncate">Pengaturan</p>
-<a href="/settings/" class="text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white hover:text-teal-700 transition truncate block">Settings</a>
+<p class="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400 truncate">Booking Baru</p>
+<a href="/order/" class="text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white hover:text-teal-700 transition truncate block">Pesan</a>
 </div>
 </div>
 </div>
@@ -81,59 +81,14 @@ Active Member
 <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 <div class="flex items-center gap-3 sm:gap-4">
 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+<svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
 </div>
 <div class="min-w-0">
-<p class="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400 truncate">Member Since</p>
-<p id="memberSince" class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white">-</p>
+<p class="text-[10px] sm:text-sm text-slate-500 dark:text-slate-400 truncate">Pengaturan</p>
+<a href="/settings/" class="text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white hover:text-teal-700 transition truncate block">Settings</a>
 </div>
 </div>
 </div>
-</div>
-
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
-<a href="/order/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
-<div class="w-10 h-10 sm:w-12 sm:h-12 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-</div>
-<p class="text-[11px] sm:text-sm font-extrabold text-slate-950 dark:text-white">New Booking</p>
-<p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pesan lapangan</p>
-</a>
-<a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
-<div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-</div>
-<p class="text-[11px] sm:text-sm font-extrabold text-slate-950 dark:text-white">Profile</p>
-<p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Edit profil</p>
-</a>
-<a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
-<div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
-</div>
-<p class="text-[11px] sm:text-sm font-extrabold text-slate-950 dark:text-white">Password</p>
-<p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Ganti password</p>
-</a>
-<a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
-<div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-</div>
-<p class="text-[11px] sm:text-sm font-extrabold text-slate-950 dark:text-white">Avatar</p>
-<p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Ganti foto</p>
-</a>
-<a href="/order/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
-<div class="w-10 h-10 sm:w-12 sm:h-12 bg-rose-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-</div>
-<p class="text-[11px] sm:text-sm font-extrabold text-slate-950 dark:text-white">History</p>
-<p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Riwayat booking</p>
-</a>
-<a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
-<div class="w-10 h-10 sm:w-12 sm:h-12 bg-cyan-100 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3">
-<svg class="w-5 h-5 sm:w-6 sm:h-6 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
-</div>
-<p class="text-[11px] sm:text-sm font-extrabold text-slate-950 dark:text-white">Settings</p>
-<p class="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pengaturan akun</p>
-</a>
 </div>
 
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">

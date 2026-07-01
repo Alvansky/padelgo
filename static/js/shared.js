@@ -164,6 +164,7 @@ PadelGo.UI = {
     const hasSession = !!PadelGo.Cookies.get('sess');
     const role = user.role || 'user';
     const displayName = user.name || user.email || 'User';
+    const initials = String(displayName).trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
     document.querySelectorAll('.nav-admin-link').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
     document.querySelectorAll('.nav-dashboard-link').forEach(el => el.classList.toggle('hidden', !hasSession));
@@ -174,10 +175,25 @@ PadelGo.UI = {
     });
     document.querySelectorAll('.nav-user-name').forEach(el => { el.textContent = displayName; });
     document.querySelectorAll('.nav-user-link').forEach(el => { el.href = role === 'admin' ? '/admin/' : '/dashboard/'; });
+
+    // Avatar with fallback: show img if URL exists, otherwise show initials
+    const storedAvatar = PadelGo.Storage.getAvatar();
+    const avatarUrl = storedAvatar || user.avatar || '';
     document.querySelectorAll('.nav-user-avatar').forEach(el => {
-      const stored = PadelGo.Storage.getAvatar();
-      el.src = stored || user.avatar || this.avatar(displayName);
-      el.alt = displayName;
+      const wrapper = el.closest('.nav-user-avatar-wrapper');
+      const fallback = wrapper ? wrapper.querySelector('.nav-user-avatar-fallback') : null;
+      if (avatarUrl) {
+        el.src = avatarUrl;
+        el.classList.remove('hidden');
+        el.alt = displayName;
+        if (fallback) fallback.classList.add('hidden');
+      } else {
+        el.classList.add('hidden');
+        if (fallback) {
+          fallback.textContent = initials;
+          fallback.classList.remove('hidden');
+        }
+      }
     });
 
     // Mobile nav sync
