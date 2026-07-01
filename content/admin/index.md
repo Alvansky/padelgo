@@ -32,11 +32,26 @@ layout: "admin"
 <!-- Tabs -->
 <div class="mb-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 <div class="flex min-w-max gap-2">
-<button type="button" class="admin-tab rounded-xl bg-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-white dark:bg-white dark:text-slate-950 whitespace-nowrap" data-tab="overview">📅 Overview</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap" data-tab="bookings">📋 Bookings</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap" data-tab="courts">🏀 Courts</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap" data-tab="finance">💰 Finance</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap" data-tab="users">👥 Users</button>
+<button type="button" class="admin-tab rounded-xl bg-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-white dark:bg-white dark:text-slate-950 whitespace-nowrap flex items-center gap-2" data-tab="overview">
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  <span>Overview</span>
+</button>
+<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="bookings">
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+  <span>Bookings</span>
+</button>
+<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="courts">
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+  <span>Courts</span>
+</button>
+<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="finance">
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+  <span>Finance</span>
+</button>
+<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="users">
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+  <span>Users</span>
+</button>
 </div>
 </div>
 
@@ -232,17 +247,23 @@ Finance Snapshot
 <!-- Users Tab -->
 <section id="users" class="admin-section hidden">
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+<div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800 flex items-center justify-between">
+<div>
 <h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Users</h2>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola data user termasuk nama, email, role, dan password.</p>
+</div>
+<span id="usersCount" class="rounded-full bg-teal-100 px-3 py-1 text-xs font-extrabold text-teal-800 dark:bg-teal-900/50 dark:text-teal-200">0 users</span>
 </div>
 <div class="overflow-x-auto">
-<table class="w-full min-w-[760px]">
+<table class="w-full min-w-[900px]">
 <thead>
 <tr class="bg-slate-50 text-left text-[10px] sm:text-xs uppercase text-slate-500 dark:bg-slate-950">
 <th class="px-4 sm:px-5 py-3">User</th>
 <th class="px-4 sm:px-5 py-3">Email</th>
+<th class="px-4 sm:px-5 py-3">Phone</th>
 <th class="px-4 sm:px-5 py-3">Role</th>
 <th class="px-4 sm:px-5 py-3">Joined</th>
+<th class="px-4 sm:px-5 py-3 text-right">Actions</th>
 </tr>
 </thead>
 <tbody id="usersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
@@ -251,6 +272,77 @@ Finance Snapshot
 </div>
 </section>
 
+</div>
+</div>
+
+<!-- User Edit Modal -->
+<div id="userEditModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeUserEditModal()"></div>
+<div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+<div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
+<div>
+<h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Edit User</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Update data user</p>
+</div>
+<button type="button" onclick="closeUserEditModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+</div>
+<form id="editUserForm" onsubmit="submitEditUser(event)" class="p-4 sm:p-6 space-y-5">
+<input type="hidden" id="editUserId">
+
+<!-- User Avatar Preview -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+<img id="editUserAvatar" src="" alt="" class="h-16 w-16 rounded-full object-cover">
+<div>
+<p id="editUserNamePreview" class="font-extrabold text-slate-900 dark:text-white"></p>
+<p id="editUserEmailPreview" class="text-sm text-slate-500"></p>
+</div>
+</div>
+
+<!-- Name -->
+<div>
+<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Nama</label>
+<input id="editUserName" type="text" required placeholder="Nama lengkap" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+</div>
+
+<!-- Email -->
+<div>
+<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Email</label>
+<input id="editUserEmail" type="email" required placeholder="email@example.com" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+</div>
+
+<!-- Phone -->
+<div>
+<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">No. HP</label>
+<input id="editUserPhone" type="tel" placeholder="08xxxxxxxxxx" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+</div>
+
+<!-- Role -->
+<div>
+<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Role</label>
+<select id="editUserRole" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+<option value="user">User</option>
+<option value="admin">Admin</option>
+</select>
+</div>
+
+<!-- Password -->
+<div>
+<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Password Baru <span class="text-xs font-normal text-slate-500">(kosongkan jika tidak diubah)</span></label>
+<input id="editUserPassword" type="password" minlength="8" placeholder="Minimal 8 karakter" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+</div>
+
+<!-- Error/Success -->
+<p id="userEditError" class="hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></p>
+<p id="userEditSuccess" class="hidden rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></p>
+
+<!-- Actions -->
+<div class="flex gap-3 pt-2">
+<button type="submit" id="editUserSubmit" class="flex-1 rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800 transition">Simpan</button>
+<button type="button" onclick="deleteCurrentUser()" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-extrabold text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 transition">Hapus</button>
+</div>
+</form>
 </div>
 </div>
 
@@ -1023,7 +1115,17 @@ function renderBookings(bookings, targetId) {
 function renderMiniUserCell(userId) {
   const profile = profileById.get(userId);
   const name = profile?.name || profile?.email || 'User';
+  const avatar = profile?.avatar_url;
   const initials = String(name || 'U').trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2);
+  
+  if (avatar) {
+    return `<div class="flex items-center gap-2">
+      <img src="${escapeAttr(avatar)}" alt="${escapeAttr(name)}" class="h-8 w-8 rounded-full object-cover ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <span class="h-8 w-8 rounded-full bg-teal-100 hidden items-center justify-center text-xs font-extrabold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200">${initials}</span>
+      <span class="font-bold text-slate-900 dark:text-slate-100 text-xs">${escapeHtml(name)}</span>
+    </div>`;
+  }
+  
   return `<div class="flex items-center gap-2">
     <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-xs font-extrabold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200">${initials}</div>
     <span class="font-bold text-slate-900 dark:text-slate-100 text-xs">${escapeHtml(name)}</span>
@@ -1165,13 +1267,54 @@ function renderFinance() {
 
 function renderUsers() {
   const tbody = document.getElementById('usersTable');
-  tbody.innerHTML = allProfiles.map(profile => `
+  const countEl = document.getElementById('usersCount');
+  
+  // Update count
+  const userCount = allProfiles.filter(p => p.role !== 'admin').length;
+  const adminCount = allProfiles.filter(p => p.role === 'admin').length;
+  countEl.textContent = `${userCount} user${userCount !== 1 ? 's' : ''} • ${adminCount} admin${adminCount !== 1 ? 's' : ''}`;
+  
+  if (!allProfiles.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="px-4 sm:px-5 py-8 sm:py-10 text-center text-sm text-slate-500">Belum ada user.</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = allProfiles.map(profile => {
+    const name = profile.name || profile.email || 'User';
+    const initials = String(name).trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2);
+    const avatar = profile.avatar_url;
+    const isAdmin = profile.role === 'admin';
+    const currentUserId = profileById.get(profile.id) ? Object.keys(profileById).find(k => profileById.get(k)?.id === profile.id) : null;
+    
+    return `
     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
-      <td class="px-4 sm:px-5 py-3 sm:py-4">${renderUserCell(profile.id)}</td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4 text-sm">${escapeHtml(profile.email || '-')}</td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4"><span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${profile.role === 'admin' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}">${escapeHtml(profile.role || 'user')}</span></td>
+      <td class="px-4 sm:px-5 py-3 sm:py-4">
+        <div class="flex items-center gap-3">
+          ${avatar 
+            ? `<img src="${escapeAttr(avatar)}" alt="${escapeAttr(name)}" class="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` 
+            : ''}
+          <div class="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-extrabold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200 ${avatar ? 'hidden' : ''}">${initials}</div>
+          <span class="font-extrabold text-slate-900 dark:text-white text-sm">${escapeHtml(name)}</span>
+        </div>
+      </td>
+      <td class="px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(profile.email || '-')}</td>
+      <td class="px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(profile.phone || '-')}</td>
+      <td class="px-4 sm:px-5 py-3 sm:py-4">
+        <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${isAdmin ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}">
+          ${escapeHtml(profile.role || 'user')}
+        </span>
+      </td>
       <td class="px-4 sm:px-5 py-3 sm:py-4 text-xs sm:text-sm text-slate-500">${escapeHtml(PadelGo.Format.date(String(profile.created_at || '').slice(0, 10)))}</td>
-    </tr>`).join('');
+      <td class="px-4 sm:px-5 py-3 sm:py-4 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button type="button" onclick="openUserEditModal('${escapeAttr(profile.id)}')" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-extrabold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800 flex items-center gap-1.5 transition">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Edit
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
 function renderUserCell(userId) {
@@ -1226,5 +1369,181 @@ function escapeHtml(text) {
 
 function escapeAttr(text) {
   return escapeHtml(text).replace(/`/g, '&#096;');
+}
+
+// ============================================
+// User Management Functions
+// ============================================
+
+function openUserEditModal(userId) {
+  const profile = allProfiles.find(p => p.id === userId);
+  if (!profile) return;
+  
+  const name = profile.name || profile.email || 'User';
+  const avatar = profile.avatar_url;
+  
+  document.getElementById('editUserId').value = userId;
+  document.getElementById('editUserName').value = profile.name || '';
+  document.getElementById('editUserEmail').value = profile.email || '';
+  document.getElementById('editUserPhone').value = profile.phone || '';
+  document.getElementById('editUserRole').value = profile.role || 'user';
+  document.getElementById('editUserPassword').value = '';
+  
+  // Avatar preview
+  const avatarImg = document.getElementById('editUserAvatar');
+  if (avatar) {
+    avatarImg.src = avatar;
+    avatarImg.classList.remove('hidden');
+  } else {
+    const initials = String(name).trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2);
+    avatarImg.src = 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="#ccfbf1" rx="32"/><text x="32" y="32" dy="0.35em" text-anchor="middle" fill="#0f766e" font-family="system-ui" font-size="20" font-weight="bold">${initials}</text></svg>`);
+  }
+  
+  document.getElementById('editUserNamePreview').textContent = name;
+  document.getElementById('editUserEmailPreview').textContent = profile.email || '-';
+  
+  document.getElementById('userEditError').classList.add('hidden');
+  document.getElementById('userEditSuccess').classList.add('hidden');
+  
+  document.getElementById('userEditModal').classList.remove('hidden');
+}
+
+function closeUserEditModal() {
+  document.getElementById('userEditModal').classList.add('hidden');
+}
+
+async function submitEditUser(e) {
+  e.preventDefault();
+  
+  const userId = document.getElementById('editUserId').value;
+  const name = document.getElementById('editUserName').value.trim();
+  const email = document.getElementById('editUserEmail').value.trim();
+  const phone = document.getElementById('editUserPhone').value.trim();
+  const role = document.getElementById('editUserRole').value;
+  const password = document.getElementById('editUserPassword').value;
+  
+  const errorEl = document.getElementById('userEditError');
+  const successEl = document.getElementById('userEditSuccess');
+  const submitBtn = document.getElementById('editUserSubmit');
+  
+  errorEl.classList.add('hidden');
+  successEl.classList.add('hidden');
+  
+  if (!name || !email) {
+    errorEl.textContent = 'Nama dan email wajib diisi.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  
+  if (password && password.length < 8) {
+    errorEl.textContent = 'Password minimal 8 karakter.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Menyimpan...';
+  
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
+    
+    // Update profile in profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        name,
+        email,
+        phone,
+        role
+      })
+      .eq('id', userId);
+    
+    if (profileError) throw new Error(profileError.message);
+    
+    // If password is provided, update auth
+    if (password) {
+      const { error: authError } = await supabase.auth.updateUser({ 
+        email: email,
+        password: password,
+        data: { name }
+      });
+      
+      if (authError) {
+        // If email update fails, try password only
+        if (authError.message.includes('email')) {
+          const { error: passwordError } = await supabase.auth.updateUser({ password });
+          if (passwordError) throw new Error(passwordError.message);
+        } else {
+          throw new Error(authError.message);
+        }
+      }
+    } else {
+      // Update email in auth if changed
+      const profile = allProfiles.find(p => p.id === userId);
+      if (profile && profile.email !== email) {
+        const { error: emailError } = await supabase.auth.updateUser({ email });
+        if (emailError) console.warn('Email update failed:', emailError.message);
+      }
+    }
+    
+    successEl.textContent = 'User berhasil diupdate!';
+    successEl.classList.remove('hidden');
+    
+    PadelGo.UI.toast('User berhasil diupdate!');
+    
+    setTimeout(async () => {
+      closeUserEditModal();
+      await loadAdminData();
+    }, 1500);
+    
+  } catch (err) {
+    errorEl.textContent = err.message || 'Gagal update user.';
+    errorEl.classList.remove('hidden');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Simpan';
+  }
+}
+
+async function deleteCurrentUser() {
+  const userId = document.getElementById('editUserId').value;
+  
+  if (!confirm('Yakin ingin menghapus user ini? Semua booking user juga akan dihapus. Tindakan ini tidak dapat dibatalkan.')) {
+    return;
+  }
+  
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
+    
+    // Delete user's bookings first (foreign key)
+    const { error: bookingsError } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (bookingsError) throw new Error('Gagal hapus booking: ' + bookingsError.message);
+    
+    // Delete user's profile
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', userId);
+    
+    if (profileError) throw new Error('Gagal hapus profile: ' + profileError.message);
+    
+    // Note: Auth user deletion should be done through Supabase Admin API
+    // For now, we just delete the local data
+    
+    PadelGo.UI.toast('User berhasil dihapus!');
+    closeUserEditModal();
+    await loadAdminData();
+    
+  } catch (err) {
+    const errorEl = document.getElementById('userEditError');
+    errorEl.textContent = err.message || 'Gagal hapus user.';
+    errorEl.classList.remove('hidden');
+  }
 }
 </script>
