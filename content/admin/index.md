@@ -5,2060 +5,1439 @@ draft: false
 layout: "admin"
 ---
 
-<div class="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950">
-<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+<div id="adminApp" class="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950">
+  
+  <!-- Loading State -->
+  <div id="adminLoading" class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+    <div class="text-center">
+      <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-teal-500 border-t-transparent"></div>
+      <p class="mt-4 text-slate-600 dark:text-slate-400">Memuat dashboard...</p>
+    </div>
+  </div>
 
-<!-- Header -->
-<div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-<div>
-<p class="text-sm font-extrabold uppercase tracking-wide text-teal-700 dark:text-teal-300">Admin Console</p>
-<h1 class="mt-1 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">PadelGo Operations</h1>
-<p class="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">Kelola booking, approval, court, gambar lapangan, user, dan pendapatan dari satu dashboard.</p>
-</div>
-<div class="flex flex-wrap gap-2">
-<button type="button" id="refreshBtn" onclick="refreshData()" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 shadow-sm hover:bg-slate-100 active:scale-95 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
-<svg id="refreshIcon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-<span class="hidden sm:inline">Refresh</span>
-</button>
-<button type="button" onclick="openAdminBookingModal()" class="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-2 text-sm font-extrabold text-white shadow-sm hover:bg-teal-800 active:scale-95 transition">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-<span class="hidden sm:inline">Booking Manual</span>
-<span class="sm:hidden">Manual</span>
-</button>
-<a href="/order/" class="rounded-xl bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-700 shadow-sm hover:bg-slate-200 active:scale-95 transition dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Lihat Page</a>
-</div>
-</div>
+  <!-- Auth Error State -->
+  <div id="adminAuthError" class="hidden flex items-center justify-center min-h-[calc(100vh-4rem)]">
+    <div class="text-center max-w-md mx-auto px-4">
+      <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+        <svg class="h-8 w-8 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Akses Ditolak</h2>
+      <p class="mt-2 text-slate-600 dark:text-slate-400">Anda harus login sebagai admin untuk mengakses halaman ini.</p>
+      <a href="/login/?next=/admin/" class="mt-6 inline-block rounded-xl bg-teal-600 px-6 py-3 font-bold text-white hover:bg-teal-700">Login Sekarang</a>
+    </div>
+  </div>
 
-<!-- Tabs -->
-<div class="mb-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex min-w-max gap-2">
-<button type="button" class="admin-tab rounded-xl bg-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-white dark:bg-white dark:text-slate-950 whitespace-nowrap flex items-center gap-2" data-tab="overview">
-  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-  <span>Overview</span>
-</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="bookings">
-  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-  <span>Bookings</span>
-</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="courts">
-  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
-  <span>Courts</span>
-</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="finance">
-  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-  <span>Finance</span>
-</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="users">
-  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-  <span>Users</span>
-</button>
-<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="reports">
-  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-  <span>Reports</span>
-</button>
-</div>
-</div>
+  <!-- Admin Content -->
+  <div id="adminContent" class="hidden">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
 
-<!-- Messages -->
-<p id="adminError" class="mb-4 sm:mb-6 hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></p>
-<p id="adminSuccess" class="mb-4 sm:mb-6 hidden rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></p>
+      <!-- Header -->
+      <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="text-sm font-extrabold uppercase tracking-wide text-teal-700 dark:text-teal-300">Admin Console</p>
+          <h1 class="mt-1 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">PadelGo Operations</h1>
+          <p class="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">Kelola booking, lapangan, user, dan pendapatan.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="refreshBtn" onclick="adminRefresh()" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 shadow-sm hover:bg-slate-100 active:scale-95 transition dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+            <svg id="refreshIcon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span class="hidden sm:inline">Refresh</span>
+          </button>
+          <button type="button" onclick="adminOpenBookingModal()" class="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-2 text-sm font-extrabold text-white shadow-sm hover:bg-teal-800 active:scale-95 transition">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+            <span class="hidden sm:inline">Booking Manual</span>
+            <span class="sm:hidden">Manual</span>
+          </button>
+        </div>
+      </div>
 
-<!-- Overview Tab -->
-<section id="overview" class="admin-section space-y-6">
+      <!-- Tabs Navigation -->
+      <div class="mb-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div class="flex min-w-max gap-2">
+          <button type="button" class="admin-tab rounded-xl bg-slate-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-white dark:bg-white dark:text-slate-950 whitespace-nowrap flex items-center gap-2" data-tab="overview">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>Overview</span>
+          </button>
+          <button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="bookings">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+            <span>Bookings</span>
+            <span id="pendingBadge" class="hidden rounded-full bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold text-white"></span>
+          </button>
+          <button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="courts">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+            <span>Lapangan</span>
+          </button>
+          <button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="finance">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Keuangan</span>
+          </button>
+          <button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="users">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <span>Users</span>
+          </button>
+          <button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="reports">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Laporan</span>
+          </button>
+        </div>
+      </div>
 
-<!-- Stats Cards -->
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Bookings</p>
-<p id="statTotal" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">-</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Pending</p>
-<p id="statPending" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-amber-600">-</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Approved</p>
-<p id="statApproved" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-emerald-600">-</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Revenue</p>
-<p id="statRevenue" class="mt-1 sm:mt-2 text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white">-</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Courts</p>
-<p id="statCourts" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">-</p>
-</div>
-</div>
+      <!-- Messages -->
+      <div id="adminErrorMsg" class="mb-4 hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></div>
+      <div id="adminSuccessMsg" class="mb-4 hidden rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></div>
 
-<!-- Calendar View -->
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800">
-<h2 class="text-lg font-extrabold text-slate-950 dark:text-white flex items-center gap-2">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-Calendar Booking
-</h2>
-<div class="flex items-center gap-2">
-<button type="button" onclick="changeMonth(-1)" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-</button>
-<span id="calendarMonth" class="font-bold text-slate-900 dark:text-white min-w-[140px] text-center text-sm sm:text-base"></span>
-<button type="button" onclick="changeMonth(1)" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-</button>
-</div>
-</div>
-<div class="p-3 sm:p-4">
-<!-- Calendar Grid -->
-<div class="grid grid-cols-7 gap-1 sm:gap-2">
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Min</div>
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Sen</div>
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Sel</div>
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Rab</div>
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Kam</div>
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Jum</div>
-<div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Sab</div>
-</div>
-<div id="calendarGrid" class="grid grid-cols-7 gap-1 sm:gap-2"></div>
-<!-- Legend -->
-<div class="mt-4 flex flex-wrap items-center justify-center gap-3 text-[10px] sm:text-xs text-slate-600 dark:text-slate-400">
-<span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Approved</span>
-<span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span> Pending</span>
-<span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-red-500"></span> Cancelled</span>
-</div>
-</div>
-</div>
+      <!-- ============ OVERVIEW TAB ============ -->
+      <section id="tab-overview" class="admin-section space-y-6">
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Total Booking</p>
+            <p id="stat-total" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">-</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Pending</p>
+            <p id="stat-pending" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-amber-600">-</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Approved</p>
+            <p id="stat-approved" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-emerald-600">-</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Revenue</p>
+            <p id="stat-revenue" class="mt-1 sm:mt-2 text-lg sm:text-2xl font-extrabold text-slate-950 dark:text-white">-</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <p class="text-[10px] sm:text-xs font-bold uppercase text-slate-500">Lapangan</p>
+            <p id="stat-courts" class="mt-1 sm:mt-2 text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">-</p>
+          </div>
+        </div>
 
-<!-- Recent Bookings & Finance -->
-<div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="border-b border-slate-200 px-4 sm:px-5 py-3 sm:py-4 dark:border-slate-800 flex items-center justify-between">
-<h2 class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white">Recent Bookings</h2>
-<button type="button" onclick="switchTab('bookings')" class="text-xs font-bold text-teal-600 hover:text-teal-800 dark:text-teal-400">Lihat semua →</button>
-</div>
-<div class="overflow-x-auto"><table class="w-full min-w-[700px]"><thead><tr class="bg-slate-50 text-left text-[10px] sm:text-xs uppercase text-slate-500 dark:bg-slate-950"><th class="px-3 sm:px-5 py-2 sm:py-3">User</th><th class="px-3 sm:px-5 py-2 sm:py-3">Court</th><th class="px-3 sm:px-5 py-2 sm:py-3 hidden sm:table-cell">Date</th><th class="px-3 sm:px-5 py-2 sm:py-3">Status</th><th class="px-3 sm:px-5 py-2 sm:py-3">Amount</th><th class="px-3 sm:px-5 py-2 sm:py-3">Action</th></tr></thead><tbody id="recentTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<h2 class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white flex items-center gap-2">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-Finance Snapshot
-</h2>
-<div class="mt-3 sm:mt-4 space-y-2 sm:space-y-3 text-xs sm:text-sm">
-<div class="flex justify-between rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/30"><span>Approved revenue</span><strong id="financeApproved" class="font-extrabold">-</strong></div>
-<div class="flex justify-between rounded-xl bg-amber-50 p-3 dark:bg-amber-950/30"><span>Pending pipeline</span><strong id="financePending" class="font-extrabold">-</strong></div>
-<div class="flex justify-between rounded-xl bg-red-50 p-3 dark:bg-red-950/30"><span>Cancelled value</span><strong id="financeCancelled" class="font-extrabold">-</strong></div>
-</div>
-</div>
-</div>
-</section>
+        <!-- Calendar + Recent Bookings -->
+        <div class="grid gap-6 lg:grid-cols-1 xl:grid-cols-3">
+          
+          <!-- Calendar -->
+          <div class="xl:col-span-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800">
+              <h2 class="text-lg font-extrabold text-slate-950 dark:text-white flex items-center gap-2">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Kalender Booking
+              </h2>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="adminCalPrev()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <span id="cal-month" class="font-bold text-slate-900 dark:text-white min-w-[120px] text-center text-sm"></span>
+                <button type="button" onclick="adminCalNext()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="p-3 sm:p-4">
+              <div class="grid grid-cols-7 gap-1 sm:gap-2 mb-2">
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Min</div>
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Sen</div>
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Sel</div>
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Rab</div>
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Kam</div>
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Jum</div>
+                <div class="text-center text-[10px] sm:text-xs font-bold text-slate-500 py-2">Sab</div>
+              </div>
+              <div id="cal-grid" class="grid grid-cols-7 gap-1 sm:gap-2"></div>
+              <div class="mt-4 flex items-center justify-center gap-4 text-[10px] sm:text-xs text-slate-600 dark:text-slate-400">
+                <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Approved</span>
+                <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span> Pending</span>
+                <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-red-500"></span> Cancelled</span>
+              </div>
+            </div>
+          </div>
 
-<!-- Bookings Tab -->
-<section id="bookings" class="admin-section hidden">
-<div class="mb-4 sm:mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-<div>
-<h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Booking Approval</h2>
-<p class="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">Klik centang hijau untuk approve. User akan melihat status approved.</p>
-</div>
-<div class="flex flex-wrap gap-2">
-<select id="statusFilter" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
-<option value="all">All Status</option>
-<option value="pending">Pending</option>
-<option value="approved">Approved</option>
-<option value="cancelled">Cancelled</option>
-</select>
-<select id="courtFilter" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
-<option value="all">All Courts</option>
-</select>
-</div>
-</div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="overflow-x-auto">
-<table class="w-full min-w-[900px]">
-<thead>
-<tr class="bg-slate-50 text-left text-[10px] sm:text-xs uppercase text-slate-500 dark:bg-slate-950">
-<th class="px-4 sm:px-5 py-3">User</th>
-<th class="px-4 sm:px-5 py-3">Court</th>
-<th class="px-4 sm:px-5 py-3">Date</th>
-<th class="px-4 sm:px-5 py-3">Time</th>
-<th class="px-4 sm:px-5 py-3">Status</th>
-<th class="px-4 sm:px-5 py-3">Amount</th>
-<th class="px-4 sm:px-5 py-3">Actions</th>
-</tr>
-</thead>
-<tbody id="ordersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-</div>
-</section>
+          <!-- Quick Stats -->
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <h3 class="text-lg font-extrabold text-slate-950 dark:text-white mb-4">Ringkasan Keuangan</h3>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/30">
+                  <span class="text-sm text-emerald-800 dark:text-emerald-200">Revenue Approved</span>
+                  <strong id="fin-approved" class="font-extrabold text-emerald-700 dark:text-emerald-300">-</strong>
+                </div>
+                <div class="flex justify-between items-center rounded-xl bg-amber-50 p-3 dark:bg-amber-950/30">
+                  <span class="text-sm text-amber-800 dark:text-amber-200">Pipeline Pending</span>
+                  <strong id="fin-pending" class="font-extrabold text-amber-700 dark:text-amber-300">-</strong>
+                </div>
+                <div class="flex justify-between items-center rounded-xl bg-red-50 p-3 dark:bg-red-950/30">
+                  <span class="text-sm text-red-800 dark:text-red-200">Cancelled</span>
+                  <strong id="fin-cancelled" class="font-extrabold text-red-700 dark:text-red-300">-</strong>
+                </div>
+              </div>
+            </div>
 
-<!-- Courts Tab -->
-<section id="courts" class="admin-section hidden">
-<div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-<form id="courtForm" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900" onsubmit="saveCourt(event)">
-<h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Tambah Lapangan</h2>
-<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Lapangan baru otomatis muncul di Home dan Booking.</p>
-<div class="mt-5 space-y-4">
-<div><label class="mb-1 block text-sm font-bold">Nama Lapangan</label><input id="courtName" required placeholder="Court C1" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
-<div><label class="mb-1 block text-sm font-bold">Harga per Jam</label><input id="courtPrice" required type="number" min="1" step="1000" placeholder="150000" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
-<div><label class="mb-1 block text-sm font-bold">Tipe</label><input id="courtType" placeholder="Premium indoor court" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
-<div><label class="mb-1 block text-sm font-bold">Surface</label><input id="courtSurface" placeholder="Artificial Grass" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
-<div><label class="mb-1 block text-sm font-bold">Gambar Lapangan</label><input id="courtImage" type="file" accept="image/*" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"></div>
-<button id="courtSubmit" type="submit" class="w-full rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800">Simpan Lapangan</button>
-</div>
-</form>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="overflow-x-auto">
-<table class="w-full min-w-[760px]">
-<thead>
-<tr class="bg-slate-50 text-left text-[10px] sm:text-xs uppercase text-slate-500 dark:bg-slate-950">
-<th class="px-4 sm:px-5 py-3">Lapangan</th>
-<th class="px-4 sm:px-5 py-3">Harga</th>
-<th class="px-4 sm:px-5 py-3">Status</th>
-<th class="px-4 sm:px-5 py-3">Actions</th>
-</tr>
-</thead>
-<tbody id="courtTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-</div>
-</div>
-</section>
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <h3 class="text-lg font-extrabold text-slate-950 dark:text-white mb-4">Booking Terbaru</h3>
+              <div id="recent-list" class="space-y-3">
+                <p class="text-sm text-slate-500 text-center py-4">Memuat...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- Finance Tab -->
-<section id="finance" class="admin-section hidden">
-<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<h2 class="text-2xl font-extrabold text-slate-950 dark:text-white">Keuangan</h2>
-<div class="mt-5 grid gap-4 md:grid-cols-3">
-<div class="rounded-xl bg-emerald-50 p-4 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"><p class="text-sm font-bold">Approved</p><p id="financeCardApproved" class="mt-2 text-2xl font-extrabold">-</p></div>
-<div class="rounded-xl bg-amber-50 p-4 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200"><p class="text-sm font-bold">Pending</p><p id="financeCardPending" class="mt-2 text-2xl font-extrabold">-</p></div>
-<div class="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/40 dark:text-red-200"><p class="text-sm font-bold">Cancelled</p><p id="financeCardCancelled" class="mt-2 text-2xl font-extrabold">-</p></div>
-</div>
-<div class="mt-6 overflow-x-auto">
-<table class="w-full min-w-[760px]">
-<thead>
-<tr class="bg-slate-50 text-left text-[10px] sm:text-xs uppercase text-slate-500 dark:bg-slate-950">
-<th class="px-4 sm:px-5 py-3">Court</th>
-<th class="px-4 sm:px-5 py-3">Bookings</th>
-<th class="px-4 sm:px-5 py-3">Approved Revenue</th>
-<th class="px-4 sm:px-5 py-3">Pending Pipeline</th>
-</tr>
-</thead>
-<tbody id="financeTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-</div>
-</section>
+      <!-- ============ BOOKINGS TAB ============ -->
+      <section id="tab-bookings" class="admin-section hidden">
+        <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Kelola Booking</h2>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Approve atau cancel booking dari user.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <select id="filter-status" onchange="adminFilterBookings()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
+              <option value="all">Semua Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="filter-court" onchange="adminFilterBookings()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
+              <option value="all">Semua Lapangan</option>
+            </select>
+          </div>
+        </div>
 
-<!-- Users Tab -->
-<section id="users" class="admin-section hidden">
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800 flex items-center justify-between">
-<div>
-<h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Users</h2>
-<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola data user termasuk nama, email, role, dan password.</p>
-</div>
-<span id="usersCount" class="rounded-full bg-teal-100 px-3 py-1 text-xs font-extrabold text-teal-800 dark:bg-teal-900/50 dark:text-teal-200">0 users</span>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full min-w-[900px]">
-<thead>
-<tr class="bg-slate-50 text-left text-[10px] sm:text-xs uppercase text-slate-500 dark:bg-slate-950">
-<th class="px-4 sm:px-5 py-3">User</th>
-<th class="px-4 sm:px-5 py-3">Email</th>
-<th class="px-4 sm:px-5 py-3">Phone</th>
-<th class="px-4 sm:px-5 py-3">Role</th>
-<th class="px-4 sm:px-5 py-3">Joined</th>
-<th class="px-4 sm:px-5 py-3 text-right">Actions</th>
-</tr>
-</thead>
-<tbody id="usersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-</div>
-</section>
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[900px]">
+              <thead>
+                <tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950">
+                  <th class="px-4 py-3">User</th>
+                  <th class="px-4 py-3">Lapangan</th>
+                  <th class="px-4 py-3">Tanggal</th>
+                  <th class="px-4 py-3">Waktu</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Jumlah</th>
+                  <th class="px-4 py-3">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-table" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="7" class="px-4 py-12 text-center text-slate-500">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-<!-- Reports Tab -->
-<section id="reports" class="admin-section hidden">
-<div class="space-y-6">
+      <!-- ============ COURTS TAB ============ -->
+      <section id="tab-courts" class="admin-section hidden">
+        <div class="grid gap-6 lg:grid-cols-2">
+          
+          <!-- Add/Edit Form -->
+          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <h2 class="text-xl font-extrabold text-slate-950 dark:text-white mb-4">Tambah Lapangan</h2>
+            <form id="court-form" onsubmit="adminSaveCourt(event)" class="space-y-4">
+              <input type="hidden" id="court-edit-id">
+              <div>
+                <label class="mb-1 block text-sm font-bold">Nama Lapangan</label>
+                <input id="court-name" required placeholder="Court A1" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <div>
+                <label class="mb-1 block text-sm font-bold">Harga per Jam (Rp)</label>
+                <input id="court-price" required type="number" min="10000" step="10000" placeholder="150000" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <div>
+                <label class="mb-1 block text-sm font-bold">Tipe</label>
+                <input id="court-type" placeholder="Premium indoor court" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <div>
+                <label class="mb-1 block text-sm font-bold">Surface</label>
+                <input id="court-surface" placeholder="Artificial Grass" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <div>
+                <label class="mb-1 block text-sm font-bold">Gambar</label>
+                <input id="court-image" type="file" accept="image/*" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <button type="submit" id="court-submit" class="w-full rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800">Simpan</button>
+              <button type="button" id="court-cancel" onclick="adminCancelCourtEdit()" class="hidden w-full rounded-xl border border-slate-200 py-3 font-extrabold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Batal</button>
+            </form>
+          </div>
 
-<!-- Filter Controls -->
-<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex flex-col lg:flex-row lg:items-end gap-4">
-<div class="flex-1">
-<h3 class="text-lg font-extrabold text-slate-950 dark:text-white mb-4 flex items-center gap-2">
-<svg class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-Filter Laporan
-</h3>
+          <!-- Courts List -->
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-800">
+              <h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Daftar Lapangan</h2>
+            </div>
+            <div class="divide-y divide-slate-100 dark:divide-slate-800" id="courts-list">
+              <div class="px-6 py-12 text-center text-slate-500">Memuat...</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<!-- Quick Filters -->
-<div class="flex flex-wrap gap-2 mb-4">
-<button type="button" onclick="setReportPeriod('today')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="today">Hari Ini</button>
-<button type="button" onclick="setReportPeriod('week')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="week">Minggu Ini</button>
-<button type="button" onclick="setReportPeriod('month')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 active bg-teal-100 border-teal-300 text-teal-700 dark:bg-teal-900/50 dark:border-teal-700 dark:text-teal-300" data-period="month">Bulan Ini</button>
-<button type="button" onclick="setReportPeriod('year')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="year">Tahun Ini</button>
-</div>
+      <!-- ============ FINANCE TAB ============ -->
+      <section id="tab-finance" class="admin-section hidden">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 class="text-2xl font-extrabold text-slate-950 dark:text-white mb-6">Laporan Keuangan</h2>
+          
+          <div class="grid gap-4 md:grid-cols-3 mb-6">
+            <div class="rounded-xl bg-emerald-50 p-5 dark:bg-emerald-950/30">
+              <p class="text-sm font-bold text-emerald-800 dark:text-emerald-200">Total Approved</p>
+              <p id="finance-total-approved" class="mt-2 text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">Rp 0</p>
+            </div>
+            <div class="rounded-xl bg-amber-50 p-5 dark:bg-amber-950/30">
+              <p class="text-sm font-bold text-amber-800 dark:text-amber-200">Pending Pipeline</p>
+              <p id="finance-total-pending" class="mt-2 text-2xl font-extrabold text-amber-700 dark:text-amber-300">Rp 0</p>
+            </div>
+            <div class="rounded-xl bg-red-50 p-5 dark:bg-red-950/30">
+              <p class="text-sm font-bold text-red-800 dark:text-red-200">Cancelled Value</p>
+              <p id="finance-total-cancelled" class="mt-2 text-2xl font-extrabold text-red-700 dark:text-red-300">Rp 0</p>
+            </div>
+          </div>
 
-<!-- Date Range -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-<div>
-<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Dari Tanggal</label>
-<input type="date" id="reportDateFrom" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
-</div>
-<div>
-<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Sampai Tanggal</label>
-<input type="date" id="reportDateTo" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
-</div>
-<div>
-<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Court</label>
-<select id="reportCourtFilter" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
-<option value="">Semua Court</option>
-</select>
-</div>
-<div>
-<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Status</label>
-<select id="reportStatusFilter" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
-<option value="">Semua Status</option>
-<option value="approved">Approved</option>
-<option value="pending">Pending</option>
-<option value="cancelled">Cancelled</option>
-</select>
-</div>
-</div>
-</div>
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[800px]">
+              <thead>
+                <tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950">
+                  <th class="px-4 py-3">Lapangan</th>
+                  <th class="px-4 py-3">Total Booking</th>
+                  <th class="px-4 py-3">Approved Revenue</th>
+                  <th class="px-4 py-3">Pending Pipeline</th>
+                </tr>
+              </thead>
+              <tbody id="finance-table" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-<div class="flex flex-col sm:flex-row gap-2 lg:self-end">
-<button type="button" onclick="exportReport('csv')" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-100 active:scale-95 transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-Export CSV
-</button>
-<button type="button" onclick="exportReport('xlsx')" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 active:scale-95 transition shadow-lg shadow-emerald-600/20">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-Export Excel
-</button>
-</div>
-</div>
-</div>
+      <!-- ============ USERS TAB ============ -->
+      <section id="tab-users" class="admin-section hidden">
+        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div class="border-b border-slate-200 px-6 py-4 dark:border-slate-800 flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Kelola Users</h2>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Edit role dan data user.</p>
+            </div>
+            <span id="users-count" class="rounded-full bg-teal-100 px-3 py-1 text-xs font-extrabold text-teal-800 dark:bg-teal-900/50 dark:text-teal-200">0 users</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[900px]">
+              <thead>
+                <tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950">
+                  <th class="px-4 py-3">User</th>
+                  <th class="px-4 py-3">Email</th>
+                  <th class="px-4 py-3">No. HP</th>
+                  <th class="px-4 py-3">Role</th>
+                  <th class="px-4 py-3">Bergabung</th>
+                  <th class="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="users-table" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td colspan="6" class="px-4 py-12 text-center text-slate-500">Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-<!-- Summary Cards -->
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-600 dark:bg-teal-900/50 dark:text-teal-400">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-</div>
-<div>
-<p class="text-xs font-bold text-slate-500 uppercase">Total Booking</p>
-<p id="reportTotalBookings" class="text-xl font-extrabold text-slate-950 dark:text-white">0</p>
-</div>
-</div>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-</div>
-<div>
-<p class="text-xs font-bold text-slate-500 uppercase">Total Revenue</p>
-<p id="reportTotalRevenue" class="text-xl font-extrabold text-emerald-600">Rp 0</p>
-</div>
-</div>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-</div>
-<div>
-<p class="text-xs font-bold text-slate-500 uppercase">Pending</p>
-<p id="reportPendingCount" class="text-xl font-extrabold text-amber-600">0</p>
-</div>
-</div>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-</div>
-<div>
-<p class="text-xs font-bold text-slate-500 uppercase">User Aktif</p>
-<p id="reportActiveUsers" class="text-xl font-extrabold text-purple-600">0</p>
-</div>
-</div>
-</div>
-</div>
+      <!-- ============ REPORTS TAB ============ -->
+      <section id="tab-reports" class="admin-section hidden">
+        <div class="space-y-6">
+          
+          <!-- Filter Controls -->
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <h3 class="text-lg font-extrabold text-slate-950 dark:text-white mb-4 flex items-center gap-2">
+              <svg class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+              Filter Laporan
+            </h3>
+            
+            <!-- Quick Filters -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <button type="button" onclick="adminSetPeriod('today')" class="report-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="today">Hari Ini</button>
+              <button type="button" onclick="adminSetPeriod('week')" class="report-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="week">Minggu Ini</button>
+              <button type="button" onclick="adminSetPeriod('month')" class="report-btn rounded-lg border border-teal-500 bg-teal-100 px-3 py-1.5 text-xs font-bold text-teal-700 dark:bg-teal-900/50 dark:border-teal-700 dark:text-teal-300" data-period="month">Bulan Ini</button>
+              <button type="button" onclick="adminSetPeriod('year')" class="report-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="year">Tahun Ini</button>
+            </div>
 
-<!-- Report Table -->
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="overflow-x-auto">
-<table class="w-full min-w-[1000px]">
-<thead>
-<tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950">
-<th class="px-4 py-3">No</th>
-<th class="px-4 py-3">User</th>
-<th class="px-4 py-3">Court</th>
-<th class="px-4 py-3">Tanggal</th>
-<th class="px-4 py-3">Waktu</th>
-<th class="px-4 py-3">Durasi</th>
-<th class="px-4 py-3">Status</th>
-<th class="px-4 py-3 text-right">Amount</th>
-</tr>
-</thead>
-<tbody id="reportTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-<div id="reportPagination" class="flex items-center justify-between border-t border-slate-200 px-4 py-3 dark:border-slate-800">
-<p id="reportCountText" class="text-sm text-slate-500"></p>
-<div class="flex items-center gap-2">
-<button type="button" id="reportPrevBtn" onclick="reportPageChange(-1)" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 disabled:cursor-not-allowed" disabled>← Prev</button>
-<button type="button" id="reportNextBtn" onclick="reportPageChange(1)" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 disabled:cursor-not-allowed" disabled>Next →</button>
-</div>
-</div>
-</div>
+            <!-- Date Range -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                <label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Dari Tanggal</label>
+                <input type="date" id="report-from" onchange="adminApplyFilter()" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <div>
+                <label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Sampai Tanggal</label>
+                <input type="date" id="report-to" onchange="adminApplyFilter()" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950">
+              </div>
+              <div>
+                <label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Lapangan</label>
+                <select id="report-court" onchange="adminApplyFilter()" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950">
+                  <option value="">Semua</option>
+                </select>
+              </div>
+              <div>
+                <label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Status</label>
+                <select id="report-status" onchange="adminApplyFilter()" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950">
+                  <option value="">Semua</option>
+                  <option value="approved">Approved</option>
+                  <option value="pending">Pending</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
-</div>
-</section>
+          <!-- Summary Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="text-xs font-bold text-slate-500 uppercase">Total Booking</p>
+              <p id="report-total" class="mt-1 text-xl font-extrabold text-slate-950 dark:text-white">0</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="text-xs font-bold text-slate-500 uppercase">Total Revenue</p>
+              <p id="report-revenue" class="mt-1 text-xl font-extrabold text-emerald-600">Rp 0</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="text-xs font-bold text-slate-500 uppercase">Pending</p>
+              <p id="report-pending" class="mt-1 text-xl font-extrabold text-amber-600">0</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="text-xs font-bold text-slate-500 uppercase">User Aktif</p>
+              <p id="report-users" class="mt-1 text-xl font-extrabold text-purple-600">0</p>
+            </div>
+          </div>
 
-</div>
-</div>
+          <!-- Report Table -->
+          <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div class="overflow-x-auto">
+              <table class="w-full min-w-[1000px]">
+                <thead>
+                  <tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950">
+                    <th class="px-4 py-3">#</th>
+                    <th class="px-4 py-3">User</th>
+                    <th class="px-4 py-3">Lapangan</th>
+                    <th class="px-4 py-3">Tanggal</th>
+                    <th class="px-4 py-3">Waktu</th>
+                    <th class="px-4 py-3">Durasi</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Jumlah</th>
+                  </tr>
+                </thead>
+                <tbody id="report-table" class="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr><td colspan="8" class="px-4 py-12 text-center text-slate-500">Pilih filter dan klik tab Laporan</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-200 px-4 py-3 dark:border-slate-800">
+              <p id="report-count" class="text-sm text-slate-500"></p>
+              <div class="flex gap-2">
+                <button type="button" id="report-prev" onclick="adminReportPage(-1)" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" disabled>←</button>
+                <button type="button" id="report-next" onclick="adminReportPage(1)" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" disabled>→</button>
+              </div>
+            </div>
+          </div>
 
-<!-- User Edit Modal -->
-<div id="userEditModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeUserEditModal()"></div>
-<div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
-<div>
-<h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Edit User</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Update data user</p>
-</div>
-<button type="button" onclick="closeUserEditModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-</button>
-</div>
-<form id="editUserForm" onsubmit="submitEditUser(event)" class="p-4 sm:p-6 space-y-5">
-<input type="hidden" id="editUserId">
+          <!-- Export Buttons -->
+          <div class="flex flex-wrap gap-3">
+            <button type="button" onclick="adminExportCSV()" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Export CSV
+            </button>
+            <button type="button" onclick="adminExportExcel()" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Export Excel
+            </button>
+          </div>
+        </div>
+      </section>
 
-<!-- User Avatar Preview -->
-<div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-<img id="editUserAvatar" src="" alt="" class="h-16 w-16 rounded-full object-cover">
-<div>
-<p id="editUserNamePreview" class="font-extrabold text-slate-900 dark:text-white"></p>
-<p id="editUserEmailPreview" class="text-sm text-slate-500"></p>
-</div>
-</div>
+    </div>
+  </div>
 
-<!-- Name -->
-<div>
-<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Nama</label>
-<input id="editUserName" type="text" required placeholder="Nama lengkap" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
+  <!-- ============ MODALS ============ -->
 
-<!-- Email -->
-<div>
-<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Email</label>
-<input id="editUserEmail" type="email" required placeholder="email@example.com" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
+  <!-- Edit User Modal -->
+  <div id="user-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="adminCloseUserModal()"></div>
+    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+      <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Edit User</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Update data dan role user</p>
+        </div>
+        <button onclick="adminCloseUserModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="user-form" onsubmit="adminSaveUser(event)" class="p-6 space-y-4">
+        <input type="hidden" id="user-id">
+        <div id="user-preview" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+          <img id="user-avatar" src="" class="h-12 w-12 rounded-full object-cover">
+          <div>
+            <p id="user-name-preview" class="font-bold text-slate-900 dark:text-white"></p>
+            <p id="user-email-preview" class="text-sm text-slate-500"></p>
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-bold">Nama</label>
+          <input id="user-name" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-bold">Email</label>
+          <input id="user-email" type="email" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-bold">No. HP</label>
+          <input id="user-phone" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-bold">Role</label>
+          <select id="user-role" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div id="user-error" class="hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300"></div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800">Simpan</button>
+          <button type="button" onclick="adminDeleteUser()" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-extrabold text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">Hapus</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-<!-- Phone -->
-<div>
-<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">No. HP</label>
-<input id="editUserPhone" type="tel" placeholder="08xxxxxxxxxx" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
+  <!-- Day Detail Modal -->
+  <div id="day-modal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="adminCloseDayModal()"></div>
+    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+      <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-800">
+        <div>
+          <h3 id="day-title" class="text-lg font-extrabold text-slate-950 dark:text-white"></h3>
+          <p id="day-subtitle" class="text-sm text-slate-500 dark:text-slate-400"></p>
+        </div>
+        <button onclick="adminCloseDayModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="day-content" class="p-6"></div>
+    </div>
+  </div>
 
-<!-- Role -->
-<div>
-<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Role</label>
-<select id="editUserRole" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-<option value="user">User</option>
-<option value="admin">Admin</option>
-</select>
-</div>
+  <!-- Manual Booking Modal -->
+  <div id="booking-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="adminCloseBookingModal()"></div>
+    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+      <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Booking Manual (Admin)</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400">Buat booking untuk customer</p>
+        </div>
+        <button onclick="adminCloseBookingModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="booking-form" onsubmit="adminSubmitBooking(event)" class="p-6 space-y-5">
+        
+        <!-- Customer Info -->
+        <div class="rounded-xl border border-teal-100 bg-teal-50 p-4 dark:border-teal-900/60 dark:bg-teal-950/20">
+          <h4 class="font-extrabold text-teal-800 dark:text-teal-200 mb-3">Data Customer</h4>
+          <div class="space-y-3">
+            <div>
+              <label class="mb-1 block text-xs font-bold text-teal-700 dark:text-teal-300">Nama *</label>
+              <input id="booking-name" required placeholder="Nama lengkap" class="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 dark:border-teal-800 dark:bg-slate-950">
+            </div>
+            <div>
+              <label class="mb-1 block text-xs font-bold text-teal-700 dark:text-teal-300">Email *</label>
+              <input id="booking-email" type="email" required placeholder="email@example.com" class="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 dark:border-teal-800 dark:bg-slate-950">
+            </div>
+          </div>
+        </div>
 
-<!-- Password -->
-<div>
-<label class="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">Password Baru <span class="text-xs font-normal text-slate-500">(kosongkan jika tidak diubah)</span></label>
-<input id="editUserPassword" type="password" minlength="8" placeholder="Minimal 8 karakter" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
+        <!-- Booking Details -->
+        <div class="space-y-4">
+          <div>
+            <label class="mb-1 block text-sm font-bold">Tanggal *</label>
+            <input id="booking-date" type="date" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-bold">Lapangan *</label>
+            <div id="booking-courts" class="grid grid-cols-2 gap-2"></div>
+            <input type="hidden" id="booking-court" required>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-bold">Durasi</label>
+            <div class="flex gap-2" id="booking-durations">
+              <button type="button" data-hours="1" class="dur-btn flex-1 rounded-xl border-2 border-teal-500 bg-teal-500 py-2 text-sm font-extrabold text-white">1 Jam</button>
+              <button type="button" data-hours="2" onclick="adminSetDuration(2)" class="dur-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300">2 Jam</button>
+              <button type="button" data-hours="3" onclick="adminSetDuration(3)" class="dur-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300">3 Jam</button>
+              <button type="button" data-hours="4" onclick="adminSetDuration(4)" class="dur-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300">4 Jam</button>
+            </div>
+            <input type="hidden" id="booking-duration" value="1">
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-bold">Waktu Mulai</label>
+            <div id="booking-times" class="grid grid-cols-6 gap-2"></div>
+            <input type="hidden" id="booking-time" required>
+          </div>
+        </div>
 
-<!-- Error/Success -->
-<p id="userEditError" class="hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></p>
-<p id="userEditSuccess" class="hidden rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></p>
+        <div id="booking-summary" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+          <p id="booking-summary-text" class="text-center text-sm font-extrabold text-emerald-800 dark:text-emerald-200"></p>
+        </div>
 
-<!-- Actions -->
-<div class="flex gap-3 pt-2">
-<button type="submit" id="editUserSubmit" class="flex-1 rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800 transition">Simpan</button>
-<button type="button" onclick="deleteCurrentUser()" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-extrabold text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 transition">Hapus</button>
-</div>
-</form>
-</div>
-</div>
+        <div id="booking-error" class="hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300"></div>
 
-<!-- Day Detail Modal -->
-<div id="dayModal" class="fixed inset-0 z-50 hidden">
-<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDayModal()"></div>
-<div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-2xl max-h-[85vh] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900 flex flex-col">
-<div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800">
-<div>
-<h3 id="dayModalTitle" class="text-lg font-extrabold text-slate-950 dark:text-white">Booking Details</h3>
-<p id="dayModalSubtitle" class="text-sm text-slate-500 dark:text-slate-400"></p>
-</div>
-<button type="button" onclick="closeDayModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-</button>
-</div>
-<div id="dayModalContent" class="flex-1 overflow-y-auto p-4 sm:p-6"></div>
-<div class="border-t border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800 flex justify-end">
-<button type="button" onclick="closeDayModal()" class="rounded-xl bg-slate-100 px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">Tutup</button>
-</div>
-</div>
-</div>
+        <button type="submit" class="w-full rounded-xl bg-teal-700 py-3.5 text-base font-extrabold text-white shadow-lg hover:bg-teal-800">Buat Booking (Approved)</button>
+      </form>
+    </div>
+  </div>
 
-<!-- Edit Booking Modal -->
-<div id="editModal" class="fixed inset-0 z-50 hidden">
-<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeEditModal()"></div>
-<div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800">
-<h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Edit Booking</h3>
-<button type="button" onclick="closeEditModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-</button>
-</div>
-<form id="editBookingForm" onsubmit="submitEditBooking(event)" class="p-4 sm:p-6 space-y-4">
-<input type="hidden" id="editBookingId">
-<div>
-<label class="mb-1 block text-sm font-bold">Tanggal</label>
-<input id="editDate" type="date" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
-<div>
-<label class="mb-1 block text-sm font-bold">Court</label>
-<select id="editCourt" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></select>
-</div>
-<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="mb-1 block text-sm font-bold">Jam Mulai</label>
-<select id="editStartTime" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></select>
-</div>
-<div>
-<label class="mb-1 block text-sm font-bold">Durasi (Jam)</label>
-<select id="editDuration" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-<option value="1">1 Jam</option>
-<option value="2">2 Jam</option>
-<option value="3">3 Jam</option>
-<option value="4">4 Jam</option>
-</select>
-</div>
-</div>
-<div>
-<label class="mb-1 block text-sm font-bold">Catatan / Usher</label>
-<input id="editNotes" type="text" placeholder="Nama usher atau catatan khusus" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
-<div class="flex gap-3 pt-2">
-<button type="submit" class="flex-1 rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800">Simpan</button>
-<button type="button" onclick="deleteCurrentBooking()" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-extrabold text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950/40 dark:text-red-300">Hapus</button>
-</div>
-</form>
-</div>
-</div>
-
-<!-- Admin Manual Booking Modal -->
-<div id="adminBookingModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-<div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeAdminBookingModal()"></div>
-<div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-<div class="flex items-center justify-between border-b border-slate-200 px-4 sm:px-6 py-4 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900">
-<div>
-<h3 class="text-lg font-extrabold text-slate-950 dark:text-white">Booking Manual (Admin)</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Buat booking untuk customer</p>
-</div>
-<button type="button" onclick="closeAdminBookingModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-</button>
-</div>
-<form id="adminBookingForm" onsubmit="submitAdminBooking(event)" class="p-4 sm:p-6 space-y-5">
-<!-- Customer Info -->
-<div class="rounded-xl border border-teal-100 bg-teal-50 p-4 dark:border-teal-900/60 dark:bg-teal-950/20">
-<h4 class="font-extrabold text-teal-800 dark:text-teal-200 mb-3 flex items-center gap-2">
-<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-Data Customer
-</h4>
-<div class="space-y-3">
-<div>
-<label class="mb-1 block text-xs font-bold text-teal-700 dark:text-teal-300">Nama Customer *</label>
-<input id="adminCustomerName" type="text" required placeholder="Nama lengkap" class="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 dark:border-teal-800 dark:bg-slate-950">
-</div>
-<div>
-<label class="mb-1 block text-xs font-bold text-teal-700 dark:text-teal-300">Email *</label>
-<input id="adminCustomerEmail" type="email" required placeholder="email@example.com" class="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 dark:border-teal-800 dark:bg-slate-950">
-</div>
-<div>
-<label class="mb-1 block text-xs font-bold text-teal-700 dark:text-teal-300">No. HP *</label>
-<input id="adminCustomerPhone" type="tel" required placeholder="08xxxxxxxxxx" class="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 dark:border-teal-800 dark:bg-slate-950">
-</div>
-</div>
-</div>
-
-<!-- Booking Info -->
-<div class="space-y-4">
-<div>
-<label class="mb-1 block text-sm font-bold">Tanggal</label>
-<input id="adminBookingDate" type="date" required class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950">
-</div>
-<div>
-<label class="mb-2 block text-sm font-bold">Court</label>
-<div id="adminCourtGrid" class="grid grid-cols-2 gap-2"></div>
-<input type="hidden" id="adminBookingCourt" required>
-</div>
-<div>
-<label class="mb-2 block text-sm font-bold">Durasi</label>
-<div class="flex gap-2" id="adminDurationGrid">
-<button type="button" data-hours="1" class="admin-duration-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:border-slate-700 dark:text-slate-300">1 Jam</button>
-<button type="button" data-hours="2" class="admin-duration-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:border-slate-700 dark:text-slate-300">2 Jam</button>
-<button type="button" data-hours="3" class="admin-duration-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:border-slate-700 dark:text-slate-300">3 Jam</button>
-<button type="button" data-hours="4" class="admin-duration-btn flex-1 rounded-xl border border-slate-200 py-2 text-sm font-extrabold text-slate-600 dark:border-slate-700 dark:text-slate-300">4 Jam</button>
-</div>
-<input type="hidden" id="adminBookingDuration" value="1">
-</div>
-<div>
-<label class="mb-2 block text-sm font-bold">Waktu Mulai</label>
-<div id="adminTimeGrid" class="grid grid-cols-6 gap-2"></div>
-<input type="hidden" id="adminBookingTime" required>
-</div>
-<div id="adminBookingSummary" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
-<p class="text-center text-sm font-extrabold text-emerald-800 dark:text-emerald-200" id="adminSummaryText"></p>
-</div>
-</div>
-
-<p id="adminBookingError" class="hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></p>
-<button type="submit" class="w-full rounded-xl bg-teal-700 py-3.5 text-base font-extrabold text-white shadow-lg shadow-teal-700/20 hover:bg-teal-800">Buat Booking (Approved)</button>
-</form>
-</div>
 </div>
 
 <script src="/js/shared.js"></script>
 <script>
+// ============================================
+// Admin Dashboard JavaScript
+// ============================================
+
 // State
-let allBookings = [];
-let allCourts = [];
-let allProfiles = [];
-let profileById = new Map();
-let currentCalendarDate = new Date();
-let adminSelectedCourt = null;
-let adminSelectedDuration = 1;
-let adminSelectedTime = null;
+let adminBookings = [];
+let adminCourts = [];
+let adminUsers = [];
+let adminProfiles = new Map();
+let adminProfileById = new Map();
+let adminCalDate = new Date();
+let adminSelCourt = null;
+let adminSelDuration = 1;
+let adminSelTime = null;
 let adminBookedSlots = {};
+let adminReportData = [];
+let adminReportFiltered = [];
+let adminReportPage = 1;
+const adminReportSize = 20;
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  loadAdminData();
-  initAdminBookingModal();
+document.addEventListener('DOMContentLoaded', adminInit);
 
-  // Tab switching
-  document.querySelectorAll('.admin-tab').forEach(button => {
-    button.addEventListener('click', () => {
-      const tab = button.dataset.tab;
-      switchTab(tab);
+async function adminInit() {
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    if (!supabase) {
+      adminShowAuthError('Supabase belum dikonfigurasi.');
+      return;
+    }
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      adminShowAuthError('Anda harus login terlebih dahulu.');
+      return;
+    }
+    
+    // Check admin role
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role, name, email')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (!profile || profile.role !== 'admin') {
+      adminShowAuthError('Anda tidak memiliki akses admin.');
+      return;
+    }
+    
+    // Load data
+    await adminLoadData();
+    
+    // Setup tabs
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+      btn.addEventListener('click', () => adminSwitchTab(btn.dataset.tab));
     });
-  });
-});
-
-function switchTab(tab) {
-  document.querySelectorAll('.admin-section').forEach(section => section.classList.toggle('hidden', section.id !== tab));
-  document.querySelectorAll('.admin-tab').forEach(item => {
-    const isActive = item.dataset.tab === tab;
-    item.classList.toggle('bg-slate-950', isActive);
-    item.classList.toggle('text-white', isActive);
-    item.classList.toggle('dark:bg-white', isActive);
-    item.classList.toggle('dark:text-slate-950', isActive);
-    item.classList.toggle('text-slate-600', !isActive);
-    item.classList.toggle('dark:text-slate-300', !isActive);
-  });
-  if (tab === 'overview') {
-    renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-  }
-  if (tab === 'reports') {
-    loadReportData();
+    
+    // Show content
+    document.getElementById('adminLoading').classList.add('hidden');
+    document.getElementById('adminContent').classList.remove('hidden');
+    
+  } catch (err) {
+    adminShowAuthError('Error: ' + (err.message || 'Gagal memuat dashboard'));
   }
 }
 
-document.getElementById('statusFilter').addEventListener('change', filterBookings);
-document.getElementById('courtFilter').addEventListener('change', filterBookings);
+function adminShowAuthError(msg) {
+  document.getElementById('adminLoading').classList.add('hidden');
+  document.getElementById('adminAuthError').classList.remove('hidden');
+  const el = document.querySelector('#adminAuthError p:nth-child(3)');
+  if (el) el.textContent = msg;
+}
 
-// Refresh Data
-async function refreshData() {
+async function adminLoadData() {
+  const supabase = await PadelGo.Supabase.init();
+  
+  const [bRes, cRes, uRes] = await Promise.all([
+    supabase.from('bookings').select('*').order('date', { ascending: false }),
+    supabase.from('courts').select('*').order('name'),
+    supabase.from('profiles').select('id, name, email, phone, role, avatar_url, created_at').order('created_at', { ascending: false })
+  ]);
+  
+  adminBookings = bRes.data || [];
+  adminCourts = cRes.data || [];
+  adminUsers = uRes.data || [];
+  adminProfileById = new Map(adminUsers.map(u => [u.id, u]));
+  
+  adminUpdatePendingBadge();
+  adminRenderAll();
+}
+
+function adminUpdatePendingBadge() {
+  const pending = adminBookings.filter(b => b.status === 'pending').length;
+  const badge = document.getElementById('pendingBadge');
+  if (pending > 0) {
+    badge.textContent = pending;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+function adminRenderAll() {
+  // Stats
+  const approved = adminBookings.filter(b => b.status === 'approved');
+  const pending = adminBookings.filter(b => b.status === 'pending');
+  const revenue = approved.reduce((s, b) => s + (b.amount || 0), 0);
+  
+  document.getElementById('stat-total').textContent = adminBookings.length;
+  document.getElementById('stat-pending').textContent = pending.length;
+  document.getElementById('stat-approved').textContent = approved.length;
+  document.getElementById('stat-revenue').textContent = adminRupiah(revenue);
+  document.getElementById('stat-courts').textContent = adminCourts.filter(c => c.available).length;
+  
+  document.getElementById('fin-approved').textContent = adminRupiah(revenue);
+  document.getElementById('fin-pending').textContent = adminRupiah(pending.reduce((s, b) => s + (b.amount || 0), 0));
+  document.getElementById('fin-cancelled').textContent = adminRupiah(adminBookings.filter(b => b.status === 'cancelled').reduce((s, b) => s + (b.amount || 0), 0));
+  
+  adminRenderCalendar();
+  adminRenderRecentBookings();
+  adminRenderBookings();
+  adminRenderCourts();
+  adminRenderFinance();
+  adminRenderUsers();
+  adminPopulateFilters();
+}
+
+function adminSwitchTab(tab) {
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.admin-tab').forEach(b => {
+    const isActive = b.dataset.tab === tab;
+    if (isActive) {
+      b.classList.add('bg-slate-950', 'text-white', 'dark:bg-white', 'dark:text-slate-950');
+      b.classList.remove('text-slate-600', 'dark:text-slate-300');
+    } else {
+      b.classList.remove('bg-slate-950', 'text-white', 'dark:bg-white', 'dark:text-slate-950');
+      b.classList.add('text-slate-600', 'dark:text-slate-300');
+    }
+  });
+  
+  document.getElementById('tab-' + tab)?.classList.remove('hidden');
+  
+  if (tab === 'reports') {
+    adminInitReports();
+  }
+}
+
+// Calendar
+function adminCalPrev() {
+  adminCalDate.setMonth(adminCalDate.getMonth() - 1);
+  adminRenderCalendar();
+}
+
+function adminCalNext() {
+  adminCalDate.setMonth(adminCalDate.getMonth() + 1);
+  adminRenderCalendar();
+}
+
+function adminRenderCalendar() {
+  const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  document.getElementById('cal-month').textContent = months[adminCalDate.getMonth()] + ' ' + adminCalDate.getFullYear();
+  
+  const year = adminCalDate.getFullYear();
+  const month = adminCalDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+  
+  const byDate = {};
+  adminBookings.forEach(b => {
+    if (!byDate[b.date]) byDate[b.date] = { approved: 0, pending: 0, cancelled: 0 };
+    if (b.status === 'approved') byDate[b.date].approved++;
+    else if (b.status === 'pending') byDate[b.date].pending++;
+    else byDate[b.date].cancelled++;
+  });
+  
+  let html = '';
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    const isToday = ds === todayStr;
+    const bd = byDate[ds] || {};
+    const total = bd.approved + bd.pending + bd.cancelled;
+    html += `<button type="button" onclick="adminShowDay('${ds}')" class="aspect-square flex flex-col items-center justify-center rounded-lg border p-1 sm:p-2 transition hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 ${isToday ? 'border-teal-500 bg-teal-50 dark:border-teal-400 dark:bg-teal-900/30' : 'border-slate-200 dark:border-slate-700'}">
+      <span class="text-xs sm:text-sm font-bold ${isToday ? 'text-teal-700 dark:text-teal-300' : 'text-slate-700 dark:text-slate-300'}">${d}</span>
+      ${total > 0 ? `<div class="flex gap-0.5 mt-0.5">${bd.approved ? '<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>' : ''}${bd.pending ? '<span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>' : ''}${bd.cancelled ? '<span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>' : ''}</div>` : ''}
+    </button>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function adminShowDay(dateStr) {
+  const dayBookings = adminBookings.filter(b => b.date === dateStr);
+  const d = new Date(dateStr + 'T00:00:00');
+  const formatted = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  
+  document.getElementById('day-title').textContent = 'Booking ' + formatted;
+  document.getElementById('day-subtitle').textContent = dayBookings.length + ' booking';
+  
+  if (!dayBookings.length) {
+    document.getElementById('day-content').innerHTML = '<p class="text-center py-8 text-slate-500">Tidak ada booking.</p>';
+  } else {
+    document.getElementById('day-content').innerHTML = dayBookings.map(b => {
+      const u = adminProfileById.get(b.user_id);
+      const name = u?.name || u?.email || 'User';
+      return `<div class="mb-3 rounded-xl border border-slate-200 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-900 dark:text-white">${adminEsc(b.court_name || b.court_id)}</span>
+            <span class="ml-2 rounded-full px-2 py-0.5 text-xs font-bold ${adminStatusClass(b.status)}">${adminStatusLabel(b.status)}</span>
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">${b.start_time} - ${b.end_time}</p>
+            <p class="text-xs text-slate-500">${adminEsc(name)}</p>
+            <p class="mt-1 font-bold text-teal-600">${adminRupiah(b.amount)}</p>
+          </div>
+          <div class="flex gap-1">
+            ${b.status === 'pending' ? `<button onclick="adminSetStatus('${b.id}','approved');adminCloseDayModal();" class="rounded-lg bg-emerald-100 p-2 text-emerald-700 hover:bg-emerald-200"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></button>` : ''}
+            ${b.status !== 'cancelled' ? `<button onclick="adminSetStatus('${b.id}','cancelled');adminCloseDayModal();" class="rounded-lg bg-red-100 p-2 text-red-700 hover:bg-red-200"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  
+  document.getElementById('day-modal').classList.remove('hidden');
+}
+
+function adminCloseDayModal() {
+  document.getElementById('day-modal').classList.add('hidden');
+}
+
+function adminRenderRecentBookings() {
+  const recent = adminBookings.slice(0, 5);
+  if (!recent.length) {
+    document.getElementById('recent-list').innerHTML = '<p class="text-sm text-slate-500 text-center py-4">Belum ada booking.</p>';
+    return;
+  }
+  document.getElementById('recent-list').innerHTML = recent.map(b => {
+    const u = adminProfileById.get(b.user_id);
+    const name = u?.name || u?.email || 'User';
+    return `<div class="flex items-center justify-between rounded-lg border border-slate-100 p-3 dark:border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700">${(name || 'U')[0].toUpperCase()}</div>
+        <div>
+          <p class="font-bold text-sm text-slate-900 dark:text-white">${adminEsc(name)}</p>
+          <p class="text-xs text-slate-500">${adminEsc(b.court_name || b.court_id)} • ${b.date}</p>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="rounded-full px-2 py-0.5 text-xs font-bold ${adminStatusClass(b.status)}">${adminStatusLabel(b.status)}</span>
+        <p class="mt-1 text-sm font-bold text-teal-600">${adminRupiah(b.amount)}</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Bookings Tab
+function adminFilterBookings() {
+  const status = document.getElementById('filter-status').value;
+  const court = document.getElementById('filter-court').value;
+  const filtered = adminBookings.filter(b => {
+    if (status !== 'all' && b.status !== status) return false;
+    if (court !== 'all' && b.court_id !== court) return false;
+    return true;
+  });
+  adminRenderBookingsTable(filtered);
+}
+
+function adminRenderBookings() {
+  adminRenderBookingsTable(adminBookings);
+}
+
+function adminRenderBookingsTable(bookings) {
+  if (!bookings.length) {
+    document.getElementById('bookings-table').innerHTML = '<tr><td colspan="7" class="px-4 py-12 text-center text-slate-500">Tidak ada booking.</td></tr>';
+    return;
+  }
+  document.getElementById('bookings-table').innerHTML = bookings.map(b => {
+    const u = adminProfileById.get(b.user_id);
+    const name = u?.name || u?.email || 'User';
+    return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+      <td class="px-4 py-3">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-xs font-bold text-teal-700">${(name || 'U')[0].toUpperCase()}</div>
+          <span class="font-bold text-sm text-slate-900 dark:text-white">${adminEsc(name)}</span>
+        </div>
+      </td>
+      <td class="px-4 py-3 font-bold text-sm">${adminEsc(b.court_name || b.court_id)}</td>
+      <td class="px-4 py-3 text-sm">${b.date}</td>
+      <td class="px-4 py-3 text-sm">${b.start_time} - ${b.end_time}</td>
+      <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-bold ${adminStatusClass(b.status)}">${adminStatusLabel(b.status)}</span></td>
+      <td class="px-4 py-3 font-bold text-sm">${adminRupiah(b.amount)}</td>
+      <td class="px-4 py-3">
+        ${b.status === 'pending' ? `<button onclick="adminSetStatus('${b.id}','approved')" class="rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-200 mr-1">✓</button>` : ''}
+        ${b.status !== 'cancelled' ? `<button onclick="adminSetStatus('${b.id}','cancelled')" class="rounded-lg bg-red-100 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-200">✗</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function adminSetStatus(id, status) {
+  if (status === 'cancelled' && !confirm('Batalkan booking ini?')) return;
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    const { error } = await supabase.from('bookings').update({ status }).eq('id', id);
+    if (error) throw error;
+    adminToast(status === 'approved' ? 'Booking approved!' : 'Booking cancelled');
+    await adminLoadData();
+  } catch (err) {
+    adminToast(err.message || 'Error', 'error');
+  }
+}
+
+// Courts Tab
+function adminRenderCourts() {
+  if (!adminCourts.length) {
+    document.getElementById('courts-list').innerHTML = '<div class="px-6 py-12 text-center text-slate-500">Belum ada lapangan.</div>';
+    return;
+  }
+  document.getElementById('courts-list').innerHTML = adminCourts.map(c => `<div class="flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+    <div class="flex items-center gap-3">
+      <img src="${c.image_url || '/images/padel1.jpg'}" class="h-14 w-20 rounded-lg object-cover">
+      <div>
+        <p class="font-extrabold text-slate-900 dark:text-white">${adminEsc(c.name)}</p>
+        <p class="text-sm text-slate-500">${adminEsc(c.type || c.surface || '')}</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="text-right">
+        <p class="font-bold text-teal-600">${adminRupiah(c.price_per_hour)}/jam</p>
+        <span class="rounded-full px-2 py-0.5 text-xs font-bold ${c.available ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}">${c.available ? 'Aktif' : 'Hidden'}</span>
+      </div>
+      <button onclick="adminEditCourt('${c.id}')" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Edit</button>
+    </div>
+  </div>`).join('');
+}
+
+function adminEditCourt(id) {
+  const c = adminCourts.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('court-edit-id').value = id;
+  document.getElementById('court-name').value = c.name;
+  document.getElementById('court-price').value = c.price_per_hour;
+  document.getElementById('court-type').value = c.type || '';
+  document.getElementById('court-surface').value = c.surface || '';
+  document.getElementById('court-submit').textContent = 'Update';
+  document.getElementById('court-cancel').classList.remove('hidden');
+}
+
+function adminCancelCourtEdit() {
+  document.getElementById('court-form').reset();
+  document.getElementById('court-edit-id').value = '';
+  document.getElementById('court-submit').textContent = 'Simpan';
+  document.getElementById('court-cancel').classList.add('hidden');
+}
+
+async function adminSaveCourt(e) {
+  e.preventDefault();
+  const supabase = await PadelGo.Supabase.init();
+  const id = document.getElementById('court-edit-id').value;
+  const name = document.getElementById('court-name').value.trim();
+  const price = parseInt(document.getElementById('court-price').value);
+  const type = document.getElementById('court-type').value.trim();
+  const surface = document.getElementById('court-surface').value.trim();
+  const imageFile = document.getElementById('court-image').files[0];
+  
+  try {
+    let imageUrl = '';
+    if (imageFile) {
+      if (imageFile.size > 5 * 1024 * 1024) throw new Error('Ukuran gambar maks 5MB');
+      const ext = imageFile.name.split('.').pop() || 'jpg';
+      const fileName = Date.now() + '-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.' + ext;
+      const { error: upErr } = await supabase.storage.from('court-images').upload(fileName, imageFile, { upsert: true });
+      if (upErr) throw upErr;
+      imageUrl = supabase.storage.from('court-images').getPublicUrl(fileName).data.publicUrl;
+    }
+    
+    const courtId = id || name.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || 'C' + Date.now();
+    const data = { id: courtId, name, type, surface, price_per_hour: price, available: true };
+    if (imageUrl) data.image_url = imageUrl;
+    
+    const { error } = await supabase.from('courts').upsert(data, { onConflict: 'id' });
+    if (error) throw error;
+    
+    adminToast(id ? 'Lapangan diupdate!' : 'Lapangan ditambahkan!');
+    adminCancelCourtEdit();
+    await adminLoadData();
+  } catch (err) {
+    adminToast(err.message || 'Error', 'error');
+  }
+}
+
+// Finance Tab
+function adminRenderFinance() {
+  document.getElementById('finance-total-approved').textContent = adminRupiah(adminBookings.filter(b => b.status === 'approved').reduce((s, b) => s + (b.amount || 0), 0));
+  document.getElementById('finance-total-pending').textContent = adminRupiah(adminBookings.filter(b => b.status === 'pending').reduce((s, b) => s + (b.amount || 0), 0));
+  document.getElementById('finance-total-cancelled').textContent = adminRupiah(adminBookings.filter(b => b.status === 'cancelled').reduce((s, b) => s + (b.amount || 0), 0));
+  
+  document.getElementById('finance-table').innerHTML = adminCourts.map(c => {
+    const items = adminBookings.filter(b => b.court_id === c.id);
+    const approved = items.filter(b => b.status === 'approved').reduce((s, b) => s + (b.amount || 0), 0);
+    const pending = items.filter(b => b.status === 'pending').reduce((s, b) => s + (b.amount || 0), 0);
+    return `<tr>
+      <td class="px-4 py-3 font-bold">${adminEsc(c.name)}</td>
+      <td class="px-4 py-3">${items.length}</td>
+      <td class="px-4 py-3 font-bold text-emerald-600">${adminRupiah(approved)}</td>
+      <td class="px-4 py-3 font-bold text-amber-600">${adminRupiah(pending)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Tidak ada data.</td></tr>';
+}
+
+// Users Tab
+function adminRenderUsers() {
+  const users = adminUsers;
+  const nonAdmin = users.filter(u => u.role !== 'admin').length;
+  const adminCnt = users.filter(u => u.role === 'admin').length;
+  document.getElementById('users-count').textContent = `${nonAdmin} user${nonAdmin !== 1 ? 's' : ''} • ${adminCnt} admin`;
+  
+  if (!users.length) {
+    document.getElementById('users-table').innerHTML = '<tr><td colspan="6" class="px-4 py-12 text-center text-slate-500">Belum ada user.</td></tr>';
+    return;
+  }
+  document.getElementById('users-table').innerHTML = users.map(u => {
+    const name = u.name || u.email || 'User';
+    const initials = name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
+    return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+      <td class="px-4 py-3">
+        <div class="flex items-center gap-3">
+          ${u.avatar_url ? `<img src="${u.avatar_url}" class="h-10 w-10 rounded-full object-cover">` : `<div class="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700">${initials}</div>`}
+          <span class="font-extrabold text-sm text-slate-900 dark:text-white">${adminEsc(name)}</span>
+        </div>
+      </td>
+      <td class="px-4 py-3 text-sm">${adminEsc(u.email || '-')}</td>
+      <td class="px-4 py-3 text-sm">${adminEsc(u.phone || '-')}</td>
+      <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-bold ${u.role === 'admin' ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-700'}">${u.role || 'user'}</span></td>
+      <td class="px-4 py-3 text-xs text-slate-500">${u.created_at ? u.created_at.slice(0, 10) : '-'}</td>
+      <td class="px-4 py-3 text-right">
+        <button onclick="adminOpenUserModal('${u.id}')" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Edit</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function adminOpenUserModal(id) {
+  const u = adminUsers.find(x => x.id === id);
+  if (!u) return;
+  const name = u.name || u.email || 'User';
+  document.getElementById('user-id').value = id;
+  document.getElementById('user-name').value = u.name || '';
+  document.getElementById('user-email').value = u.email || '';
+  document.getElementById('user-phone').value = u.phone || '';
+  document.getElementById('user-role').value = u.role || 'user';
+  document.getElementById('user-name-preview').textContent = name;
+  document.getElementById('user-email-preview').textContent = u.email || '-';
+  document.getElementById('user-avatar').src = u.avatar_url || PadelGo.UI.defaultAvatar();
+  document.getElementById('user-error').classList.add('hidden');
+  document.getElementById('user-modal').classList.remove('hidden');
+}
+
+function adminCloseUserModal() {
+  document.getElementById('user-modal').classList.add('hidden');
+}
+
+async function adminSaveUser(e) {
+  e.preventDefault();
+  const supabase = await PadelGo.Supabase.init();
+  const id = document.getElementById('user-id').value;
+  const name = document.getElementById('user-name').value.trim();
+  const email = document.getElementById('user-email').value.trim();
+  const phone = document.getElementById('user-phone').value.trim();
+  const role = document.getElementById('user-role').value;
+  
+  try {
+    const { error } = await supabase.from('profiles').update({ name, email, phone, role }).eq('id', id);
+    if (error) throw error;
+    adminToast('User diupdate!');
+    adminCloseUserModal();
+    await adminLoadData();
+  } catch (err) {
+    document.getElementById('user-error').textContent = err.message || 'Error';
+    document.getElementById('user-error').classList.remove('hidden');
+  }
+}
+
+async function adminDeleteUser() {
+  const id = document.getElementById('user-id').value;
+  if (!confirm('Hapus user ini? Semua booking juga akan dihapus.')) return;
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    await supabase.from('bookings').delete().eq('user_id', id);
+    const { error } = await supabase.from('profiles').delete().eq('id', id);
+    if (error) throw error;
+    adminToast('User dihapus!');
+    adminCloseUserModal();
+    await adminLoadData();
+  } catch (err) {
+    adminToast(err.message || 'Error', 'error');
+  }
+}
+
+// Reports Tab
+function adminInitReports() {
+  adminReportData = [...adminBookings];
+  adminReportFiltered = [...adminReportData];
+  adminReportPage = 1;
+  
+  // Set default date range to current month
+  const now = new Date();
+  const first = new Date(now.getFullYear(), now.getMonth(), 1);
+  const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  
+  document.getElementById('report-from').value = first.toISOString().split('T')[0];
+  document.getElementById('report-to').value = last.toISOString().split('T')[0];
+  
+  // Populate court filter
+  const sel = document.getElementById('report-court');
+  sel.innerHTML = '<option value="">Semua</option>' + adminCourts.map(c => `<option value="${c.id}">${adminEsc(c.name)}</option>`).join('');
+  
+  adminSetPeriod('month');
+}
+
+function adminSetPeriod(period) {
+  document.querySelectorAll('.report-btn').forEach(b => {
+    b.classList.remove('border-teal-500', 'bg-teal-100', 'text-teal-700', 'dark:bg-teal-900/50', 'dark:border-teal-700', 'dark:text-teal-300');
+    b.classList.add('border-slate-200', 'text-slate-600', 'dark:border-slate-700', 'dark:text-slate-300');
+  });
+  const btn = document.querySelector(`.report-btn[data-period="${period}"]`);
+  if (btn) {
+    btn.classList.remove('border-slate-200', 'text-slate-600', 'dark:border-slate-700', 'dark:text-slate-300');
+    btn.classList.add('border-teal-500', 'bg-teal-100', 'text-teal-700', 'dark:bg-teal-900/50', 'dark:border-teal-700', 'dark:text-teal-300');
+  }
+  
+  const now = new Date();
+  let from, to;
+  switch(period) {
+    case 'today': from = to = now; break;
+    case 'week': from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()); to = new Date(from); to.setDate(to.getDate() + 6); break;
+    case 'month': from = new Date(now.getFullYear(), now.getMonth(), 1); to = new Date(now.getFullYear(), now.getMonth() + 1, 0); break;
+    case 'year': from = new Date(now.getFullYear(), 0, 1); to = new Date(now.getFullYear(), 11, 31); break;
+  }
+  
+  document.getElementById('report-from').value = from.toISOString().split('T')[0];
+  document.getElementById('report-to').value = to.toISOString().split('T')[0];
+  adminApplyFilter();
+}
+
+function adminApplyFilter() {
+  const from = document.getElementById('report-from').value;
+  const to = document.getElementById('report-to').value;
+  const court = document.getElementById('report-court').value;
+  const status = document.getElementById('report-status').value;
+  
+  adminReportFiltered = adminReportData.filter(b => {
+    if (from && b.date < from) return false;
+    if (to && b.date > to) return false;
+    if (court && b.court_id !== court) return false;
+    if (status && b.status !== status) return false;
+    return true;
+  });
+  
+  adminReportPage = 1;
+  adminRenderReport();
+}
+
+function adminRenderReport() {
+  const total = adminReportFiltered.length;
+  const revenue = adminReportFiltered.filter(b => b.status === 'approved').reduce((s, b) => s + (b.amount || 0), 0);
+  const pending = adminReportFiltered.filter(b => b.status === 'pending').length;
+  const users = new Set(adminReportFiltered.map(b => b.user_id)).size;
+  
+  document.getElementById('report-total').textContent = total;
+  document.getElementById('report-revenue').textContent = adminRupiah(revenue);
+  document.getElementById('report-pending').textContent = pending;
+  document.getElementById('report-users').textContent = users;
+  
+  const start = (adminReportPage - 1) * adminReportSize;
+  const page = adminReportFiltered.slice(start, start + adminReportSize);
+  const totalPages = Math.ceil(total / adminReportSize) || 1;
+  
+  if (!page.length) {
+    document.getElementById('report-table').innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-slate-500">Tidak ada data.</td></tr>';
+  } else {
+    document.getElementById('report-table').innerHTML = page.map((b, i) => {
+      const u = adminProfileById.get(b.user_id);
+      const name = u?.name || u?.email || 'User';
+      return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+        <td class="px-4 py-3 text-sm text-slate-500">${start + i + 1}</td>
+        <td class="px-4 py-3 text-sm">${adminEsc(name)}</td>
+        <td class="px-4 py-3 text-sm">${adminEsc(b.court_name || b.court_id)}</td>
+        <td class="px-4 py-3 text-sm">${b.date}</td>
+        <td class="px-4 py-3 text-sm">${b.start_time} - ${b.end_time}</td>
+        <td class="px-4 py-3 text-sm">${b.duration_hours || 1} jam</td>
+        <td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-bold ${adminStatusClass(b.status)}">${adminStatusLabel(b.status)}</span></td>
+        <td class="px-4 py-3 text-right font-bold text-sm">${adminRupiah(b.amount)}</td>
+      </tr>`;
+    }).join('');
+  }
+  
+  document.getElementById('report-count').textContent = `${start + 1}-${Math.min(start + adminReportSize, total)} dari ${total}`;
+  document.getElementById('report-prev').disabled = adminReportPage <= 1;
+  document.getElementById('report-next').disabled = adminReportPage >= totalPages;
+}
+
+function adminReportPage(delta) {
+  adminReportPage = Math.max(1, adminReportPage + delta);
+  adminRenderReport();
+}
+
+function adminExportCSV() {
+  if (!adminReportFiltered.length) return adminToast('Tidak ada data', 'error');
+  const headers = ['No', 'Nama', 'Email', 'Lapangan', 'Tanggal', 'Waktu', 'Durasi', 'Status', 'Jumlah'];
+  const rows = adminReportFiltered.map((b, i) => {
+    const u = adminProfileById.get(b.user_id);
+    return [i+1, u?.name || 'User', u?.email || '-', b.court_name || b.court_id, b.date, b.start_time + '-' + b.end_time, b.duration_hours + ' jam', adminStatusLabel(b.status), b.amount];
+  });
+  const csv = [headers, ...rows].map(r => r.map(c => `"${c || ''}"`).join(',')).join('\n');
+  adminDownload(csv, `padelgo-report-${Date.now()}.csv`, 'text/csv');
+  adminToast('CSV exported!');
+}
+
+function adminExportExcel() {
+  if (!adminReportFiltered.length) return adminToast('Tidak ada data', 'error');
+  const total = adminReportFiltered.filter(b => b.status === 'approved').reduce((s, b) => s + (b.amount || 0), 0);
+  let html = `<html><head><meta charset="utf-8"><title>PadelGo Report</title><style>th{background:#0d9488;color:white;padding:8px;}td,th{border:1px solid #ddd;padding:8px;}</style></head><body>
+    <h2>PadelGo Booking Report</h2>
+    <p>Total: ${adminReportFiltered.length} | Approved Revenue: ${adminRupiah(total)}</p>
+    <table><tr><th>No</th><th>Nama</th><th>Lapangan</th><th>Tanggal</th><th>Waktu</th><th>Status</th><th>Jumlah</th></tr>`;
+  adminReportFiltered.forEach((b, i) => {
+    const u = adminProfileById.get(b.user_id);
+    html += `<tr><td>${i+1}</td><td>${u?.name || 'User'}</td><td>${b.court_name || b.court_id}</td><td>${b.date}</td><td>${b.start_time}-${b.end_time}</td><td>${adminStatusLabel(b.status)}</td><td>${b.amount}</td></tr>`;
+  });
+  html += '</table></body></html>';
+  adminDownload(html, `padelgo-report-${Date.now()}.xls`, 'application/vnd.ms-excel');
+  adminToast('Excel exported!');
+}
+
+function adminDownload(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// Filters
+function adminPopulateFilters() {
+  const sel = document.getElementById('filter-court');
+  sel.innerHTML = '<option value="all">Semua Lapangan</option>' + adminCourts.map(c => `<option value="${c.id}">${adminEsc(c.name)}</option>`).join('');
+}
+
+// Manual Booking Modal
+function adminOpenBookingModal() {
+  adminSelCourt = null;
+  adminSelTime = null;
+  adminSelDuration = 1;
+  adminBookedSlots = {};
+  document.getElementById('booking-form').reset();
+  document.getElementById('booking-court').value = '';
+  document.getElementById('booking-time').value = '';
+  document.getElementById('booking-duration').value = '1';
+  document.getElementById('booking-summary').classList.add('hidden');
+  document.getElementById('booking-error').classList.add('hidden');
+  document.getElementById('booking-date').min = new Date().toISOString().split('T')[0];
+  adminSetDuration(1);
+  
+  // Render courts
+  document.getElementById('booking-courts').innerHTML = adminCourts.filter(c => c.available).map(c => `<button type="button" onclick="adminSelectCourt('${c.id}', this)" class="court-btn rounded-xl border border-slate-200 p-3 text-left hover:border-teal-500 dark:border-slate-700">
+    <span class="block font-bold text-sm">${adminEsc(c.name)}</span>
+    <span class="text-xs text-slate-500">${adminRupiah(c.price_per_hour)}/jam</span>
+  </button>`).join('');
+  
+  // Render time slots
+  adminRenderTimeSlots();
+  
+  document.getElementById('booking-modal').classList.remove('hidden');
+}
+
+function adminCloseBookingModal() {
+  document.getElementById('booking-modal').classList.add('hidden');
+}
+
+function adminSelectCourt(id, btn) {
+  adminSelCourt = id;
+  document.getElementById('booking-court').value = id;
+  document.querySelectorAll('.court-btn').forEach(b => { b.classList.remove('border-teal-500', 'bg-teal-500'); b.classList.add('border-slate-200', 'dark:border-slate-700'); b.querySelector('span:first-child')?.classList.remove('text-white'); b.querySelector('span:first-child')?.classList.add('text-slate-900', 'dark:text-white'); });
+  btn.classList.remove('border-slate-200', 'dark:border-slate-700'); btn.classList.add('border-teal-500', 'bg-teal-500'); btn.querySelector('span:first-child')?.classList.remove('text-slate-900', 'dark:text-white'); btn.querySelector('span:first-child')?.classList.add('text-white');
+  adminLoadAvailability();
+}
+
+async function adminLoadAvailability() {
+  const date = document.getElementById('booking-date').value;
+  if (!adminSelCourt || !date) { adminBookedSlots[adminSelCourt] = []; adminRenderTimeSlots(); return; }
+  const supabase = await PadelGo.Supabase.init();
+  const { data } = await supabase.rpc('get_booked_slots', { p_court_id: adminSelCourt, p_date: date });
+  adminBookedSlots[adminSelCourt] = [];
+  (data || []).forEach(b => {
+    const sh = parseInt(String(b.start_time).split(':')[0]);
+    const eh = parseInt(String(b.end_time).split(':')[0]);
+    for (let h = sh; h < eh; h++) {
+      const label = String(h).padStart(2, '0') + ':00';
+      if (!adminBookedSlots[adminSelCourt].includes(label)) adminBookedSlots[adminSelCourt].push(label);
+    }
+  });
+  adminRenderTimeSlots();
+}
+
+function adminSetDuration(h) {
+  adminSelDuration = h;
+  document.getElementById('booking-duration').value = h;
+  document.querySelectorAll('.dur-btn').forEach(b => { b.classList.remove('border-teal-500', 'bg-teal-500', 'text-white'); b.classList.add('border-slate-200', 'text-slate-600', 'dark:text-slate-300'); });
+  document.querySelector(`.dur-btn[data-hours="${h}"]`)?.classList.add('border-teal-500', 'bg-teal-500', 'text-white');
+  adminRenderTimeSlots();
+  adminUpdateSummary();
+}
+
+function adminRenderTimeSlots() {
+  const grid = document.getElementById('booking-times');
+  grid.innerHTML = '';
+  for (let h = 0; h < 24; h++) {
+    const label = String(h).padStart(2, '0') + ':00';
+    const booked = adminBookedSlots[adminSelCourt]?.includes(label);
+    let available = !booked && h + adminSelDuration <= 24;
+    if (available) {
+      for (let offset = 1; offset < adminSelDuration; offset++) {
+        if (adminBookedSlots[adminSelCourt]?.includes(String(h + offset).padStart(2, '0') + ':00')) { available = false; break; }
+      }
+    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.disabled = !available || !adminSelCourt;
+    btn.className = available && adminSelCourt ? 'rounded-lg bg-white border border-slate-200 px-1 py-2 text-xs font-bold text-slate-700 hover:bg-teal-100 dark:bg-slate-800 dark:text-slate-200' : 'rounded-lg bg-slate-100 px-1 py-2 text-xs font-bold text-slate-400 line-through cursor-not-allowed dark:bg-slate-900 dark:text-slate-600';
+    btn.onclick = available && adminSelCourt ? () => adminSelectTime(label, btn) : null;
+    grid.appendChild(btn);
+  }
+  adminSelTime = null;
+  document.getElementById('booking-time').value = '';
+  adminUpdateSummary();
+}
+
+function adminSelectTime(time, btn) {
+  adminSelTime = time;
+  document.getElementById('booking-time').value = time;
+  grid.querySelectorAll('button').forEach(b => b.classList.remove('bg-teal-500', 'text-white'));
+  btn.classList.add('bg-teal-500', 'text-white');
+  adminUpdateSummary();
+}
+
+function adminUpdateSummary() {
+  const sum = document.getElementById('booking-summary');
+  const txt = document.getElementById('booking-summary-text');
+  if (adminSelCourt && adminSelTime && adminSelDuration) {
+    const c = adminCourts.find(x => x.id === adminSelCourt);
+    const endH = parseInt(adminSelTime.split(':')[0]) + adminSelDuration;
+    const total = (c?.price_per_hour || 150000) * adminSelDuration;
+    txt.textContent = `${c?.name || adminSelCourt} | ${adminSelTime} - ${String(endH).padStart(2, '0')}:00 (${adminSelDuration} jam) = ${adminRupiah(total)}`;
+    sum.classList.remove('hidden');
+  } else {
+    sum.classList.add('hidden');
+  }
+}
+
+async function adminSubmitBooking(e) {
+  e.preventDefault();
+  const name = document.getElementById('booking-name').value.trim();
+  const email = document.getElementById('booking-email').value.trim();
+  const date = document.getElementById('booking-date').value;
+  const courtId = document.getElementById('booking-court').value;
+  const duration = parseInt(document.getElementById('booking-duration').value);
+  const time = document.getElementById('booking-time').value;
+  
+  if (!name || !email || !date || !courtId || !time) {
+    document.getElementById('booking-error').textContent = 'Lengkapi semua data.';
+    document.getElementById('booking-error').classList.remove('hidden');
+    return;
+  }
+  
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    const { data: profile } = await supabase.from('profiles').select('id').eq('email', email).single();
+    if (!profile) throw new Error('Email tidak ditemukan. User harus register dulu.');
+    
+    const c = adminCourts.find(x => x.id === courtId);
+    const endH = parseInt(time.split(':')[0]) + duration;
+    const amount = (c?.price_per_hour || 150000) * duration;
+    const bookingId = 'BK-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    
+    const { error } = await supabase.from('bookings').insert({
+      id: bookingId, user_id: profile.id, court_id: courtId, court_name: c?.name || courtId,
+      date, start_time: time, end_time: String(endH).padStart(2, '0') + ':00',
+      duration_hours: duration, amount, status: 'approved',
+      notes: `Manual by admin. Customer: ${name}`
+    });
+    if (error) throw error;
+    
+    adminToast('Booking berhasil dibuat!');
+    adminCloseBookingModal();
+    await adminLoadData();
+  } catch (err) {
+    document.getElementById('booking-error').textContent = err.message;
+    document.getElementById('booking-error').classList.remove('hidden');
+  }
+}
+
+// Refresh
+async function adminRefresh() {
   const btn = document.getElementById('refreshBtn');
   const icon = document.getElementById('refreshIcon');
   btn.disabled = true;
   icon.classList.add('animate-spin');
   try {
-    await loadAdminData();
-    PadelGo.UI.toast('Data berhasil di-refresh!');
+    await adminLoadData();
+    adminToast('Data refreshed!');
   } finally {
     btn.disabled = false;
     icon.classList.remove('animate-spin');
   }
 }
 
-// Main Data Loader
-async function loadAdminData() {
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi.');
-    const session = await requireAdmin(supabase);
-    if (!session) return;
+// Helpers
+function adminRupiah(val) { return 'Rp ' + Number(val || 0).toLocaleString('id-ID'); }
 
-    const [bookingsRes, courtsRes, profilesRes] = await Promise.all([
-      supabase.from('bookings').select('*').order('date', { ascending: false }).order('start_time', { ascending: false }),
-      supabase.from('courts').select('*').order('name', { ascending: true }),
-      supabase.from('profiles').select('id, name, email, role, avatar_url, created_at, phone').order('created_at', { ascending: false })
-    ]);
-
-    if (bookingsRes.error) throw new Error(bookingsRes.error.message);
-    if (courtsRes.error) throw new Error(courtsRes.error.message);
-    if (profilesRes.error) throw new Error(profilesRes.error.message);
-
-    allBookings = bookingsRes.data || [];
-    allCourts = courtsRes.data || [];
-    allProfiles = profilesRes.data || [];
-    profileById = new Map(allProfiles.map(profile => [profile.id, profile]));
-
-    hydrateCourtFilter();
-    renderAll();
-  } catch (err) {
-    showAdminMessage(err.message || 'Gagal memuat admin dashboard.', 'error');
-  }
+function adminEsc(str) {
+  const m = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+  return String(str || '').replace(/[&<>"']/g, c => m[c]);
 }
 
-function renderAll() {
-  const approved = allBookings.filter(b => b.status === 'approved' || b.status === 'confirmed');
-  const pending = allBookings.filter(b => b.status === 'pending');
-  const cancelled = allBookings.filter(b => b.status === 'cancelled');
-  const approvedRevenue = approved.reduce((sum, b) => sum + Number(b.amount || 0), 0);
-  const pendingRevenue = pending.reduce((sum, b) => sum + Number(b.amount || 0), 0);
-  const cancelledRevenue = cancelled.reduce((sum, b) => sum + Number(b.amount || 0), 0);
-
-  document.getElementById('statTotal').textContent = allBookings.length;
-  document.getElementById('statPending').textContent = pending.length;
-  document.getElementById('statApproved').textContent = approved.length;
-  document.getElementById('statRevenue').textContent = rupiah(approvedRevenue);
-  document.getElementById('statCourts').textContent = allCourts.filter(c => c.available).length;
-
-  ['financeApproved', 'financeCardApproved'].forEach(id => document.getElementById(id).textContent = rupiah(approvedRevenue));
-  ['financePending', 'financeCardPending'].forEach(id => document.getElementById(id).textContent = rupiah(pendingRevenue));
-  ['financeCancelled', 'financeCardCancelled'].forEach(id => document.getElementById(id).textContent = rupiah(cancelledRevenue));
-
-  renderBookings(allBookings.slice(0, 6), 'recentTable');
-  filterBookings();
-  renderCourts();
-  renderFinance();
-  renderUsers();
-  renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+function adminStatusClass(s) {
+  if (s === 'approved') return 'bg-emerald-100 text-emerald-700';
+  if (s === 'pending') return 'bg-amber-100 text-amber-700';
+  return 'bg-red-100 text-red-700';
 }
 
-// Calendar Functions
-function changeMonth(delta) {
-  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
-  renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-}
-
-function renderCalendar(year, month) {
-  const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-  const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-
-  document.getElementById('calendarMonth').textContent = `${monthNames[month]} ${year}`;
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-  // Group bookings by date
-  const bookingsByDate = {};
-  allBookings.forEach(b => {
-    if (!bookingsByDate[b.date]) bookingsByDate[b.date] = { approved: 0, pending: 0, cancelled: 0 };
-    if (b.status === 'approved' || b.status === 'confirmed') bookingsByDate[b.date].approved++;
-    else if (b.status === 'pending') bookingsByDate[b.date].pending++;
-    else if (b.status === 'cancelled') bookingsByDate[b.date].cancelled++;
-  });
-
-  let html = '';
-
-  // Empty cells before first day
-  for (let i = 0; i < firstDay; i++) {
-    html += '<div class="aspect-square"></div>';
-  }
-
-  // Days
-  for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const isToday = dateStr === todayStr;
-    const bookings = bookingsByDate[dateStr] || {};
-    const totalBookings = (bookings.approved || 0) + (bookings.pending || 0) + (bookings.cancelled || 0);
-    const hasBookings = totalBookings > 0;
-
-    html += `
-      <button type="button" onclick="showDayModal('${dateStr}')"
-        class="aspect-square flex flex-col items-center justify-center rounded-lg border p-1 sm:p-2 transition hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 ${isToday ? 'border-teal-500 bg-teal-50 dark:border-teal-400 dark:bg-teal-900/30' : 'border-slate-200 dark:border-slate-700'} ${hasBookings ? 'cursor-pointer' : 'opacity-50'}">
-        <span class="text-xs sm:text-sm font-bold ${isToday ? 'text-teal-700 dark:text-teal-300' : 'text-slate-700 dark:text-slate-300'}">${day}</span>
-        ${hasBookings ? `
-          <div class="flex gap-0.5 mt-1">
-            ${bookings.approved > 0 ? `<span class="h-1.5 w-1.5 rounded-full bg-emerald-500" title="${bookings.approved} approved"></span>` : ''}
-            ${bookings.pending > 0 ? `<span class="h-1.5 w-1.5 rounded-full bg-amber-500" title="${bookings.pending} pending"></span>` : ''}
-            ${bookings.cancelled > 0 ? `<span class="h-1.5 w-1.5 rounded-full bg-red-500" title="${bookings.cancelled} cancelled"></span>` : ''}
-          </div>
-        ` : ''}
-      </button>
-    `;
-  }
-
-  document.getElementById('calendarGrid').innerHTML = html;
-}
-
-function showDayModal(dateStr) {
-  const dayBookings = allBookings.filter(b => b.date === dateStr);
-  const modal = document.getElementById('dayModal');
-  const title = document.getElementById('dayModalTitle');
-  const subtitle = document.getElementById('dayModalSubtitle');
-  const content = document.getElementById('dayModalContent');
-
-  const dateObj = new Date(dateStr + 'T00:00:00');
-  const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
-  title.textContent = `Booking ${formattedDate}`;
-  subtitle.textContent = `${dayBookings.length} booking`;
-
-  if (dayBookings.length === 0) {
-    content.innerHTML = `
-      <div class="text-center py-12">
-        <svg class="h-16 w-16 mx-auto text-slate-300 dark:text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-        </svg>
-        <p class="text-slate-500 dark:text-slate-400">Tidak ada booking di tanggal ini</p>
-      </div>
-    `;
-  } else {
-    content.innerHTML = `
-      <div class="space-y-3">
-        ${dayBookings.map(booking => {
-          const profile = profileById.get(booking.user_id);
-          const customerName = profile?.name || profile?.email || 'User';
-          return `
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
-              <div class="flex items-start justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="font-extrabold text-slate-900 dark:text-white">${escapeHtml(booking.court_name || booking.court_id)}</span>
-                    <span class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-extrabold ${statusClass(booking.status)}">${statusLabel(booking.status)}</span>
-                  </div>
-                  <p class="text-sm text-slate-600 dark:text-slate-300">🕐 ${escapeHtml(booking.start_time)} - ${escapeHtml(booking.end_time)}</p>
-                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">👤 ${escapeHtml(customerName)}</p>
-                  <p class="text-sm font-extrabold text-teal-700 dark:text-teal-300 mt-1">${rupiah(booking.amount)}</p>
-                </div>
-                <div class="flex flex-col gap-1">
-                  ${booking.status === 'pending' ? `
-                    <button type="button" onclick="setBookingStatus('${escapeAttr(booking.id)}','approved'); closeDayModal();" class="p-2 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200" title="Approve">
-                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    </button>
-                  ` : ''}
-                  ${booking.status !== 'cancelled' ? `
-                    <button type="button" onclick="setBookingStatus('${escapeAttr(booking.id)}','cancelled'); closeDayModal();" class="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200" title="Cancel">
-                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                  ` : ''}
-                  <button type="button" onclick="openEditModal('${escapeAttr(booking.id)}'); closeDayModal();" class="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-200" title="Edit">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-  }
-
-  modal.classList.remove('hidden');
-}
-
-function closeDayModal() {
-  document.getElementById('dayModal').classList.add('hidden');
-}
-
-// Edit Booking Modal
-function openEditModal(bookingId) {
-  const booking = allBookings.find(b => b.id === bookingId);
-  if (!booking) return;
-
-  document.getElementById('editBookingId').value = bookingId;
-  document.getElementById('editDate').value = booking.date;
-  document.getElementById('editNotes').value = booking.notes || '';
-
-  // Populate courts
-  const courtSelect = document.getElementById('editCourt');
-  courtSelect.innerHTML = allCourts.map(c => `<option value="${escapeAttr(c.id)}" ${c.id === booking.court_id ? 'selected' : ''}>${escapeHtml(c.name || c.id)}</option>`).join('');
-
-  // Populate times
-  const timeSelect = document.getElementById('editStartTime');
-  timeSelect.innerHTML = '';
-  for (let h = 0; h < 24; h++) {
-    const label = `${String(h).padStart(2, '0')}:00`;
-    timeSelect.innerHTML += `<option value="${label}" ${label === booking.start_time ? 'selected' : ''}>${label}</option>`;
-  }
-
-  // Set duration
-  const duration = booking.duration_hours || 1;
-  document.getElementById('editDuration').value = duration;
-
-  document.getElementById('editModal').classList.remove('hidden');
-}
-
-function closeEditModal() {
-  document.getElementById('editModal').classList.add('hidden');
-}
-
-async function submitEditBooking(e) {
-  e.preventDefault();
-  const bookingId = document.getElementById('editBookingId').value;
-  const date = document.getElementById('editDate').value;
-  const courtId = document.getElementById('editCourt').value;
-  const startTime = document.getElementById('editStartTime').value;
-  const duration = parseInt(document.getElementById('editDuration').value);
-  const endHour = parseInt(startTime.split(':')[0]) + duration;
-  const endTime = `${String(endHour).padStart(2, '0')}:00`;
-  const notes = document.getElementById('editNotes').value;
-
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-
-    const { data: court } = await supabase.from('courts').select('name, price_per_hour').eq('id', courtId).single();
-    const amount = (court?.price_per_hour || 150000) * duration;
-
-    const { error } = await supabase.from('bookings').update({
-      court_id: courtId,
-      court_name: court?.name || courtId,
-      date,
-      start_time: startTime,
-      end_time: endTime,
-      duration_hours: duration,
-      amount,
-      notes
-    }).eq('id', bookingId);
-
-    if (error) throw new Error(error.message);
-
-    closeEditModal();
-    showAdminMessage('Booking berhasil diupdate!');
-    await loadAdminData();
-  } catch (err) {
-    showAdminMessage(err.message || 'Gagal update booking.', 'error');
-  }
-}
-
-async function deleteCurrentBooking() {
-  const bookingId = document.getElementById('editBookingId').value;
-  if (!confirm('Yakin ingin menghapus booking ini? Tindakan ini tidak dapat dibatalkan.')) return;
-
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-
-    const { error } = await supabase.from('bookings').delete().eq('id', bookingId);
-    if (error) throw new Error(error.message);
-
-    closeEditModal();
-    showAdminMessage('Booking berhasil dihapus!');
-    await loadAdminData();
-  } catch (err) {
-    showAdminMessage(err.message || 'Gagal hapus booking.', 'error');
-  }
-}
-
-// Admin Manual Booking Modal
-function initAdminBookingModal() {
-  document.getElementById('adminBookingDate').setAttribute('min', getTodayLocalDate());
-  document.getElementById('adminBookingDate').addEventListener('change', () => {
-    if (adminSelectedCourt) loadAdminAvailability();
-  });
-
-  document.querySelectorAll('.admin-duration-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      adminSelectedDuration = parseInt(btn.dataset.hours);
-      document.getElementById('adminBookingDuration').value = adminSelectedDuration;
-      document.querySelectorAll('.admin-duration-btn').forEach(b => {
-        b.classList.remove('border-emerald-500', 'bg-emerald-600', 'text-white');
-      });
-      btn.classList.add('border-emerald-500', 'bg-emerald-600', 'text-white');
-      updateAdminSummary();
-    });
-  });
-
-  // Set first duration as selected
-  document.querySelector('.admin-duration-btn[data-hours="1"]').click();
-}
-
-function openAdminBookingModal() {
-  adminSelectedCourt = null;
-  adminSelectedTime = null;
-  adminSelectedDuration = 1;
-  document.getElementById('adminBookingForm').reset();
-  document.getElementById('adminBookingCourt').value = '';
-  document.getElementById('adminBookingTime').value = '';
-  document.getElementById('adminBookingDuration').value = '1';
-  document.getElementById('adminBookingSummary').classList.add('hidden');
-  document.querySelectorAll('.admin-duration-btn').forEach(b => {
-    b.classList.remove('border-emerald-500', 'bg-emerald-600', 'text-white');
-  });
-  document.querySelector('.admin-duration-btn[data-hours="1"]').classList.add('border-emerald-500', 'bg-emerald-600', 'text-white');
-
-  // Render courts
-  const courtGrid = document.getElementById('adminCourtGrid');
-  courtGrid.innerHTML = allCourts.filter(c => c.available).map(court => `
-    <button type="button" onclick="selectAdminCourt('${escapeAttr(court.id)}', this)" class="admin-court-btn rounded-xl border border-slate-200 p-3 text-left hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:hover:bg-emerald-500/10">
-      <span class="block font-extrabold text-slate-900 dark:text-white text-sm">${escapeHtml(court.name || court.id)}</span>
-      <span class="text-xs text-slate-500 dark:text-slate-400">${PadelGo.Format.rupiah(court.price_per_hour)}/jam</span>
-    </button>
-  `).join('');
-
-  // Render time slots
-  renderAdminTimeSlots();
-
-  document.getElementById('adminBookingModal').classList.remove('hidden');
-}
-
-function closeAdminBookingModal() {
-  document.getElementById('adminBookingModal').classList.add('hidden');
-}
-
-function selectAdminCourt(courtId, btn) {
-  adminSelectedCourt = courtId;
-  document.getElementById('adminBookingCourt').value = courtId;
-  document.querySelectorAll('.admin-court-btn').forEach(b => {
-    b.classList.remove('border-emerald-500', 'bg-emerald-600');
-    b.classList.add('border-slate-200', 'dark:border-slate-700');
-    b.querySelector('span:first-child')?.classList.remove('text-white');
-    b.querySelector('span:first-child')?.classList.add('text-slate-900', 'dark:text-white');
-  });
-  btn.classList.remove('border-slate-200', 'dark:border-slate-700');
-  btn.classList.add('border-emerald-500', 'bg-emerald-600');
-  btn.querySelector('span:first-child')?.classList.remove('text-slate-900', 'dark:text-white');
-  btn.querySelector('span:first-child')?.classList.add('text-white');
-  loadAdminAvailability();
-}
-
-async function loadAdminAvailability() {
-  const date = document.getElementById('adminBookingDate').value;
-  if (!adminSelectedCourt || !date) {
-    adminBookedSlots[adminSelectedCourt] = [];
-    renderAdminTimeSlots();
-    return;
-  }
-
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) return;
-
-    const { data, error } = await supabase.rpc('get_booked_slots', {
-      p_court_id: adminSelectedCourt,
-      p_date: date
-    });
-
-    adminBookedSlots[adminSelectedCourt] = [];
-    (data || []).forEach(b => {
-      const sh = Number(String(b.start_time).split(':')[0]);
-      const eh = Number(String(b.end_time).split(':')[0]);
-      for (let h = sh; h < eh; h++) {
-        const label = `${String(h).padStart(2, '0')}:00`;
-        if (!adminBookedSlots[adminSelectedCourt].includes(label)) {
-          adminBookedSlots[adminSelectedCourt].push(label);
-        }
-      }
-    });
-  } catch {
-    adminBookedSlots[adminSelectedCourt] = [];
-  }
-
-  renderAdminTimeSlots();
-}
-
-function renderAdminTimeSlots() {
-  const grid = document.getElementById('adminTimeGrid');
-  grid.innerHTML = '';
-  for (let h = 0; h < 24; h++) {
-    const label = `${String(h).padStart(2, '0')}:00`;
-    const booked = adminBookedSlots[adminSelectedCourt]?.includes(label) || [];
-    const endHour = h + adminSelectedDuration;
-    const isAvailable = !booked && endHour <= 24;
-
-    // Check if all hours in duration are available
-    for (let offset = 1; offset < adminSelectedDuration; offset++) {
-      const checkHour = h + offset;
-      if (adminBookedSlots[adminSelectedCourt]?.includes(`${String(checkHour).padStart(2, '0')}:00`)) {
-        isAvailable = false;
-        break;
-      }
-    }
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = label;
-    btn.disabled = !isAvailable || !adminSelectedCourt;
-    btn.onclick = isAvailable ? () => selectAdminTime(label, btn) : null;
-    btn.className = isAvailable && adminSelectedCourt
-      ? 'rounded-lg bg-white px-1 py-2 text-xs font-extrabold text-slate-700 transition hover:bg-emerald-100 hover:text-emerald-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-emerald-500/15 dark:hover:text-emerald-200 border border-slate-200 dark:border-slate-700'
-      : 'rounded-lg bg-slate-100 px-1 py-2 text-xs font-extrabold text-slate-400 line-through dark:bg-slate-900 dark:text-slate-600 cursor-not-allowed';
-    grid.appendChild(btn);
-  }
-  adminSelectedTime = null;
-  document.getElementById('adminBookingTime').value = '';
-  updateAdminSummary();
-}
-
-function selectAdminTime(time, btn) {
-  adminSelectedTime = time;
-  document.getElementById('adminBookingTime').value = time;
-  document.querySelectorAll('#adminTimeGrid button').forEach(b => {
-    b.classList.remove('bg-emerald-600', 'text-white', 'ring-2', 'ring-emerald-400');
-  });
-  btn.classList.add('bg-emerald-600', 'text-white', 'ring-2', 'ring-emerald-400');
-  updateAdminSummary();
-}
-
-function updateAdminSummary() {
-  const summary = document.getElementById('adminBookingSummary');
-  const text = document.getElementById('adminSummaryText');
-  if (adminSelectedCourt && adminSelectedTime && adminSelectedDuration) {
-    const endHour = parseInt(adminSelectedTime.split(':')[0]) + adminSelectedDuration;
-    const court = allCourts.find(c => c.id === adminSelectedCourt);
-    const total = (court?.price_per_hour || 150000) * adminSelectedDuration;
-    text.textContent = `${court?.name || adminSelectedCourt} | ${adminSelectedTime} - ${String(endHour).padStart(2, '0')}:00 (${adminSelectedDuration} jam) = ${rupiah(total)}`;
-    summary.classList.remove('hidden');
-  } else {
-    summary.classList.add('hidden');
-  }
-}
-
-async function submitAdminBooking(e) {
-  e.preventDefault();
-  const errorEl = document.getElementById('adminBookingError');
-  errorEl.classList.add('hidden');
-
-  const customerName = document.getElementById('adminCustomerName').value.trim();
-  const customerEmail = document.getElementById('adminCustomerEmail').value.trim();
-  const customerPhone = document.getElementById('adminCustomerPhone').value.trim();
-  const date = document.getElementById('adminBookingDate').value;
-  const courtId = document.getElementById('adminBookingCourt').value;
-  const duration = parseInt(document.getElementById('adminBookingDuration').value);
-  const startTime = document.getElementById('adminBookingTime').value;
-
-  if (!customerName || !customerEmail || !customerPhone) {
-    errorEl.textContent = 'Data customer wajib diisi.';
-    errorEl.classList.remove('hidden');
-    return;
-  }
-
-  if (!courtId || !date || !startTime) {
-    errorEl.textContent = 'Pilih tanggal, court, dan waktu.';
-    errorEl.classList.remove('hidden');
-    return;
-  }
-
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-
-    // Find or create user by email
-    let userId;
-    const { data: existingProfile } = await supabase.from('profiles').select('id').eq('email', customerEmail).single();
-
-    if (existingProfile) {
-      userId = existingProfile.id;
-    } else {
-      errorEl.textContent = 'Customer belum terdaftar. Gunakan email yang sudah terdaftar.';
-      errorEl.classList.remove('hidden');
-      return;
-    }
-
-    const endHour = parseInt(startTime.split(':')[0]) + duration;
-    const endTime = `${String(endHour).padStart(2, '0')}:00`;
-    const court = allCourts.find(c => c.id === courtId);
-    const amount = (court?.price_per_hour || 150000) * duration;
-    const bookingId = `BK-${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-
-    const { error } = await supabase.from('bookings').insert({
-      id: bookingId,
-      user_id: userId,
-      court_id: courtId,
-      court_name: court?.name || courtId,
-      date,
-      start_time: startTime,
-      end_time: endTime,
-      duration_hours: duration,
-      amount,
-      status: 'approved',
-      notes: `Manual booking oleh admin. Customer: ${customerName} (${customerPhone})`
-    });
-
-    if (error) throw new Error(error.message);
-
-    PadelGo.UI.toast('Booking manual berhasil dibuat!');
-    closeAdminBookingModal();
-    await loadAdminData();
-  } catch (err) {
-    errorEl.textContent = err.message || 'Gagal membuat booking.';
-    errorEl.classList.remove('hidden');
-  }
-}
-
-// Existing Functions
-function showAdminMessage(message, type = 'success') {
-  const success = document.getElementById('adminSuccess');
-  const error = document.getElementById('adminError');
-  success.classList.add('hidden');
-  error.classList.add('hidden');
-  const target = type === 'error' ? error : success;
-  target.textContent = message;
-  target.classList.remove('hidden');
-  setTimeout(() => target.classList.add('hidden'), 5000);
-}
-
-async function requireAdmin(supabase) {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { window.location.href = '/login/?next=/admin/'; return null; }
-  const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
-  if (error || profile?.role !== 'admin') { window.location.href = '/dashboard/'; return null; }
-  return session;
-}
-
-function hydrateCourtFilter() {
-  const filter = document.getElementById('courtFilter');
-  const current = filter.value || 'all';
-  filter.innerHTML = '<option value="all">All Courts</option>' + allCourts.map(court => `<option value="${escapeHtml(court.id)}">${escapeHtml(court.name || court.id)}</option>`).join('');
-  filter.value = [...filter.options].some(option => option.value === current) ? current : 'all';
-}
-
-function renderBookings(bookings, targetId) {
-  const tbody = document.getElementById(targetId);
-  const isFullTable = targetId === 'ordersTable';
-  if (!bookings.length) {
-    tbody.innerHTML = `<tr><td colspan="${isFullTable ? '7' : '6'}" class="px-4 sm:px-5 py-8 sm:py-10 text-center text-sm text-slate-500">Belum ada booking.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = bookings.map(order => `
-    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
-      <td class="px-3 sm:px-5 py-3 sm:py-4">
-        ${isFullTable ? renderUserCell(order.user_id) : renderMiniUserCell(order.user_id)}
-      </td>
-      <td class="px-3 sm:px-5 py-3 sm:py-4">
-        <span class="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">${escapeHtml(order.court_name || order.court_id)}</span>
-        ${isFullTable ? `<br><span class="text-[10px] text-slate-500 sm:hidden">${escapeHtml(order.date)}</span>` : ''}
-      </td>
-      ${isFullTable ? `<td class="px-3 sm:px-5 py-3 sm:py-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 hidden sm:table-cell">${escapeHtml(order.date || '-')}</td>` : ''}
-      ${isFullTable ? `<td class="px-3 sm:px-5 py-3 sm:py-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">${escapeHtml(order.start_time || '')} - ${escapeHtml(order.end_time || '')}</td>` : ''}
-      <td class="px-3 sm:px-5 py-3 sm:py-4"><span class="inline-flex rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-extrabold ${statusClass(order.status)}">${statusLabel(order.status)}</span></td>
-      <td class="px-3 sm:px-5 py-3 sm:py-4 font-extrabold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">${rupiah(order.amount)}</td>
-      <td class="px-3 sm:px-5 py-3 sm:py-4">
-        ${isFullTable ? renderBookingActions(order) : renderBookingActionsMini(order)}
-      </td>
-    </tr>
-  `).join('');
-}
-
-function renderMiniUserCell(userId) {
-  const profile = profileById.get(userId);
-  const name = profile?.name || profile?.email || 'User';
-  const avatar = profile?.avatar_url;
-  const initials = String(name || 'U').trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2);
-  
-  if (avatar) {
-    return `<div class="flex items-center gap-2">
-      <img src="${escapeAttr(avatar)}" alt="${escapeAttr(name)}" class="h-8 w-8 rounded-full object-cover ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <span class="h-8 w-8 rounded-full bg-teal-100 hidden items-center justify-center text-xs font-extrabold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200">${initials}</span>
-      <span class="font-bold text-slate-900 dark:text-slate-100 text-xs">${escapeHtml(name)}</span>
-    </div>`;
-  }
-  
-  return `<div class="flex items-center gap-2">
-    <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-xs font-extrabold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200">${initials}</div>
-    <span class="font-bold text-slate-900 dark:text-slate-100 text-xs">${escapeHtml(name)}</span>
-  </div>`;
-}
-
-function renderBookingActionsMini(order) {
-  if (order.status === 'approved' || order.status === 'confirmed') {
-    return '<span class="inline-flex rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-200">✓</span>';
-  }
-  if (order.status === 'cancelled') {
-    return '<span class="inline-flex rounded-full bg-red-50 px-2 py-1 text-[10px] font-extrabold text-red-700 dark:bg-red-950/50 dark:text-red-200">✗</span>';
-  }
-  return `
-    <div class="flex items-center gap-1">
-      <button type="button" onclick="setBookingStatus('${escapeAttr(order.id)}','approved')" class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-emerald-100 text-sm font-extrabold text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200" title="Approve">✓</button>
-      <button type="button" onclick="setBookingStatus('${escapeAttr(order.id)}','cancelled')" class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-red-100 text-sm font-extrabold text-red-700 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200" title="Cancel">✗</button>
-    </div>`;
-}
-
-function renderBookingActions(order) {
-  if (order.status === 'approved' || order.status === 'confirmed') {
-    return '<span class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-200">approved</span>';
-  }
-  if (order.status === 'cancelled') {
-    return '<span class="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-extrabold text-red-700 dark:bg-red-950/50 dark:text-red-200">cancelled</span>';
-  }
-  return `
-    <div class="flex items-center gap-1 sm:gap-2">
-      <button type="button" onclick="setBookingStatus('${escapeAttr(order.id)}','approved')" class="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-lg bg-emerald-100 text-base sm:text-lg font-extrabold text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200" title="Approve">✓</button>
-      <button type="button" onclick="setBookingStatus('${escapeAttr(order.id)}','cancelled')" class="h-8 sm:h-9 w-8 sm:w-9 inline-flex items-center justify-center rounded-lg bg-red-100 text-base sm:text-lg font-extrabold text-red-700 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200" title="Cancel">✗</button>
-    </div>`;
-}
-
-async function setBookingStatus(bookingId, status) {
-  if (status === 'cancelled' && !confirm('Batalkan booking ini?')) return;
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    const { error } = await supabase.from('bookings').update({ status }).eq('id', bookingId);
-    if (error) throw new Error(error.message || 'Gagal update booking.');
-    showAdminMessage(status === 'approved' ? 'Booking approved.' : 'Booking cancelled.');
-    await loadAdminData();
-  } catch (err) {
-    showAdminMessage(err.message || 'Gagal update booking.', 'error');
-  }
-}
-
-async function saveCourt(event) {
-  event.preventDefault();
-  const button = document.getElementById('courtSubmit');
-  const name = document.getElementById('courtName').value.trim();
-  const price = Number(document.getElementById('courtPrice').value);
-  const type = document.getElementById('courtType').value.trim() || 'Padel court';
-  const surface = document.getElementById('courtSurface').value.trim() || '';
-  const image = document.getElementById('courtImage').files[0];
-  if (!name || !price) return showAdminMessage('Nama lapangan dan harga wajib diisi.', 'error');
-  button.disabled = true;
-  button.textContent = 'Menyimpan...';
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    const session = await requireAdmin(supabase);
-    if (!session) return;
-    let imageUrl = '';
-    if (image) {
-      if (image.size > 5 * 1024 * 1024) throw new Error('Ukuran gambar maksimal 5MB.');
-      const ext = image.name.split('.').pop() || 'jpg';
-      const fileName = `${Date.now()}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('court-images').upload(fileName, image, { upsert: true, cacheControl: '3600' });
-      if (uploadError) throw new Error(uploadError.message || 'Gagal upload gambar lapangan.');
-      imageUrl = supabase.storage.from('court-images').getPublicUrl(fileName).data?.publicUrl || '';
-    }
-    const id = name.toUpperCase().replace(/^COURT\s+/, '').replace(/[^A-Z0-9]+/g, '').slice(0, 12) || `C${Date.now()}`;
-    const { error } = await supabase.from('courts').upsert({
-      id,
-      name,
-      type,
-      surface,
-      price_per_hour: price,
-      image_url: imageUrl || '/images/padel1.jpg',
-      available: true
-    }, { onConflict: 'id' });
-    if (error) throw new Error(error.message || 'Gagal menyimpan lapangan.');
-    document.getElementById('courtForm').reset();
-    showAdminMessage('Lapangan berhasil ditambahkan.');
-    await loadAdminData();
-  } catch (err) {
-    showAdminMessage(err.message || 'Gagal menyimpan lapangan.', 'error');
-  } finally {
-    button.disabled = false;
-    button.textContent = 'Simpan Lapangan';
-  }
-}
-
-async function toggleCourt(courtId, available) {
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    const { error } = await supabase.from('courts').update({ available }).eq('id', courtId);
-    if (error) throw new Error(error.message);
-    await loadAdminData();
-  } catch (err) {
-    showAdminMessage(err.message || 'Gagal update lapangan.', 'error');
-  }
-}
-
-function renderCourts() {
-  const tbody = document.getElementById('courtTable');
-  if (!allCourts.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="px-4 sm:px-5 py-8 sm:py-10 text-center text-sm text-slate-500">Belum ada lapangan.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = allCourts.map(court => `
-    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
-      <td class="px-4 sm:px-5 py-3 sm:py-4">
-        <div class="flex items-center gap-3">
-          <img src="${escapeAttr(court.image_url || '/images/padel1.jpg')}" alt="${escapeAttr(court.name || court.id)}" class="h-12 sm:h-14 w-16 sm:w-20 rounded-xl object-cover">
-          <div>
-            <p class="font-extrabold text-slate-950 dark:text-white text-sm sm:text-base">${escapeHtml(court.name || court.id)}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">${escapeHtml(court.type || court.surface || court.id)}</p>
-          </div>
-        </div>
-      </td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4 font-bold text-sm sm:text-base">${rupiah(court.price_per_hour)} / jam</td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4"><span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${court.available ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200' : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200'}">${court.available ? 'Available' : 'Hidden'}</span></td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4">
-        <button type="button" onclick="toggleCourt('${escapeAttr(court.id)}', ${court.available ? 'false' : 'true'})" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-extrabold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">${court.available ? 'Hide' : 'Show'}</button>
-      </td>
-    </tr>`).join('');
-}
-
-function renderFinance() {
-  const rows = allCourts.map(court => {
-    const items = allBookings.filter(b => b.court_id === court.id);
-    const approved = items.filter(b => b.status === 'approved' || b.status === 'confirmed').reduce((sum, b) => sum + Number(b.amount || 0), 0);
-    const pending = items.filter(b => b.status === 'pending').reduce((sum, b) => sum + Number(b.amount || 0), 0);
-    return `<tr><td class="px-4 sm:px-5 py-3 sm:py-4 font-extrabold text-sm sm:text-base">${escapeHtml(court.name || court.id)}</td><td class="px-4 sm:px-5 py-3 sm:py-4">${items.length}</td><td class="px-4 sm:px-5 py-3 sm:py-4 font-bold">${rupiah(approved)}</td><td class="px-4 sm:px-5 py-3 sm:py-4 font-bold">${rupiah(pending)}</td></tr>`;
-  });
-  document.getElementById('financeTable').innerHTML = rows.join('') || '<tr><td colspan="4" class="px-4 sm:px-5 py-8 sm:py-10 text-center text-sm text-slate-500">Belum ada data.</td></tr>';
-}
-
-function renderUsers() {
-  const tbody = document.getElementById('usersTable');
-  const countEl = document.getElementById('usersCount');
-  
-  // Update count
-  const userCount = allProfiles.filter(p => p.role !== 'admin').length;
-  const adminCount = allProfiles.filter(p => p.role === 'admin').length;
-  countEl.textContent = `${userCount} user${userCount !== 1 ? 's' : ''} • ${adminCount} admin${adminCount !== 1 ? 's' : ''}`;
-  
-  if (!allProfiles.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="px-4 sm:px-5 py-8 sm:py-10 text-center text-sm text-slate-500">Belum ada user.</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML = allProfiles.map(profile => {
-    const name = profile.name || profile.email || 'User';
-    const initials = String(name).trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2);
-    const avatar = profile.avatar_url;
-    const isAdmin = profile.role === 'admin';
-    const currentUserId = profileById.get(profile.id) ? Object.keys(profileById).find(k => profileById.get(k)?.id === profile.id) : null;
-    
-    return `
-    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
-      <td class="px-4 sm:px-5 py-3 sm:py-4">
-        <div class="flex items-center gap-3">
-          ${avatar 
-            ? `<img src="${escapeAttr(avatar)}" alt="${escapeAttr(name)}" class="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-800" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` 
-            : ''}
-          <div class="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-extrabold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200 ${avatar ? 'hidden' : ''}">${initials}</div>
-          <span class="font-extrabold text-slate-900 dark:text-white text-sm">${escapeHtml(name)}</span>
-        </div>
-      </td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(profile.email || '-')}</td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(profile.phone || '-')}</td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4">
-        <span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${isAdmin ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}">
-          ${escapeHtml(profile.role || 'user')}
-        </span>
-      </td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4 text-xs sm:text-sm text-slate-500">${escapeHtml(PadelGo.Format.date(String(profile.created_at || '').slice(0, 10)))}</td>
-      <td class="px-4 sm:px-5 py-3 sm:py-4 text-right">
-        <div class="flex items-center justify-end gap-2">
-          <button type="button" onclick="openUserEditModal('${escapeAttr(profile.id)}')" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-extrabold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800 flex items-center gap-1.5 transition">
-            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            Edit
-          </button>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function renderUserCell(userId) {
-  const profile = profileById.get(userId);
-  const label = profile?.name || profile?.email || userId || 'User';
-  const sub = profile?.email && profile?.name ? profile.email : '';
-  const avatar = profile?.avatar_url || PadelGo.UI.defaultAvatar();
-  return `<div class="flex items-center gap-3">
-    <img src="${escapeAttr(avatar)}" alt="${escapeAttr(label)}" class="h-9 sm:h-10 w-9 sm:w-10 rounded-full object-cover">
-    <div>
-      <p class="font-extrabold text-slate-950 dark:text-white text-sm sm:text-base">${escapeHtml(label)}</p>
-      <p class="max-w-[180px] sm:max-w-[220px] truncate text-[10px] sm:text-xs text-slate-500">${escapeHtml(sub)}</p>
-    </div>
-  </div>`;
-}
-
-function filterBookings() {
-  const status = document.getElementById('statusFilter').value;
-  const court = document.getElementById('courtFilter').value;
-  const filtered = allBookings.filter(b => {
-    const normalizedStatus = b.status === 'confirmed' ? 'approved' : b.status;
-    return (status === 'all' || normalizedStatus === status) && (court === 'all' || b.court_id === court);
-  });
-  renderBookings(filtered, 'ordersTable');
-}
-
-function statusLabel(status) {
-  if (status === 'approved' || status === 'confirmed') return 'Approved';
-  if (status === 'pending') return 'Pending';
+function adminStatusLabel(s) {
+  if (s === 'approved') return 'Approved';
+  if (s === 'pending') return 'Pending';
   return 'Cancelled';
 }
 
-function statusClass(status) {
-  if (status === 'approved' || status === 'confirmed') return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200';
-  if (status === 'pending') return 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200';
-  return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
-}
-
-function rupiah(value) {
-  return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
-}
-
-function getTodayLocalDate() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-}
-
-function escapeHtml(text) {
-  const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
-  return String(text || '').replace(/[&<>"']/g, m => map[m]);
-}
-
-function escapeAttr(text) {
-  return escapeHtml(text).replace(/`/g, '&#096;');
-}
-
-// ============================================
-// Reports Functions
-// ============================================
-
-// Report State
-let reportData = [];
-let filteredReportData = [];
-let reportPage = 1;
-const reportPageSize = 20;
-let reportDateFrom = '';
-let reportDateTo = '';
-let reportCourt = '';
-let reportStatus = '';
-
-// Initialize Reports
-function initReports() {
-  // Set initial date range to current month
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-  document.getElementById('reportDateFrom').value = formatDateForInput(firstDay);
-  document.getElementById('reportDateTo').value = formatDateForInput(lastDay);
-
-  reportDateFrom = document.getElementById('reportDateFrom').value;
-  reportDateTo = document.getElementById('reportDateTo').value;
-
-  // Populate court filter
-  const courtSelect = document.getElementById('reportCourtFilter');
-  courtSelect.innerHTML = '<option value="">Semua Court</option>' + 
-    allCourts.map(c => `<option value="${escapeAttr(c.id)}">${escapeHtml(c.name || c.id)}</option>`).join('');
-
-  // Set default quick filter
-  setReportPeriod('month');
-}
-
-// Format date for input
-function formatDateForInput(date) {
-  return date.toISOString().split('T')[0];
-}
-
-// Set quick report period
-function setReportPeriod(period) {
-  const now = new Date();
-  let from, to;
-
-  switch(period) {
-    case 'today':
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      break;
-    case 'week':
-      var dayOfWeek = now.getDay();
-      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
-      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (6 - dayOfWeek));
-      break;
-    case 'month':
-      from = new Date(now.getFullYear(), now.getMonth(), 1);
-      to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      break;
-    case 'year':
-      from = new Date(now.getFullYear(), 0, 1);
-      to = new Date(now.getFullYear(), 11, 31);
-      break;
-    default:
-      return;
-  }
-
-  document.getElementById('reportDateFrom').value = formatDateForInput(from);
-  document.getElementById('reportDateTo').value = formatDateForInput(to);
-
-  // Update active button
-  document.querySelectorAll('.report-quick-btn').forEach(btn => {
-    btn.classList.remove('bg-teal-100', 'border-teal-300', 'text-teal-700', 'dark:bg-teal-900/50', 'dark:border-teal-700', 'dark:text-teal-300');
-    btn.classList.add('border-slate-200', 'text-slate-600', 'dark:border-slate-700', 'dark:text-slate-300');
-  });
-  const activeBtn = document.querySelector(`.report-quick-btn[data-period="${period}"]`);
-  if (activeBtn) {
-    activeBtn.classList.remove('border-slate-200', 'text-slate-600', 'dark:border-slate-700', 'dark:text-slate-300');
-    activeBtn.classList.add('bg-teal-100', 'border-teal-300', 'text-teal-700', 'dark:bg-teal-900/50', 'dark:border-teal-700', 'dark:text-teal-300');
-  }
-
-  reportDateFrom = document.getElementById('reportDateFrom').value;
-  reportDateTo = document.getElementById('reportDateTo').value;
-  reportCourt = document.getElementById('reportCourtFilter').value;
-  reportStatus = document.getElementById('reportStatusFilter').value;
-
-  applyReportFilter();
-}
-
-// Apply filter
-function applyReportFilter() {
-  reportDateFrom = document.getElementById('reportDateFrom').value;
-  reportDateTo = document.getElementById('reportDateTo').value;
-  reportCourt = document.getElementById('reportCourtFilter').value;
-  reportStatus = document.getElementById('reportStatusFilter').value;
-
-  filteredReportData = reportData.filter(item => {
-    // Date filter
-    if (reportDateFrom && item.date < reportDateFrom) return false;
-    if (reportDateTo && item.date > reportDateTo) return false;
-    // Court filter
-    if (reportCourt && item.court_id !== reportCourt) return false;
-    // Status filter
-    if (reportStatus) {
-      const normalizedStatus = item.status === 'confirmed' ? 'approved' : item.status;
-      if (normalizedStatus !== reportStatus) return false;
-    }
-    return true;
-  });
-
-  reportPage = 1;
-  renderReportTable();
-  updateReportSummary();
-}
-
-// Update report summary
-function updateReportSummary() {
-  const totalBookings = filteredReportData.length;
-  const totalRevenue = filteredReportData
-    .filter(b => b.status === 'approved' || b.status === 'confirmed')
-    .reduce((sum, b) => sum + Number(b.amount || 0), 0);
-  const pendingCount = filteredReportData.filter(b => b.status === 'pending').length;
-  const activeUsers = new Set(filteredReportData.map(b => b.user_id)).size;
-
-  document.getElementById('reportTotalBookings').textContent = totalBookings;
-  document.getElementById('reportTotalRevenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
-  document.getElementById('reportPendingCount').textContent = pendingCount;
-  document.getElementById('reportActiveUsers').textContent = activeUsers;
-}
-
-// Render report table
-function renderReportTable() {
-  const tbody = document.getElementById('reportTableBody');
-  const start = (reportPage - 1) * reportPageSize;
-  const end = start + reportPageSize;
-  const pageData = filteredReportData.slice(start, end);
-
-  if (!pageData.length) {
-    tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-12 text-center text-sm text-slate-500">Tidak ada data untuk periode ini.</td></tr>`;
-    document.getElementById('reportCountText').textContent = '0 dari 0';
-    document.getElementById('reportPrevBtn').disabled = true;
-    document.getElementById('reportNextBtn').disabled = true;
-    return;
-  }
-
-  tbody.innerHTML = pageData.map((booking, index) => {
-    const profile = profileById.get(booking.user_id);
-    const userName = profile?.name || profile?.email || 'User';
-    const userAvatar = profile?.avatar_url;
-    const initials = String(userName).slice(0, 2).toUpperCase();
-    const rowNum = start + index + 1;
-
-    const statusClass = booking.status === 'approved' || booking.status === 'confirmed' 
-      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200' 
-      : booking.status === 'pending' 
-        ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200' 
-        : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
-    const statusLabel = booking.status === 'approved' || booking.status === 'confirmed' 
-      ? 'Approved' 
-      : booking.status === 'pending' 
-        ? 'Pending' 
-        : 'Cancelled';
-
-    return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-      <td class="px-4 py-3 text-sm text-slate-500">${rowNum}</td>
-      <td class="px-4 py-3">
-        <div class="flex items-center gap-2">
-          ${userAvatar 
-            ? `<img src="${escapeAttr(userAvatar)}" alt="${escapeAttr(userName)}" class="h-8 w-8 rounded-full object-cover" onerror="this.style.display='none'">` 
-            : ''}
-          <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-xs font-bold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200 ${userAvatar ? 'hidden' : ''}">${initials}</div>
-          <span class="text-sm font-medium text-slate-900 dark:text-white">${escapeHtml(userName)}</span>
-        </div>
-      </td>
-      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${escapeHtml(booking.court_name || booking.court_id)}</td>
-      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${formatDateDisplay(booking.date)}</td>
-      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${escapeHtml(booking.start_time)} - ${escapeHtml(booking.end_time)}</td>
-      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${booking.duration_hours || 1} jam</td>
-      <td class="px-4 py-3"><span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${statusClass}">${statusLabel}</span></td>
-      <td class="px-4 py-3 text-sm font-bold text-slate-900 dark:text-white text-right">${rupiah(booking.amount)}</td>
-    </tr>`;
-  }).join('');
-
-  // Update pagination
-  const totalPages = Math.ceil(filteredReportData.length / reportPageSize);
-  document.getElementById('reportCountText').textContent = `${start + 1}-${Math.min(end, filteredReportData.length)} dari ${filteredReportData.length}`;
-  document.getElementById('reportPrevBtn').disabled = reportPage <= 1;
-  document.getElementById('reportNextBtn').disabled = reportPage >= totalPages;
-}
-
-// Format date for display
-function formatDateDisplay(dateStr) {
-  if (!dateStr) return '-';
-  var date = new Date(dateStr + 'T00:00:00');
-  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-// Page change
-function reportPageChange(delta) {
-  const totalPages = Math.ceil(filteredReportData.length / reportPageSize);
-  reportPage = Math.max(1, Math.min(totalPages, reportPage + delta));
-  renderReportTable();
-}
-
-// Export report
-function exportReport(format) {
-  if (!filteredReportData.length) {
-    showAdminMessage('Tidak ada data untuk diexport.', 'error');
-    return;
-  }
-
-  if (format === 'csv') {
-    exportToCSV();
-  } else if (format === 'xlsx') {
-    exportToXLSX();
-  }
-}
-
-// Export to CSV
-function exportToCSV() {
-  const headers = ['No', 'Nama User', 'Email', 'Court', 'Tanggal', 'Jam Mulai', 'Jam Selesai', 'Durasi', 'Status', 'Amount (Rp)'];
-  const rows = filteredReportData.map((booking, index) => {
-    const profile = profileById.get(booking.user_id);
-    return [
-      index + 1,
-      profile?.name || 'User',
-      profile?.email || '-',
-      booking.court_name || booking.court_id,
-      booking.date,
-      booking.start_time,
-      booking.end_time,
-      booking.duration_hours || 1,
-      statusLabel(booking.status),
-      booking.amount || 0
-    ];
-  });
-
-  const csvContent = [headers, ...rows]
-    .map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','))
-    .join('\n');
-
-  downloadFile(csvContent, `padelgo-report-${reportDateFrom}-${reportDateTo}.csv`, 'text/csv');
-}
-
-// Export to XLSX (using data URI for simple Excel format)
-function exportToXLSX() {
-  // Create HTML table as Excel
-  let html = `
-    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-    <head>
-      <meta charset="utf-8">
-      <title>PadelGo Report</title>
-      <style>
-        body { font-family: Arial, sans-serif; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #0d9488; color: white; font-weight: bold; }
-        tr:nth-child(even) { background-color: #f9fafb; }
-        .approved { color: #059669; font-weight: bold; }
-        .pending { color: #d97706; font-weight: bold; }
-        .cancelled { color: #dc2626; font-weight: bold; }
-        .header-row { background-color: #0d9488; color: white; }
-      </style>
-    </head>
-    <body>
-      <h2>PadelGo Booking Report</h2>
-      <p>Periode: ${formatDateDisplay(reportDateFrom)} - ${formatDateDisplay(reportDateTo)}</p>
-      <p>Dicetak: ${new Date().toLocaleString('id-ID')}</p>
-      <table>
-        <thead>
-          <tr class="header-row">
-            <th>No</th>
-            <th>Nama User</th>
-            <th>Email</th>
-            <th>Court</th>
-            <th>Tanggal</th>
-            <th>Jam Mulai</th>
-            <th>Jam Selesai</th>
-            <th>Durasi</th>
-            <th>Status</th>
-            <th>Amount (Rp)</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-  filteredReportData.forEach((booking, index) => {
-    const profile = profileById.get(booking.user_id);
-    const statusClass = booking.status === 'approved' || booking.status === 'confirmed' 
-      ? 'approved' 
-      : booking.status === 'pending' 
-        ? 'pending' 
-        : 'cancelled';
-
-    html += `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${escapeHtml(profile?.name || 'User')}</td>
-            <td>${escapeHtml(profile?.email || '-')}</td>
-            <td>${escapeHtml(booking.court_name || booking.court_id)}</td>
-            <td>${booking.date}</td>
-            <td>${booking.start_time}</td>
-            <td>${booking.end_time}</td>
-            <td>${booking.duration_hours || 1} jam</td>
-            <td class="${statusClass}">${statusLabel(booking.status)}</td>
-            <td style="mso-number-format:'Rp #,##0'">${booking.amount || 0}</td>
-          </tr>`;
-  });
-
-  // Summary
-  const totalBookings = filteredReportData.length;
-  const totalRevenue = filteredReportData
-    .filter(b => b.status === 'approved' || b.status === 'confirmed')
-    .reduce((sum, b) => sum + Number(b.amount || 0), 0);
-  const pendingCount = filteredReportData.filter(b => b.status === 'pending').length;
-
-  html += `
-        </tbody>
-        <tfoot>
-          <tr style="background-color: #f3f4f6; font-weight: bold;">
-            <td colspan="3">TOTAL</td>
-            <td>${totalBookings} booking</td>
-            <td colspan="4">${pendingCount} pending</td>
-            <td style="mso-number-format:'#,##0'">${totalRevenue}</td>
-          </tr>
-        </tfoot>
-      </table>
-      <br>
-      <h3>Ringkasan</h3>
-      <table>
-        <tr><td>Total Booking</td><td><strong>${totalBookings}</strong></td></tr>
-        <tr><td>Approved</td><td><strong>${filteredReportData.filter(b => b.status === 'approved' || b.status === 'confirmed').length}</strong></td></tr>
-        <tr><td>Pending</td><td><strong>${pendingCount}</strong></td></tr>
-        <tr><td>Cancelled</td><td><strong>${filteredReportData.filter(b => b.status === 'cancelled').length}</strong></td></tr>
-        <tr><td>Total Revenue</td><td><strong>Rp ${totalRevenue.toLocaleString('id-ID')}</strong></td></tr>
-      </table>
-    </body>
-    </html>`;
-
-  downloadFile(html, `padelgo-report-${reportDateFrom}-${reportDateTo}.xls`, 'application/vnd.ms-excel');
-}
-
-// Download file helper
-function downloadFile(content, filename, mimeType) {
-  const blob = new Blob([content], { type: mimeType });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-
-  showAdminMessage(`Report berhasil diexport: ${filename}`);
-}
-
-// Load report data (called when switching to reports tab)
-function loadReportData() {
-  reportData = [...allBookings].sort((a, b) => {
-    if (a.date !== b.date) return b.date.localeCompare(a.date);
-    return (b.start_time || '').localeCompare(a.start_time || '');
-  });
-
-  initReports();
-}
-
-// ============================================
-// User Management Functions
-// ============================================
-
-function openUserEditModal(userId) {
-  const profile = allProfiles.find(p => p.id === userId);
-  if (!profile) return;
-  
-  const name = profile.name || profile.email || 'User';
-  const avatar = profile.avatar_url;
-  
-  document.getElementById('editUserId').value = userId;
-  document.getElementById('editUserName').value = profile.name || '';
-  document.getElementById('editUserEmail').value = profile.email || '';
-  document.getElementById('editUserPhone').value = profile.phone || '';
-  document.getElementById('editUserRole').value = profile.role || 'user';
-  document.getElementById('editUserPassword').value = '';
-  
-  // Avatar preview
-  const avatarImg = document.getElementById('editUserAvatar');
-  if (avatar) {
-    avatarImg.src = avatar;
-    avatarImg.classList.remove('hidden');
-  } else {
-    const initials = String(name).trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2);
-    avatarImg.src = 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="#ccfbf1" rx="32"/><text x="32" y="32" dy="0.35em" text-anchor="middle" fill="#0f766e" font-family="system-ui" font-size="20" font-weight="bold">${initials}</text></svg>`);
-  }
-  
-  document.getElementById('editUserNamePreview').textContent = name;
-  document.getElementById('editUserEmailPreview').textContent = profile.email || '-';
-  
-  document.getElementById('userEditError').classList.add('hidden');
-  document.getElementById('userEditSuccess').classList.add('hidden');
-  
-  document.getElementById('userEditModal').classList.remove('hidden');
-}
-
-function closeUserEditModal() {
-  document.getElementById('userEditModal').classList.add('hidden');
-}
-
-async function submitEditUser(e) {
-  e.preventDefault();
-  
-  const userId = document.getElementById('editUserId').value;
-  const name = document.getElementById('editUserName').value.trim();
-  const email = document.getElementById('editUserEmail').value.trim();
-  const phone = document.getElementById('editUserPhone').value.trim();
-  const role = document.getElementById('editUserRole').value;
-  const password = document.getElementById('editUserPassword').value;
-  
-  const errorEl = document.getElementById('userEditError');
-  const successEl = document.getElementById('userEditSuccess');
-  const submitBtn = document.getElementById('editUserSubmit');
-  
-  errorEl.classList.add('hidden');
-  successEl.classList.add('hidden');
-  
-  if (!name || !email) {
-    errorEl.textContent = 'Nama dan email wajib diisi.';
-    errorEl.classList.remove('hidden');
-    return;
-  }
-  
-  if (password && password.length < 8) {
-    errorEl.textContent = 'Password minimal 8 karakter.';
-    errorEl.classList.remove('hidden');
-    return;
-  }
-  
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Menyimpan...';
-  
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-    
-    // Update profile in profiles table
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({
-        name,
-        email,
-        phone,
-        role
-      })
-      .eq('id', userId);
-    
-    if (profileError) throw new Error(profileError.message);
-    
-    // If password is provided, update auth
-    if (password) {
-      const { error: authError } = await supabase.auth.updateUser({ 
-        email: email,
-        password: password,
-        data: { name }
-      });
-      
-      if (authError) {
-        // If email update fails, try password only
-        if (authError.message.includes('email')) {
-          const { error: passwordError } = await supabase.auth.updateUser({ password });
-          if (passwordError) throw new Error(passwordError.message);
-        } else {
-          throw new Error(authError.message);
-        }
-      }
-    } else {
-      // Update email in auth if changed
-      const profile = allProfiles.find(p => p.id === userId);
-      if (profile && profile.email !== email) {
-        const { error: emailError } = await supabase.auth.updateUser({ email });
-        if (emailError) console.warn('Email update failed:', emailError.message);
-      }
-    }
-    
-    successEl.textContent = 'User berhasil diupdate!';
-    successEl.classList.remove('hidden');
-    
-    PadelGo.UI.toast('User berhasil diupdate!');
-    
-    setTimeout(async () => {
-      closeUserEditModal();
-      await loadAdminData();
-    }, 1500);
-    
-  } catch (err) {
-    errorEl.textContent = err.message || 'Gagal update user.';
-    errorEl.classList.remove('hidden');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Simpan';
-  }
-}
-
-async function deleteCurrentUser() {
-  const userId = document.getElementById('editUserId').value;
-  
-  if (!confirm('Yakin ingin menghapus user ini? Semua booking user juga akan dihapus. Tindakan ini tidak dapat dibatalkan.')) {
-    return;
-  }
-  
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
-    
-    // Delete user's bookings first (foreign key)
-    const { error: bookingsError } = await supabase
-      .from('bookings')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (bookingsError) throw new Error('Gagal hapus booking: ' + bookingsError.message);
-    
-    // Delete user's profile
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', userId);
-    
-    if (profileError) throw new Error('Gagal hapus profile: ' + profileError.message);
-    
-    // Note: Auth user deletion should be done through Supabase Admin API
-    // For now, we just delete the local data
-    
-    PadelGo.UI.toast('User berhasil dihapus!');
-    closeUserEditModal();
-    await loadAdminData();
-    
-  } catch (err) {
-    const errorEl = document.getElementById('userEditError');
-    errorEl.textContent = err.message || 'Gagal hapus user.';
-    errorEl.classList.remove('hidden');
-  }
+function adminToast(msg, type = 'success') {
+  let t = document.getElementById('admin-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'admin-toast'; t.className = 'fixed top-20 right-4 z-50'; document.body.appendChild(t); }
+  const col = type === 'error' ? 'bg-red-500' : 'bg-emerald-500';
+  t.innerHTML = `<div class="rounded-xl px-4 py-3 text-sm font-bold text-white shadow-xl ${col}">${msg}</div>`;
+  setTimeout(() => t.innerHTML = '', 3000);
 }
 </script>
