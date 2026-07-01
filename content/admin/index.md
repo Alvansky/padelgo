@@ -648,13 +648,13 @@ let adminBookedSlots = {};
 document.addEventListener('DOMContentLoaded', () => {
   loadAdminData();
   initAdminBookingModal();
-});
 
-// Tab switching
-document.querySelectorAll('.admin-tab').forEach(button => {
-  button.addEventListener('click', () => {
-    const tab = button.dataset.tab;
-    switchTab(tab);
+  // Tab switching
+  document.querySelectorAll('.admin-tab').forEach(button => {
+    button.addEventListener('click', () => {
+      const tab = button.dataset.tab;
+      switchTab(tab);
+    });
   });
 });
 
@@ -671,6 +671,9 @@ function switchTab(tab) {
   });
   if (tab === 'overview') {
     renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
+  }
+  if (tab === 'reports') {
+    loadReportData();
   }
 }
 
@@ -1882,15 +1885,6 @@ function loadReportData() {
 
   initReports();
 }
-
-// Hook into tab switch for reports
-const originalSwitchTab = switchTab;
-switchTab = function(tab) {
-  originalSwitchTab(tab);
-  if (tab === 'reports') {
-    loadReportData();
-  }
-};
 
 // ============================================
 // User Management Functions
