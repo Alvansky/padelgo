@@ -69,6 +69,7 @@ layout: "register"
 <script>
 async function persistRegisteredUser(name, email, token) {
   if (token) PadelGo.Cookies.set('sess', 'active', 2 * 60 * 60, { secure: location.protocol === 'https:' });
+  PadelGo.Storage.clearAvatar();
   PadelGo.Auth.setUser({ email, name, role: 'user', avatar: '' });
 }
 

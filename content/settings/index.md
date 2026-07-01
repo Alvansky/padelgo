@@ -203,6 +203,11 @@ async function handleSaveSettings(e) {
     const { error: profileError } = await supabase.from('profiles').upsert(updateData, { onConflict: 'id' });
     if (profileError) throw new Error(profileError.message || 'Gagal menyimpan.');
 
+    const metadataUpdate = { name };
+    if (avatarUrl) metadataUpdate.avatar_url = avatarUrl;
+    const { error: metadataError } = await supabase.auth.updateUser({ data: metadataUpdate });
+    if (metadataError) throw new Error(metadataError.message || 'Gagal menyinkronkan profil Auth');
+
     if (newPassword) {
       const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) throw new Error(updateError.message || 'Gagal update password');
@@ -247,13 +252,17 @@ async function loadProfile() {
     const { data: profile } = await supabase.from('profiles').select('name, email, avatar_url, role').eq('id', session.user.id).single();
     const name = profile?.name || fallbackName;
     const email = profile?.email || session.user.email || '';
-    const avatar = profile?.avatar_url || PadelGo.Storage.getAvatar() || getAvatarDataUrl(name || email || 'U');
+    const avatar = profile?.avatar_url || '';
     document.getElementById('name').value = name;
     document.getElementById('email').value = email;
-    document.getElementById('avatarPreview').src = avatar;
+    document.getElementById('avatarPreview').src = avatar || PadelGo.UI.defaultAvatar();
     const user = { name, email, role: profile?.role || 'user', avatar };
     PadelGo.Auth.setUser(user);
-    if (profile?.avatar_url) PadelGo.Storage.setAvatar(profile.avatar_url);
+    if (profile?.avatar_url) {
+      PadelGo.Storage.setAvatar(profile.avatar_url);
+    } else {
+      PadelGo.Storage.clearAvatar();
+    }
     PadelGo.UI.updateNav(user);
   } catch (err) {
     const errorEl = document.getElementById('errorMessage');

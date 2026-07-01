@@ -98,6 +98,7 @@ PadelGo.Auth = {
   clear() {
     PadelGo.Cookies.remove('sess');
     PadelGo.Cookies.remove('padelgo_user');
+    PadelGo.Storage.clearAvatar();
   },
   isLoggedIn() {
     return !!PadelGo.Cookies.get('sess');
@@ -121,6 +122,10 @@ PadelGo.Format = {
 };
 
 PadelGo.UI = {
+  defaultAvatar() {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" rx="48" fill="#0f766e"/><circle cx="48" cy="38" r="17" fill="#ccfbf1"/><path d="M18 84c5.8-17.8 17-26.7 30-26.7S72.2 66.2 78 84" fill="#ccfbf1"/></svg>';
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+  },
   avatar(name) {
     const initials = String(name || 'U').trim().split(/\s+/).map(part => part[0]).join('').toUpperCase().slice(0, 2) || 'U';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96"><rect width="96" height="96" rx="24" fill="#0f766e"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="white">${initials}</text></svg>`;
@@ -149,7 +154,11 @@ PadelGo.UI = {
         PadelGo.Auth.setSession(session);
         const { data: profile } = await client.from('profiles').select('name, role, avatar_url, email').eq('id', session.user.id).single();
         const avatar = profile?.avatar_url || session.user.user_metadata?.avatar || '';
-        if (avatar) PadelGo.Storage.setAvatar(avatar);
+        if (avatar) {
+          PadelGo.Storage.setAvatar(avatar);
+        } else {
+          PadelGo.Storage.clearAvatar();
+        }
         user = {
           email: profile?.email || session.user.email,
           name: profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
@@ -165,7 +174,7 @@ PadelGo.UI = {
     const hasSession = !!PadelGo.Cookies.get('sess');
     const role = user.role || 'user';
     const displayName = user.name || user.email || 'User';
-    const initials = String(displayName).trim().split(/\s+/).map(p => p[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    const displayEmail = user.email || '';
 
     document.querySelectorAll('.nav-admin-link').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
     document.querySelectorAll('.nav-dashboard-link').forEach(el => el.classList.toggle('hidden', !hasSession));
@@ -175,26 +184,19 @@ PadelGo.UI = {
       el.classList.toggle('flex', hasSession);
     });
     document.querySelectorAll('.nav-user-name').forEach(el => { el.textContent = displayName; });
+    document.querySelectorAll('.nav-user-email').forEach(el => { el.textContent = displayEmail; });
     document.querySelectorAll('.nav-user-link').forEach(el => { el.href = role === 'admin' ? '/admin/' : '/dashboard/'; });
 
-    // Avatar with fallback: show img if URL exists, otherwise show initials
+    // Uploaded avatar wins. Accounts without one use the same green default image.
     const storedAvatar = PadelGo.Storage.getAvatar();
-    const avatarUrl = storedAvatar || user.avatar || '';
+    const avatarUrl = user.avatar || storedAvatar || '';
     document.querySelectorAll('.nav-user-avatar').forEach(el => {
       const wrapper = el.closest('.nav-user-avatar-wrapper');
       const fallback = wrapper ? wrapper.querySelector('.nav-user-avatar-fallback') : null;
-      if (avatarUrl) {
-        el.src = avatarUrl;
-        el.classList.remove('hidden');
-        el.alt = displayName;
-        if (fallback) fallback.classList.add('hidden');
-      } else {
-        el.classList.add('hidden');
-        if (fallback) {
-          fallback.textContent = initials;
-          fallback.classList.remove('hidden');
-        }
-      }
+      el.src = avatarUrl || PadelGo.UI.defaultAvatar();
+      el.classList.remove('hidden');
+      el.alt = displayName;
+      if (fallback) fallback.classList.add('hidden');
     });
 
     // Mobile nav sync

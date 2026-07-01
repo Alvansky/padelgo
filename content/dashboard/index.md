@@ -20,9 +20,9 @@ layout: "dashboard"
 <svg class="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
 </div>
 </div>
-<div class="text-center sm:text-left flex-1 pt-2 sm:pt-0">
-<h1 id="userName" class="text-2xl sm:text-3xl font-extrabold text-slate-950 dark:text-white">User</h1>
-<p id="userEmail" class="text-slate-500 dark:text-slate-400 mt-1 text-xs sm:text-sm break-all">user@example.com</p>
+<div class="min-w-0 text-center sm:text-left flex-1 pt-2 sm:pt-0">
+<h1 id="userName" class="max-w-xl break-words text-2xl sm:text-3xl font-extrabold leading-tight text-slate-950 dark:text-white sm:text-white sm:drop-shadow">User</h1>
+<p id="userEmail" class="mt-1 max-w-xl text-slate-500 dark:text-slate-400 text-xs sm:text-sm break-all">user@example.com</p>
 <div class="flex flex-wrap justify-center sm:justify-start gap-2 mt-3 sm:mt-4">
 <span class="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-[10px] sm:text-xs font-bold dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
 <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -117,30 +117,40 @@ async function loadDashboard() {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login/?next=/dashboard/'; return; }
   const user = session.user;
-  const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+  const cachedUser = PadelGo.Auth.getUser();
+  const displayName = cachedUser.name || user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+  const metadataAvatar = user.user_metadata?.avatar_url || user.user_metadata?.avatar || '';
 
   let userRole = 'user';
   try {
-    const { data: profile } = await supabase.from('profiles').select('name, avatar_url, created_at, role').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('name, email, avatar_url, created_at, role').eq('id', user.id).single();
     userRole = profile?.role || 'user';
-    const profileName = profile?.name || displayName;
+    const profileName = profile?.name || cachedUser.name || displayName;
+    const profileEmail = profile?.email || user.email || cachedUser.email || '';
+    const avatar = profile?.avatar_url || metadataAvatar || cachedUser.avatar || '';
     document.getElementById('userName').textContent = profileName;
-    const avatar = profile?.avatar_url || user.user_metadata?.avatar || PadelGo.UI.avatar(profileName);
-    document.getElementById('userAvatar').src = avatar;
-    if (profile?.avatar_url) PadelGo.Storage.setAvatar(profile.avatar_url);
+    document.getElementById('userEmail').textContent = profileEmail;
+    document.getElementById('userAvatar').src = avatar || PadelGo.UI.defaultAvatar();
+    if (avatar && !avatar.startsWith('data:')) {
+      PadelGo.Storage.setAvatar(avatar);
+    } else {
+      PadelGo.Storage.clearAvatar();
+    }
     if (profile?.created_at) {
       document.getElementById('memberSince').textContent = PadelGo.Format.date(profile.created_at);
     }
-    const cookieUser = PadelGo.Auth.getUser();
+    const cookieUser = cachedUser || {};
     cookieUser.name = profileName;
+    cookieUser.email = profileEmail;
+    cookieUser.role = userRole;
+    cookieUser.avatar = avatar;
     PadelGo.Auth.setUser(cookieUser);
     PadelGo.UI.updateNav(cookieUser);
   } catch {
     document.getElementById('userName').textContent = displayName;
-    document.getElementById('userAvatar').src = user.user_metadata?.avatar || PadelGo.UI.avatar(displayName);
+    document.getElementById('userEmail').textContent = user.email || cachedUser.email || '';
+    document.getElementById('userAvatar').src = metadataAvatar || cachedUser.avatar || PadelGo.UI.defaultAvatar();
   }
-
-  document.getElementById('userEmail').textContent = user.email || '';
 
   try {
     const { data: bookings, error } = await supabase

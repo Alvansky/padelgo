@@ -41,13 +41,20 @@ create table if not exists public.bookings (
 
 -- Keep existing databases aligned when this file is rerun.
 update public.profiles set role = 'user' where role is null;
+update public.profiles set avatar_url = null where avatar_url = '';
 update public.courts set available = true where available is null;
 update public.bookings set status = 'confirmed' where status is null;
+update public.profiles p
+set email = u.email
+from auth.users u
+where p.id = u.id
+  and (p.email is null or p.email <> u.email);
 
 alter table public.profiles alter column role set default 'user';
 alter table public.profiles alter column role set not null;
 alter table public.profiles add column if not exists email text;
 alter table public.profiles add column if not exists avatar_url text;
+alter table public.profiles alter column avatar_url drop default;
 alter table public.courts alter column available set default true;
 alter table public.courts alter column available set not null;
 alter table public.bookings alter column status set default 'confirmed';
@@ -195,6 +202,7 @@ as $$
 $$;
 
 -- Trigger to create profile on signup.
+-- New users intentionally start with avatar_url = null; the UI renders a shared green default avatar.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -202,9 +210,21 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, name, email, role)
-  values (new.id, new.raw_user_meta_data->>'name', new.email, 'user')
-  on conflict (id) do nothing;
+  insert into public.profiles (id, name, email, avatar_url, role)
+  values (
+    new.id,
+    new.raw_user_meta_data->>'name',
+    new.email,
+    coalesce(
+      nullif(new.raw_user_meta_data->>'avatar_url', ''),
+      nullif(new.raw_user_meta_data->>'avatar', '')
+    ),
+    'user'
+  )
+  on conflict (id) do update set
+    email = excluded.email,
+    name = coalesce(public.profiles.name, excluded.name),
+    avatar_url = coalesce(public.profiles.avatar_url, excluded.avatar_url);
   return new;
 end;
 $$;
@@ -213,6 +233,32 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+create or replace function public.handle_updated_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.profiles
+  set
+    email = new.email,
+    name = coalesce(nullif(new.raw_user_meta_data->>'name', ''), name),
+    avatar_url = coalesce(
+      nullif(new.raw_user_meta_data->>'avatar_url', ''),
+      nullif(new.raw_user_meta_data->>'avatar', ''),
+      avatar_url
+    )
+  where id = new.id;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_updated on auth.users;
+create trigger on_auth_user_updated
+  after update of email, raw_user_meta_data on auth.users
+  for each row execute procedure public.handle_updated_user();
 
 -- RLS
 alter table public.profiles enable row level security;
