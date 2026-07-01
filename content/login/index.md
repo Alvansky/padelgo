@@ -100,10 +100,10 @@ Belum punya akun? <a href="/register/" class="font-extrabold text-teal-700 hover
 
 <!-- Register CTA -->
 <div class="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center dark:border-slate-700 dark:bg-slate-900">
-<p class="text-sm text-slate-600 dark:text-slate-400">Ingin booking lapangan?</p>
-<a href="/order/" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-teal-700 hover:text-teal-800 dark:text-teal-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-Booking tanpa login
+<p class="text-sm text-slate-600 dark:text-slate-400">Belum punya akun?</p>
+<a href="/register/" class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-teal-700 hover:text-teal-800 dark:text-teal-300">
+<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+Daftar sekarang
 </a>
 </div>
 
