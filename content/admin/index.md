@@ -602,7 +602,6 @@ layout: "admin"
 let adminBookings = [];
 let adminCourts = [];
 let adminUsers = [];
-let adminProfiles = new Map();
 let adminProfileById = new Map();
 let adminCalDate = new Date();
 let adminSelCourt = null;
@@ -614,32 +613,47 @@ let adminReportFiltered = [];
 let adminReportPage = 1;
 const adminReportSize = 20;
 
-// Initialize
-document.addEventListener('DOMContentLoaded', adminInit);
+// Initialize with delay to ensure shared.js is loaded
+function initAdmin() {
+  if (typeof PadelGo === 'undefined' || typeof PadelGo.Supabase === 'undefined') {
+    setTimeout(initAdmin, 100);
+    return;
+  }
+  adminInit();
+}
 
 async function adminInit() {
   try {
+    // Show loading
+    document.getElementById('adminLoading').style.display = 'flex';
+    document.getElementById('adminAuthError').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'none';
+    
     const supabase = await PadelGo.Supabase.init();
     if (!supabase) {
       adminShowAuthError('Supabase belum dikonfigurasi.');
       return;
     }
     
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw sessionError;
+    
     if (!session) {
       adminShowAuthError('Anda harus login terlebih dahulu.');
       return;
     }
     
     // Check admin role
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('role, name, email')
       .eq('id', session.user.id)
       .single();
     
+    if (profileError) throw profileError;
+    
     if (!profile || profile.role !== 'admin') {
-      adminShowAuthError('Anda tidak memiliki akses admin.');
+      adminShowAuthError('Anda tidak memiliki akses admin. Role Anda: ' + (profile?.role || 'tidak ada'));
       return;
     }
     
@@ -652,37 +666,46 @@ async function adminInit() {
     });
     
     // Show content
-    document.getElementById('adminLoading').classList.add('hidden');
-    document.getElementById('adminContent').classList.remove('hidden');
+    document.getElementById('adminLoading').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
     
   } catch (err) {
-    adminShowAuthError('Error: ' + (err.message || 'Gagal memuat dashboard'));
+    adminShowAuthError('Error: ' + (err.message || err.toString()));
   }
 }
 
 function adminShowAuthError(msg) {
-  document.getElementById('adminLoading').classList.add('hidden');
-  document.getElementById('adminAuthError').classList.remove('hidden');
+  document.getElementById('adminLoading').style.display = 'none';
+  document.getElementById('adminAuthError').style.display = 'flex';
   const el = document.querySelector('#adminAuthError p:nth-child(3)');
   if (el) el.textContent = msg;
 }
 
 async function adminLoadData() {
-  const supabase = await PadelGo.Supabase.init();
-  
-  const [bRes, cRes, uRes] = await Promise.all([
-    supabase.from('bookings').select('*').order('date', { ascending: false }),
-    supabase.from('courts').select('*').order('name'),
-    supabase.from('profiles').select('id, name, email, phone, role, avatar_url, created_at').order('created_at', { ascending: false })
-  ]);
-  
-  adminBookings = bRes.data || [];
-  adminCourts = cRes.data || [];
-  adminUsers = uRes.data || [];
-  adminProfileById = new Map(adminUsers.map(u => [u.id, u]));
-  
-  adminUpdatePendingBadge();
-  adminRenderAll();
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    
+    const [bRes, cRes, uRes] = await Promise.all([
+      supabase.from('bookings').select('*').order('date', { ascending: false }),
+      supabase.from('courts').select('*').order('name'),
+      supabase.from('profiles').select('id, name, email, phone, role, avatar_url, created_at').order('created_at', { ascending: false })
+    ]);
+    
+    if (bRes.error) console.error('Bookings error:', bRes.error);
+    if (cRes.error) console.error('Courts error:', cRes.error);
+    if (uRes.error) console.error('Profiles error:', uRes.error);
+    
+    adminBookings = bRes.data || [];
+    adminCourts = cRes.data || [];
+    adminUsers = uRes.data || [];
+    adminProfileById = new Map(adminUsers.map(u => [u.id, u]));
+    
+    adminUpdatePendingBadge();
+    adminRenderAll();
+  } catch (err) {
+    console.error('Load data error:', err);
+    adminToast('Error loading data: ' + err.message, 'error');
+  }
 }
 
 function adminUpdatePendingBadge() {
@@ -1440,4 +1463,7 @@ function adminToast(msg, type = 'success') {
   t.innerHTML = `<div class="rounded-xl px-4 py-3 text-sm font-bold text-white shadow-xl ${col}">${msg}</div>`;
   setTimeout(() => t.innerHTML = '', 3000);
 }
+
+// Start initialization
+initAdmin();
 </script>
