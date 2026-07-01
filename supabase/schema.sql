@@ -5,6 +5,7 @@
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   name text,
+  email text,
   phone text,
   avatar_url text,
   role text default 'user' not null check (role in ('user', 'admin')),
@@ -45,6 +46,7 @@ update public.bookings set status = 'confirmed' where status is null;
 
 alter table public.profiles alter column role set default 'user';
 alter table public.profiles alter column role set not null;
+alter table public.profiles add column if not exists email text;
 alter table public.profiles add column if not exists avatar_url text;
 alter table public.courts alter column available set default true;
 alter table public.courts alter column available set not null;
@@ -200,8 +202,8 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, name, role)
-  values (new.id, new.raw_user_meta_data->>'name', 'user')
+  insert into public.profiles (id, name, email, role)
+  values (new.id, new.raw_user_meta_data->>'name', new.email, 'user')
   on conflict (id) do nothing;
   return new;
 end;
@@ -219,6 +221,7 @@ alter table public.bookings enable row level security;
 
 -- Profiles policies
 drop policy if exists "Users view own profile" on public.profiles;
+drop policy if exists "Users insert own profile" on public.profiles;
 drop policy if exists "Users update own profile" on public.profiles;
 drop policy if exists "Admins view all profiles" on public.profiles;
 drop policy if exists "Admins update all profiles" on public.profiles;
@@ -227,6 +230,11 @@ create policy "Users view own profile"
   on public.profiles
   for select
   using (auth.uid() = id);
+
+create policy "Users insert own profile"
+  on public.profiles
+  for insert
+  with check (auth.uid() = id and coalesce(role, 'user') = 'user');
 
 create policy "Users update own profile"
   on public.profiles
@@ -306,6 +314,7 @@ where not exists (select 1 from storage.buckets where id = 'avatars');
 drop policy if exists "Users can upload their own avatar" on storage.objects;
 drop policy if exists "Users can view avatars" on storage.objects;
 drop policy if exists "Users can update their own avatar" on storage.objects;
+drop policy if exists "Users can delete their own avatar" on storage.objects;
 
 create policy "Users can upload their own avatar"
   on storage.objects
@@ -313,8 +322,10 @@ create policy "Users can upload their own avatar"
   to authenticated
   with check (
     bucket_id = 'avatars' and
-    (storage.foldername(name))[1] = 'avatars' and
-    (storage.foldername(name))[2] = auth.uid()::text
+    (
+      (storage.foldername(name))[1] = auth.uid()::text or
+      ((storage.foldername(name))[1] = 'avatars' and (storage.foldername(name))[2] = auth.uid()::text)
+    )
   );
 
 create policy "Users can view avatars"
@@ -328,11 +339,27 @@ create policy "Users can update their own avatar"
   to authenticated
   using (
     bucket_id = 'avatars' and
-    (storage.foldername(name))[1] = 'avatars' and
-    (storage.foldername(name))[2] = auth.uid()::text
+    (
+      (storage.foldername(name))[1] = auth.uid()::text or
+      ((storage.foldername(name))[1] = 'avatars' and (storage.foldername(name))[2] = auth.uid()::text)
+    )
+  );
+
+create policy "Users can delete their own avatar"
+  on storage.objects
+  for delete
+  to authenticated
+  using (
+    bucket_id = 'avatars' and
+    (
+      (storage.foldername(name))[1] = auth.uid()::text or
+      ((storage.foldername(name))[1] = 'avatars' and (storage.foldername(name))[2] = auth.uid()::text)
+    )
   );
 
 -- Allow public reads for avatars (since bucket is public)
+drop policy if exists "Anyone can view avatars" on storage.objects;
+
 create policy "Anyone can view avatars"
   on storage.objects
   for select
@@ -340,10 +367,10 @@ create policy "Anyone can view avatars"
 
 -- Seed courts. Admin account creation is intentionally not included here.
 insert into public.courts (id, name, type, price_per_hour, surface, available) values
-  ('A1', 'Pista Norte', 'Exterior', 150000, 'Artificial Grass', true),
-  ('A2', 'Pista Sur', 'Exterior', 100000, 'Artificial Grass', true),
-  ('B1', 'Pista Central', 'Interior Premium', 150000, 'Panoramic Glass', true),
-  ('B2', 'Pista Elite', 'Interior Elite', 100000, 'Panoramic Glass', true)
+  ('A1', 'Court A1', 'Premium indoor court', 150000, 'Artificial Grass', true),
+  ('A2', 'Court A2', 'Standard indoor court', 100000, 'Artificial Grass', true),
+  ('B1', 'Court B1', 'Premium glass court', 150000, 'Panoramic Glass', true),
+  ('B2', 'Court B2', 'Standard glass court', 100000, 'Panoramic Glass', true)
 on conflict (id) do update set
   name = excluded.name,
   type = excluded.type,

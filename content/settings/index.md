@@ -97,7 +97,7 @@ function hideMessages() {
 
 async function uploadAvatarToStorage(supabase, userId, file) {
   const ext = file.name.split('.').pop() || 'jpg';
-  const fileName = `avatars/avatar-${userId}-${Date.now()}.${ext}`;
+  const fileName = `avatars/${userId}/avatar-${Date.now()}.${ext}`;
 
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from('avatars')
@@ -197,7 +197,7 @@ async function handleSaveSettings(e) {
       if (reauthError) throw new Error('Password saat ini salah.');
     }
 
-    const updateData = { id: userId, name, updated_at: new Date().toISOString() };
+    const updateData = { id: userId, name, email: session.user.email, updated_at: new Date().toISOString() };
     if (avatarUrl) updateData.avatar_url = avatarUrl;
 
     const { error: profileError } = await supabase.from('profiles').upsert(updateData, { onConflict: 'id' });
@@ -210,14 +210,16 @@ async function handleSaveSettings(e) {
 
     const user = PadelGo.Auth.getUser();
     user.name = name;
+    user.email = session.user.email;
+    if (avatarUrl) user.avatar = avatarUrl;
     PadelGo.Auth.setUser(user);
     if (avatarUrl) {
       PadelGo.Storage.setAvatar(avatarUrl);
-      PadelGo.UI.updateNav(user);
     }
+    PadelGo.UI.updateNav(user);
 
     PadelGo.UI.toast('Perubahan berhasil disimpan!', 'success');
-    successEl.textContent = '✓ Perubahan berhasil disimpan.';
+    successEl.textContent = 'Perubahan berhasil disimpan.';
     successEl.classList.remove('hidden');
     setTimeout(() => successEl.classList.add('hidden'), 4000);
 
@@ -236,26 +238,30 @@ async function handleSaveSettings(e) {
 }
 
 async function loadProfile() {
-  const user = PadelGo.Auth.getUser();
-  if (!user) { window.location.href = '/login/?next=/settings/'; return; }
-  document.getElementById('name').value = user.name || '';
-  document.getElementById('email').value = user.email || '';
-  const storedAvatar = PadelGo.Storage.getAvatar();
-  document.getElementById('avatarPreview').src = storedAvatar || getAvatarDataUrl(user.name || user.email || 'U');
-
   try {
     const supabase = await PadelGo.Supabase.init();
-    if (supabase) {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', session.user.id).single();
-        if (profile?.avatar_url) {
-          PadelGo.Storage.setAvatar(profile.avatar_url);
-          document.getElementById('avatarPreview').src = profile.avatar_url;
-        }
-      }
+    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = '/login/?next=/settings/'; return; }
+    const fallbackName = session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User';
+    const { data: profile } = await supabase.from('profiles').select('name, email, avatar_url, role').eq('id', session.user.id).single();
+    const name = profile?.name || fallbackName;
+    const email = profile?.email || session.user.email || '';
+    const avatar = profile?.avatar_url || PadelGo.Storage.getAvatar() || getAvatarDataUrl(name || email || 'U');
+    document.getElementById('name').value = name;
+    document.getElementById('email').value = email;
+    document.getElementById('avatarPreview').src = avatar;
+    const user = { name, email, role: profile?.role || 'user', avatar };
+    PadelGo.Auth.setUser(user);
+    if (profile?.avatar_url) PadelGo.Storage.setAvatar(profile.avatar_url);
+    PadelGo.UI.updateNav(user);
+  } catch (err) {
+    const errorEl = document.getElementById('errorMessage');
+    if (errorEl) {
+      errorEl.textContent = err.message || 'Gagal memuat profil.';
+      errorEl.classList.remove('hidden');
     }
-  } catch {}
+  }
 }
 
 document.addEventListener('DOMContentLoaded', loadProfile);

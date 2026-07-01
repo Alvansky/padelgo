@@ -141,19 +141,20 @@ PadelGo.UI = {
     this.applyTheme();
   },
   async hydrateAuthNav() {
-    const client = await this.init();
+    const client = await PadelGo.Supabase.init();
     let user = PadelGo.Auth.getUser() || {};
     if (client) {
       const { data: { session } } = await client.auth.getSession();
       if (session) {
         PadelGo.Auth.setSession(session);
-        const { data: profile } = await client.from('profiles').select('name, role, avatar_url').eq('id', session.user.id).single();
+        const { data: profile } = await client.from('profiles').select('name, role, avatar_url, email').eq('id', session.user.id).single();
         const avatar = profile?.avatar_url || session.user.user_metadata?.avatar || '';
         if (avatar) PadelGo.Storage.setAvatar(avatar);
         user = {
-          email: session.user.email,
+          email: profile?.email || session.user.email,
           name: profile?.name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
           role: profile?.role || 'user',
+          avatar,
         };
         PadelGo.Auth.setUser(user);
       }

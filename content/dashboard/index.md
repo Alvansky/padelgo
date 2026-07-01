@@ -48,13 +48,13 @@ Settings
 </div>
 </div>
 
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
-<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 text-center">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+<a href="/order/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-teal-100 rounded-xl flex items-center justify-center mx-auto mb-2">
 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-teal-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
 </div>
 <p class="text-sm font-extrabold text-slate-950 dark:text-white">Booking Baru</p>
-</div>
+</a>
 <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 text-center">
 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2">
 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -67,6 +67,18 @@ Settings
 </div>
 <p id="totalSpent2" class="text-sm font-extrabold text-slate-950 dark:text-white">Rp 0</p>
 </div>
+<div class="hidden" aria-hidden="true">
+<span id="userBookingCount">0</span>
+<span id="totalSpent">Rp 0</span>
+<span id="memberSince">-</span>
+</div>
+<a href="/settings/" class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:border-slate-800 dark:bg-slate-900 text-center">
+<div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+<svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+</div>
+<p class="text-sm font-extrabold text-slate-950 dark:text-white">Pengaturan Akun</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Foto, nama, password</p>
+</a>
 </div>
 
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -107,8 +119,10 @@ async function loadDashboard() {
   const user = session.user;
   const displayName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
 
+  let userRole = 'user';
   try {
-    const { data: profile } = await supabase.from('profiles').select('name, avatar_url, created_at').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('name, avatar_url, created_at, role').eq('id', user.id).single();
+    userRole = profile?.role || 'user';
     const profileName = profile?.name || displayName;
     document.getElementById('userName').textContent = profileName;
     const avatar = profile?.avatar_url || user.user_metadata?.avatar || PadelGo.UI.avatar(profileName);
@@ -160,7 +174,7 @@ async function loadDashboard() {
         <td class="py-3 sm:py-4 px-3 sm:px-6"><span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${statusColors[b.status] || 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300'}">${escapeHtml(b.status)}</span></td>
         <td class="py-3 sm:py-4 px-3 sm:px-6 font-extrabold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">Rp ${(b.amount || 0).toLocaleString('id-ID')}</td>
         <td class="py-3 sm:py-4 px-3 sm:px-6 text-right">
-          <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-300 dark:hover:text-red-100 text-xs sm:text-sm font-bold" onclick="cancelBooking('${escapeHtml(b.id)}')">Batalkan</button>
+          ${userRole === 'admin' ? `<button type="button" class="text-red-600 hover:text-red-800 dark:text-red-300 dark:hover:text-red-100 text-xs sm:text-sm font-bold" onclick="cancelBooking('${escapeHtml(b.id)}')">Batalkan</button>` : `<span class="text-xs text-slate-400 dark:text-slate-500">-</span>`}
         </td>
       `;
       tbody.appendChild(tr);
@@ -173,7 +187,7 @@ async function loadDashboard() {
 }
 
 function escapeHtml(text) {
-  const map = {'&': '&', '<': '<', '>': '>', '"': '"', "'": '&#039;'};
+  const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
   return String(text || '').replace(/[&<>"']/g, m => map[m]);
 }
 
