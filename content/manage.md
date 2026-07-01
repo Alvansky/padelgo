@@ -2,7 +2,7 @@
 title: "Admin Dashboard"
 date: 2026-07-02
 draft: false
-layout: "admin"
+layout: "manage"
 ---
 
 <!-- Admin Dashboard - Clean & Simple -->
@@ -34,7 +34,7 @@ layout: "admin"
       <!-- Header -->
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <p class="text-xs font-bold uppercase tracking-wide text-teal-600 dark:text-teal-400">Admin Console</p>
+          <p class="text-xs font-bold uppercase tracking-wide text-orange-600 dark:text-orange-400">Admin Console</p>
           <h1 class="text-2xl font-extrabold text-slate-900 dark:text-white">PadelGo Dashboard</h1>
         </div>
         <div class="flex gap-2">
@@ -145,13 +145,13 @@ layout: "admin"
           <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 px-6 py-4 dark:border-slate-800">
             <h2 class="text-lg font-bold text-slate-900 dark:text-white">Semua Booking</h2>
             <div class="flex gap-2">
-              <select id="filter-status" onchange="adminFilterBookings()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
+              <select id="filter-status" onchange="adminFilterBookings()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-950">
                 <option value="all">Semua Status</option>
                 <option value="pending">Pending</option>
                 <option value="approved">Approved</option>
                 <option value="cancelled">Cancelled</option>
               </select>
-              <select id="filter-court" onchange="adminFilterBookings()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900">
+              <select id="filter-court" onchange="adminFilterBookings()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-950">
                 <option value="all">Semua Court</option>
               </select>
             </div>
@@ -372,7 +372,7 @@ function adminRenderRecentBookings() {
   recent.forEach(function(b) {
     var u = adminProfiles[b.user_id];
     var name = u ? (u.name || u.email) : 'User';
-    html += '<div class="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center text-sm font-bold text-teal-700">' + (name ? name[0].toUpperCase() : 'U') + '</div><div><p class="font-bold text-sm text-slate-900 dark:text-white">' + adminEsc(name) + '</p><p class="text-xs text-slate-500">' + adminEsc(b.court_name || b.court_id) + ' &bull; ' + b.date + '</p></div></div><div class="text-right"><span class="inline-block rounded-full px-2 py-0.5 text-xs font-bold ' + adminStatusClass(b.status) + '">' + adminStatusLabel(b.status) + '</span><p class="mt-1 text-sm font-bold text-teal-600">' + adminRupiah(b.amount) + '</p></div></div>';
+    html += '<div class="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800"><div class="flex items-center gap-3"><div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-sm font-bold text-orange-700">' + (name ? name[0].toUpperCase() : 'U') + '</div><div><p class="font-bold text-sm text-slate-900 dark:text-white">' + adminEsc(name) + '</p><p class="text-xs text-slate-500">' + adminEsc(b.court_name || b.court_id) + ' &bull; ' + b.date + '</p></div></div><div class="text-right"><span class="inline-block rounded-full px-2 py-0.5 text-xs font-bold ' + adminStatusClass(b.status) + '">' + adminStatusLabel(b.status) + '</span><p class="mt-1 text-sm font-bold text-teal-600">' + adminRupiah(b.amount) + '</p></div></div>';
   });
   document.getElementById('bookings-list').innerHTML = html;
 }
@@ -427,7 +427,7 @@ function adminRenderUsers() {
   }
   var html = '';
   adminData.users.forEach(function(u) {
-    html += '<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50"><td class="px-4 py-3 text-sm font-bold">' + adminEsc(u.name || u.email || 'User') + '</td><td class="px-4 py-3 text-sm text-slate-500">' + adminEsc(u.email || '-') + '</td><td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-bold ' + (u.role === 'admin' ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-700') + '">' + (u.role || 'user') + '</span></td><td class="px-4 py-3 text-right"><button onclick="adminOpenUserModal(\'' + u.id + '\')" class="rounded-lg border border-slate-200 px-3 py-1 text-xs font-bold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Edit</button></td></tr>';
+    html += '<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50"><td class="px-4 py-3 text-sm font-bold">' + adminEsc(u.name || u.email || 'User') + '</td><td class="px-4 py-3 text-sm text-slate-500">' + adminEsc(u.email || '-') + '</td><td class="px-4 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-bold ' + (u.role === 'admin' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-700') + '">' + (u.role || 'user') + '</span></td><td class="px-4 py-3 text-right"><button onclick="adminOpenUserModal(\'' + u.id + '\')" class="rounded-lg border border-slate-200 px-3 py-1 text-xs font-bold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">Edit</button></td></tr>';
   });
   document.getElementById('users-table').innerHTML = html;
 }
@@ -540,7 +540,7 @@ function adminStatusLabel(s) { return s === 'approved' ? 'Approved' : s === 'pen
 function adminToast(msg, type) {
   var t = document.getElementById('admin-toast');
   if (!t) { t = document.createElement('div'); t.id = 'admin-toast'; t.className = 'fixed top-20 right-4 z-50'; document.body.appendChild(t); }
-  t.innerHTML = '<div class="rounded-xl px-4 py-3 text-sm font-bold text-white shadow-xl ' + (type === 'error' ? 'bg-red-500' : 'bg-emerald-500') + '">' + msg + '</div>';
+  t.innerHTML = '<div class="rounded-xl px-4 py-3 text-sm font-bold text-white shadow-xl ' + (type === 'error' ? 'bg-red-500' : 'bg-orange-500') + '">' + msg + '</div>';
   setTimeout(function() { t.innerHTML = ''; }, 3000);
 }
 
