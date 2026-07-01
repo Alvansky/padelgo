@@ -27,7 +27,7 @@ draft: false
 </div>
 <div class="mt-12 grid max-w-2xl grid-cols-3 gap-3">
 <div class="rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur-sm dark:border-white/15 dark:bg-white/10">
-<p class="text-3xl font-extrabold text-gray-900 dark:text-white">4</p>
+<p id="homeCourtCount" class="text-3xl font-extrabold text-gray-900 dark:text-white">4</p>
 <p class="mt-1 text-sm text-gray-600 dark:text-slate-200">Active courts</p>
 </div>
 <div class="rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur-sm dark:border-white/15 dark:bg-white/10">
@@ -49,11 +49,8 @@ draft: false
 </div>
 <div class="rounded-xl bg-emerald-100 px-3 py-2 text-sm font-extrabold text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-100">Live-ready</div>
 </div>
-<div class="mt-6 space-y-3">
-<div class="flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-white/10"><span class="font-bold text-gray-900 dark:text-white">Court A1</span><span class="text-sm text-emerald-600 dark:text-emerald-200">Premium</span></div>
-<div class="flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-white/10"><span class="font-bold text-gray-900 dark:text-white">Court A2</span><span class="text-sm text-sky-600 dark:text-sky-200">Standard</span></div>
-<div class="flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-white/10"><span class="font-bold text-gray-900 dark:text-white">Court B1</span><span class="text-sm text-emerald-600 dark:text-emerald-200">Premium</span></div>
-<div class="flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-white/10"><span class="font-bold text-gray-900 dark:text-white">Court B2</span><span class="text-sm text-sky-600 dark:text-sky-200">Standard</span></div>
+<div id="homeAvailabilityList" class="mt-6 space-y-3">
+<div class="rounded-xl bg-gray-50 p-4 text-sm font-bold text-gray-500 dark:bg-white/10 dark:text-slate-300">Memuat lapangan...</div>
 </div>
 </div>
 </div>
@@ -75,23 +72,8 @@ draft: false
 </div>
 <a href="/order/" class="inline-flex items-center justify-center rounded-xl bg-teal-700 px-5 py-3 font-extrabold text-white transition hover:bg-teal-800">Book Court</a>
 </div>
-<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-<article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
-<img src="/images/padel1.jpg" alt="Court A1" class="h-44 w-full object-cover">
-<div class="p-5"><h3 class="text-lg font-extrabold text-gray-900 dark:text-white">Court A1</h3><p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Premium indoor court</p><p class="mt-4 text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rp 150.000 <span class="text-sm font-semibold text-gray-500 dark:text-slate-400">/jam</span></p></div>
-</article>
-<article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
-<img src="/images/padel2.jpg" alt="Court A2" class="h-44 w-full object-cover">
-<div class="p-5"><h3 class="text-lg font-extrabold text-gray-900 dark:text-white">Court A2</h3><p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Standard indoor court</p><p class="mt-4 text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rp 100.000 <span class="text-sm font-semibold text-gray-500 dark:text-slate-400">/jam</span></p></div>
-</article>
-<article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
-<img src="/images/padel3.jpg" alt="Court B1" class="h-44 w-full object-cover">
-<div class="p-5"><h3 class="text-lg font-extrabold text-gray-900 dark:text-white">Court B1</h3><p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Premium glass court</p><p class="mt-4 text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rp 150.000 <span class="text-sm font-semibold text-gray-500 dark:text-slate-400">/jam</span></p></div>
-</article>
-<article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
-<img src="/images/padel4.jpg" alt="Court B2" class="h-44 w-full object-cover">
-<div class="p-5"><h3 class="text-lg font-extrabold text-gray-900 dark:text-white">Court B2</h3><p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Standard glass court</p><p class="mt-4 text-2xl font-extrabold text-blue-600 dark:text-blue-400">Rp 100.000 <span class="text-sm font-semibold text-gray-500 dark:text-slate-400">/jam</span></p></div>
-</article>
+<div id="homeCourtsGrid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+<div class="rounded-2xl border border-gray-200 bg-white p-5 text-sm font-bold text-gray-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">Memuat lapangan...</div>
 </div>
 </div>
 </section>
@@ -167,4 +149,47 @@ draft: false
     dot.addEventListener('click', () => show(i));
   });
 })();
+
+(async function loadHomeCourts() {
+  const fallback = [
+    { name: 'Court A1', type: 'Premium indoor court', price_per_hour: 150000, image_url: '/images/padel1.jpg' },
+    { name: 'Court A2', type: 'Standard indoor court', price_per_hour: 100000, image_url: '/images/padel2.jpg' },
+    { name: 'Court B1', type: 'Premium glass court', price_per_hour: 150000, image_url: '/images/padel3.jpg' },
+    { name: 'Court B2', type: 'Standard glass court', price_per_hour: 100000, image_url: '/images/padel4.jpg' },
+  ];
+  let courts = fallback;
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    if (supabase) {
+      const { data, error } = await supabase.from('courts').select('*').eq('available', true).order('name', { ascending: true });
+      if (!error && data?.length) courts = data;
+    }
+  } catch {}
+  document.getElementById('homeCourtCount').textContent = courts.length;
+  document.getElementById('homeAvailabilityList').innerHTML = courts.slice(0, 5).map(court => `
+    <div class="flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-white/10">
+      <span class="font-bold text-gray-900 dark:text-white">${escapeHtml(court.name || court.id)}</span>
+      <span class="text-sm text-emerald-600 dark:text-emerald-200">${escapeHtml(court.type || court.surface || 'Available')}</span>
+    </div>
+  `).join('');
+  document.getElementById('homeCourtsGrid').innerHTML = courts.map(court => `
+    <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+      <img src="${escapeAttr(court.image_url || '/images/padel1.jpg')}" alt="${escapeAttr(court.name || court.id)}" class="h-44 w-full object-cover">
+      <div class="p-5">
+        <h3 class="text-lg font-extrabold text-gray-900 dark:text-white">${escapeHtml(court.name || court.id)}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">${escapeHtml(court.type || court.surface || 'Padel court')}</p>
+        <p class="mt-4 text-2xl font-extrabold text-blue-600 dark:text-blue-400">${PadelGo.Format.rupiah(court.price_per_hour)} <span class="text-sm font-semibold text-gray-500 dark:text-slate-400">/jam</span></p>
+      </div>
+    </article>
+  `).join('');
+})();
+
+function escapeHtml(text) {
+  const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+  return String(text || '').replace(/[&<>"']/g, m => map[m]);
+}
+
+function escapeAttr(text) {
+  return escapeHtml(text).replace(/`/g, '&#096;');
+}
 </script>

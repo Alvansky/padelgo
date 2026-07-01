@@ -46,10 +46,7 @@ Login diperlukan agar tanggal dan durasi status dapat disesuaikan.
 <div>
 <label class="mb-2 block text-sm font-extrabold text-slate-700 dark:text-slate-200">Lapangan</label>
 <div class="grid grid-cols-2 gap-3" id="courtGrid">
-<button type="button" data-court="A1" class="court-btn rounded-xl border border-slate-200 p-4 text-left transition hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:hover:bg-emerald-500/10"><span class="block text-lg font-extrabold text-slate-950 dark:text-white">A1</span><span class="text-sm text-slate-500 dark:text-slate-400">Premium</span></button>
-<button type="button" data-court="A2" class="court-btn rounded-xl border border-slate-200 p-4 text-left transition hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:hover:bg-emerald-500/10"><span class="block text-lg font-extrabold text-slate-950 dark:text-white">A2</span><span class="text-sm text-slate-500 dark:text-slate-400">Standard</span></button>
-<button type="button" data-court="B1" class="court-btn rounded-xl border border-slate-200 p-4 text-left transition hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:hover:bg-emerald-500/10"><span class="block text-lg font-extrabold text-slate-950 dark:text-white">B1</span><span class="text-sm text-slate-500 dark:text-slate-400">Premium</span></button>
-<button type="button" data-court="B2" class="court-btn rounded-xl border border-slate-200 p-4 text-left transition hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:hover:bg-emerald-500/10"><span class="block text-lg font-extrabold text-slate-950 dark:text-white">B2</span><span class="text-sm text-slate-500 dark:text-slate-400">Standard</span></button>
+<div class="col-span-2 rounded-xl border border-slate-200 p-4 text-sm font-bold text-slate-500 dark:border-slate-700 dark:text-slate-400">Memuat lapangan...</div>
 </div>
 <input type="hidden" id="court" required>
 </div>
@@ -77,13 +74,10 @@ Login diperlukan agar tanggal dan durasi status dapat disesuaikan.
 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
 <div class="mb-5 flex items-center justify-between gap-4">
 <div><h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Court Map</h2><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Klik court untuk memilih lapangan.</p></div>
-<div class="rounded-xl bg-slate-100 px-3 py-2 text-xs font-extrabold text-slate-600 dark:bg-slate-800 dark:text-slate-300">4 courts</div>
+<div id="courtCount" class="rounded-xl bg-slate-100 px-3 py-2 text-xs font-extrabold text-slate-600 dark:bg-slate-800 dark:text-slate-300">0 courts</div>
 </div>
 <div class="grid gap-4 sm:grid-cols-2" id="courtMap">
-<button type="button" data-court="A1" class="court-map-card relative h-40 overflow-hidden rounded-2xl border border-slate-200 text-white shadow-sm transition hover:-translate-y-1 dark:border-slate-800"><img src="/images/padel1.jpg" alt="Court A1" class="absolute inset-0 h-full w-full object-cover opacity-80"><span class="absolute inset-0 bg-slate-950/35"></span><span class="relative flex h-full flex-col items-center justify-center"><span class="text-2xl font-extrabold drop-shadow">A1</span><span class="text-sm font-bold opacity-90">Premium</span></span></button>
-<button type="button" data-court="B1" class="court-map-card relative h-40 overflow-hidden rounded-2xl border border-slate-200 text-white shadow-sm transition hover:-translate-y-1 dark:border-slate-800"><img src="/images/padel3.jpg" alt="Court B1" class="absolute inset-0 h-full w-full object-cover opacity-80"><span class="absolute inset-0 bg-slate-950/35"></span><span class="relative flex h-full flex-col items-center justify-center"><span class="text-2xl font-extrabold drop-shadow">B1</span><span class="text-sm font-bold opacity-90">Premium</span></span></button>
-<button type="button" data-court="A2" class="court-map-card relative h-40 overflow-hidden rounded-2xl border border-slate-200 text-white shadow-sm transition hover:-translate-y-1 dark:border-slate-800"><img src="/images/padel2.jpg" alt="Court A2" class="absolute inset-0 h-full w-full object-cover opacity-80"><span class="absolute inset-0 bg-slate-950/35"></span><span class="relative flex h-full flex-col items-center justify-center"><span class="text-2xl font-extrabold drop-shadow">A2</span><span class="text-sm font-bold opacity-90">Standard</span></span></button>
-<button type="button" data-court="B2" class="court-map-card relative h-40 overflow-hidden rounded-2xl border border-slate-200 text-white shadow-sm transition hover:-translate-y-1 dark:border-slate-800"><img src="/images/padel4.jpg" alt="Court B2" class="absolute inset-0 h-full w-full object-cover opacity-80"><span class="absolute inset-0 bg-slate-950/35"></span><span class="relative flex h-full flex-col items-center justify-center"><span class="text-2xl font-extrabold drop-shadow">B2</span><span class="text-sm font-bold opacity-90">Standard</span></span></button>
+<div class="rounded-xl border border-slate-200 p-4 text-sm font-bold text-slate-500 dark:border-slate-700 dark:text-slate-400">Memuat court map...</div>
 </div>
 </div>
 
@@ -92,7 +86,7 @@ Login diperlukan agar tanggal dan durasi status dapat disesuaikan.
 <div class="mt-4 grid gap-3 sm:grid-cols-3">
 <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Login required</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Booking butuh sesi Supabase aktif.</p></div>
 <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Anti double-book</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Slot bentrok dicek sebelum insert.</p></div>
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Confirmed</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Status awal mengikuti schema: confirmed.</p></div>
+<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950"><p class="font-extrabold text-slate-950 dark:text-white">Pending</p><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Admin akan approve booking sebelum status final.</p></div>
 </div>
 </div>
 </div>
@@ -108,6 +102,7 @@ let selectedDuration = 1;
 let selectedCourt = null;
 let selectedTime = null;
 let isLoadingAvailability = false;
+let courts = [];
 
 function setActiveButton(buttons, activeButton, activeClasses) {
 buttons.forEach(button => {
@@ -138,6 +133,59 @@ card.classList.toggle('ring-emerald-400', card.dataset.court === court);
 loadAvailability();
 renderTimeSlots();
 updateSummary();
+}
+
+async function loadCourts() {
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    if (!supabase) throw new Error('Supabase belum dikonfigurasi');
+    const { data, error } = await supabase.from('courts').select('*').eq('available', true).order('name', { ascending: true });
+    if (error) throw new Error(error.message || 'Gagal memuat lapangan.');
+    courts = data || [];
+  } catch {
+    courts = [
+      { id: 'A1', name: 'Court A1', type: 'Premium indoor court', price_per_hour: 150000, image_url: '/images/padel1.jpg' },
+      { id: 'A2', name: 'Court A2', type: 'Standard indoor court', price_per_hour: 100000, image_url: '/images/padel2.jpg' },
+      { id: 'B1', name: 'Court B1', type: 'Premium glass court', price_per_hour: 150000, image_url: '/images/padel3.jpg' },
+      { id: 'B2', name: 'Court B2', type: 'Standard glass court', price_per_hour: 100000, image_url: '/images/padel4.jpg' },
+    ];
+  }
+  renderCourts();
+}
+
+function renderCourts() {
+  const grid = document.getElementById('courtGrid');
+  const map = document.getElementById('courtMap');
+  const count = document.getElementById('courtCount');
+  count.textContent = courts.length + (courts.length === 1 ? ' court' : ' courts');
+  if (!courts.length) {
+    grid.innerHTML = '<div class="col-span-2 rounded-xl border border-slate-200 p-4 text-sm font-bold text-slate-500 dark:border-slate-700 dark:text-slate-400">Belum ada lapangan tersedia.</div>';
+    map.innerHTML = '<div class="rounded-xl border border-slate-200 p-4 text-sm font-bold text-slate-500 dark:border-slate-700 dark:text-slate-400">Belum ada court map.</div>';
+    return;
+  }
+  grid.innerHTML = courts.map(court => `
+    <button type="button" data-court="${escapeAttr(court.id)}" class="court-btn rounded-xl border border-slate-200 p-4 text-left transition hover:border-emerald-500 hover:bg-emerald-50 dark:border-slate-700 dark:hover:bg-emerald-500/10">
+      <span class="block text-lg font-extrabold text-slate-950 dark:text-white">${escapeHtml(court.name || court.id)}</span>
+      <span class="text-sm text-slate-500 dark:text-slate-400">${escapeHtml(court.type || court.surface || 'Padel court')}</span>
+      <span class="mt-2 block text-xs font-extrabold text-teal-700 dark:text-teal-300">${PadelGo.Format.rupiah(court.price_per_hour)} / jam</span>
+    </button>
+  `).join('');
+  map.innerHTML = courts.map(court => `
+    <button type="button" data-court="${escapeAttr(court.id)}" class="court-map-card relative h-40 overflow-hidden rounded-2xl border border-slate-200 text-white shadow-sm transition hover:-translate-y-1 dark:border-slate-800">
+      <img src="${escapeAttr(court.image_url || '/images/padel1.jpg')}" alt="${escapeAttr(court.name || court.id)}" class="absolute inset-0 h-full w-full object-cover opacity-80">
+      <span class="absolute inset-0 bg-slate-950/35"></span>
+      <span class="relative flex h-full flex-col items-center justify-center px-3 text-center">
+        <span class="text-2xl font-extrabold drop-shadow">${escapeHtml(court.name || court.id)}</span>
+        <span class="text-sm font-bold opacity-90">${escapeHtml(court.type || 'Padel court')}</span>
+      </span>
+    </button>
+  `).join('');
+  document.querySelectorAll('.court-btn').forEach(button => {
+    button.addEventListener('click', () => selectCourt(button.dataset.court, button));
+  });
+  document.querySelectorAll('.court-map-card').forEach(button => {
+    button.addEventListener('click', () => selectCourt(button.dataset.court, button));
+  });
 }
 
 async function loadAvailability() {
@@ -296,7 +344,7 @@ async function handleBooking(e) {
     const endHour = startHour + selectedDuration;
     const endTime = String(endHour).padStart(2, '0') + ':00';
 
-    const { data: court } = await supabase.from('courts').select('price_per_hour').eq('id', selectedCourt).single();
+    const { data: court } = await supabase.from('courts').select('name, price_per_hour').eq('id', selectedCourt).single();
     const pricePerHour = court?.price_per_hour || 150000;
     const amount = pricePerHour * selectedDuration;
     const bookingId = `BK-${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -305,13 +353,13 @@ async function handleBooking(e) {
       id: bookingId,
       user_id: session.user.id,
       court_id: selectedCourt,
-      court_name: `Court ${selectedCourt}`,
+      court_name: court?.name || selectedCourt,
       date: dateVal,
       start_time: selectedTime,
       end_time: endTime,
       duration_hours: selectedDuration,
       amount: amount,
-      status: 'confirmed',
+      status: 'pending',
     });
 
     if (insertError) throw new Error(insertError.message || 'Booking gagal');
@@ -319,7 +367,7 @@ async function handleBooking(e) {
     resetFormState();
     successEl.textContent = successMessage;
     successEl.classList.remove('hidden');
-    PadelGo.UI.toast('Booking berhasil dikonfirmasi.');
+    PadelGo.UI.toast('Booking masuk pending. Admin akan approve.');
     loadAvailability();
   } catch (err) {
     errorEl.textContent = err.message || 'Booking gagal. Cek koneksi backend atau slot mungkin sudah dipesan.';
@@ -333,14 +381,18 @@ async function handleBooking(e) {
 document.querySelectorAll('.duration-btn').forEach(button => {
 button.addEventListener('click', () => selectDuration(Number(button.dataset.hours), button));
 });
-document.querySelectorAll('.court-btn').forEach(button => {
-button.addEventListener('click', () => selectCourt(button.dataset.court, button));
-});
-document.querySelectorAll('.court-map-card').forEach(button => {
-button.addEventListener('click', () => selectCourt(button.dataset.court, button));
-});
 document.getElementById('date').addEventListener('change', loadAvailability);
 document.getElementById('date').setAttribute('min', getTodayLocalDate());
 selectDuration(1, document.querySelector('.duration-btn[data-hours="1"]'));
 renderTimeSlots();
+loadCourts();
+
+function escapeHtml(text) {
+  const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+  return String(text || '').replace(/[&<>"']/g, m => map[m]);
+}
+
+function escapeAttr(text) {
+  return escapeHtml(text).replace(/`/g, '&#096;');
+}
 </script>

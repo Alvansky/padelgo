@@ -173,7 +173,7 @@ async function loadDashboard() {
       tbody.innerHTML = '<tr><td colspan="6" class="py-8 sm:py-12 text-center text-slate-500 dark:text-slate-400 text-sm">Belum ada booking. <a href="/order/" class="text-teal-700 font-extrabold hover:underline">Buat booking sekarang</a></td></tr>';
       return;
     }
-    const statusColors = {'confirmed': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200', 'pending': 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200', 'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'};
+    const statusColors = {'approved': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200', 'confirmed': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200', 'pending': 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200', 'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200'};
     list.forEach(b => {
       const tr = document.createElement('tr');
       tr.className = 'group hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
@@ -181,10 +181,10 @@ async function loadDashboard() {
         <td class="py-3 sm:py-4 px-3 sm:px-6"><span class="font-extrabold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">${escapeHtml(b.court_name || b.court_id)}</span></td>
         <td class="py-3 sm:py-4 px-3 sm:px-6 text-slate-700 font-medium dark:text-slate-300 text-xs sm:text-sm">${escapeHtml(b.date)}</td>
         <td class="py-3 sm:py-4 px-3 sm:px-6 text-slate-700 font-medium dark:text-slate-300 text-xs sm:text-sm">${escapeHtml(b.start_time || '')} - ${escapeHtml(b.end_time || '')}</td>
-        <td class="py-3 sm:py-4 px-3 sm:px-6"><span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${statusColors[b.status] || 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300'}">${escapeHtml(b.status)}</span></td>
+        <td class="py-3 sm:py-4 px-3 sm:px-6"><span class="inline-flex items-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold ${statusColors[b.status] || 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-300'}">${escapeHtml(statusLabel(b.status))}</span></td>
         <td class="py-3 sm:py-4 px-3 sm:px-6 font-extrabold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">Rp ${(b.amount || 0).toLocaleString('id-ID')}</td>
         <td class="py-3 sm:py-4 px-3 sm:px-6 text-right">
-          ${userRole === 'admin' ? `<button type="button" class="text-red-600 hover:text-red-800 dark:text-red-300 dark:hover:text-red-100 text-xs sm:text-sm font-bold" onclick="cancelBooking('${escapeHtml(b.id)}')">Batalkan</button>` : `<span class="text-xs text-slate-400 dark:text-slate-500">-</span>`}
+          ${b.status === 'approved' || b.status === 'confirmed' ? `<span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-200">approved</span>` : userRole === 'admin' ? `<button type="button" class="text-red-600 hover:text-red-800 dark:text-red-300 dark:hover:text-red-100 text-xs sm:text-sm font-bold" onclick="cancelBooking('${escapeHtml(b.id)}')">Batalkan</button>` : `<span class="text-xs text-slate-400 dark:text-slate-500">-</span>`}
         </td>
       `;
       tbody.appendChild(tr);
@@ -194,6 +194,12 @@ async function loadDashboard() {
     document.getElementById('dashError').textContent = err.message || 'Gagal memuat data.';
     document.getElementById('dashError').classList.remove('hidden');
   }
+}
+
+function statusLabel(status) {
+  if (status === 'approved' || status === 'confirmed') return 'approved';
+  if (status === 'pending') return 'pending';
+  return 'cancelled';
 }
 
 function escapeHtml(text) {

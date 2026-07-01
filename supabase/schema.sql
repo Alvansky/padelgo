@@ -20,6 +20,7 @@ create table if not exists public.courts (
   type text not null,
   price_per_hour integer not null check (price_per_hour > 0),
   surface text,
+  image_url text,
   available boolean default true not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -35,7 +36,7 @@ create table if not exists public.bookings (
   end_time text not null,
   duration_hours integer not null check (duration_hours between 1 and 4),
   amount integer not null check (amount > 0),
-  status text default 'confirmed' not null check (status in ('confirmed', 'pending', 'cancelled')),
+  status text default 'pending' not null check (status in ('pending', 'approved', 'confirmed', 'cancelled')),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -43,7 +44,8 @@ create table if not exists public.bookings (
 update public.profiles set role = 'user' where role is null;
 update public.profiles set avatar_url = null where avatar_url = '';
 update public.courts set available = true where available is null;
-update public.bookings set status = 'confirmed' where status is null;
+update public.bookings set status = 'pending' where status is null;
+update public.bookings set status = 'approved' where status = 'confirmed';
 update public.profiles p
 set email = u.email
 from auth.users u
@@ -55,10 +57,20 @@ alter table public.profiles alter column role set not null;
 alter table public.profiles add column if not exists email text;
 alter table public.profiles add column if not exists avatar_url text;
 alter table public.profiles alter column avatar_url drop default;
+alter table public.courts add column if not exists image_url text;
 alter table public.courts alter column available set default true;
 alter table public.courts alter column available set not null;
-alter table public.bookings alter column status set default 'confirmed';
+alter table public.bookings alter column status set default 'pending';
 alter table public.bookings alter column status set not null;
+
+do $$
+begin
+  alter table public.bookings drop constraint if exists bookings_status_check;
+  alter table public.bookings
+    add constraint bookings_status_check
+    check (status in ('pending', 'approved', 'confirmed', 'cancelled'));
+end;
+$$;
 
 -- Indexes
 create index if not exists idx_bookings_user_id on public.bookings(user_id);
@@ -110,7 +122,30 @@ declare
   end_hour integer;
 begin
   if new.status is null then
-    new.status := 'confirmed';
+    new.status := 'pending';
+  end if;
+
+  if tg_op = 'INSERT' and not public.is_admin() then
+    new.status := 'pending';
+  end if;
+
+  if tg_op = 'UPDATE' and not public.is_admin() then
+    if old.user_id = auth.uid()
+      and new.user_id = old.user_id
+      and new.court_id = old.court_id
+      and new.court_name = old.court_name
+      and new.date = old.date
+      and new.start_time = old.start_time
+      and new.end_time = old.end_time
+      and new.duration_hours = old.duration_hours
+      and new.amount = old.amount
+      and old.status <> 'cancelled'
+      and new.status = 'cancelled'
+    then
+      return new;
+    end if;
+
+    raise exception 'User hanya dapat membatalkan booking miliknya sendiri.';
   end if;
 
   if new.date !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' then
@@ -260,6 +295,20 @@ create trigger on_auth_user_updated
   after update of email, raw_user_meta_data on auth.users
   for each row execute procedure public.handle_updated_user();
 
+-- Admin bootstrap.
+-- Create this login in Supabase Auth first:
+--   email: admin@padelgo.com
+--   password: Hanyaadmin!
+-- Re-running this schema promotes that Auth user to admin without exposing a password in public tables.
+insert into public.profiles (id, name, email, role)
+select id, coalesce(raw_user_meta_data->>'name', 'PadelGo Admin'), email, 'admin'
+from auth.users
+where email = 'admin@padelgo.com'
+on conflict (id) do update set
+  name = coalesce(public.profiles.name, excluded.name),
+  email = excluded.email,
+  role = 'admin';
+
 -- RLS
 alter table public.profiles enable row level security;
 alter table public.courts enable row level security;
@@ -334,7 +383,8 @@ create policy "Users create bookings"
 create policy "Users update own bookings"
   on public.bookings
   for update
-  using (auth.uid() = user_id);
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id and status = 'cancelled');
 
 create policy "Admins view all bookings"
   on public.bookings
@@ -355,6 +405,10 @@ grant execute on function public.is_admin() to authenticated;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 select 'avatars', 'avatars', true, 2097152, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 where not exists (select 1 from storage.buckets where id = 'avatars');
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+select 'court-images', 'court-images', true, 5242880, array['image/jpeg', 'image/png', 'image/webp']
+where not exists (select 1 from storage.buckets where id = 'court-images');
 
 -- Allow authenticated users to upload their own avatars
 drop policy if exists "Users can upload their own avatar" on storage.objects;
@@ -411,15 +465,44 @@ create policy "Anyone can view avatars"
   for select
   using (bucket_id = 'avatars');
 
--- Seed courts. Admin account creation is intentionally not included here.
-insert into public.courts (id, name, type, price_per_hour, surface, available) values
-  ('A1', 'Court A1', 'Premium indoor court', 150000, 'Artificial Grass', true),
-  ('A2', 'Court A2', 'Standard indoor court', 100000, 'Artificial Grass', true),
-  ('B1', 'Court B1', 'Premium glass court', 150000, 'Panoramic Glass', true),
-  ('B2', 'Court B2', 'Standard glass court', 100000, 'Panoramic Glass', true)
+drop policy if exists "Anyone can view court images" on storage.objects;
+drop policy if exists "Admins can upload court images" on storage.objects;
+drop policy if exists "Admins can update court images" on storage.objects;
+drop policy if exists "Admins can delete court images" on storage.objects;
+
+create policy "Anyone can view court images"
+  on storage.objects
+  for select
+  using (bucket_id = 'court-images');
+
+create policy "Admins can upload court images"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (bucket_id = 'court-images' and public.is_admin());
+
+create policy "Admins can update court images"
+  on storage.objects
+  for update
+  to authenticated
+  using (bucket_id = 'court-images' and public.is_admin());
+
+create policy "Admins can delete court images"
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'court-images' and public.is_admin());
+
+-- Seed courts.
+insert into public.courts (id, name, type, price_per_hour, surface, image_url, available) values
+  ('A1', 'Court A1', 'Premium indoor court', 150000, 'Artificial Grass', '/images/padel1.jpg', true),
+  ('A2', 'Court A2', 'Standard indoor court', 100000, 'Artificial Grass', '/images/padel2.jpg', true),
+  ('B1', 'Court B1', 'Premium glass court', 150000, 'Panoramic Glass', '/images/padel3.jpg', true),
+  ('B2', 'Court B2', 'Standard glass court', 100000, 'Panoramic Glass', '/images/padel4.jpg', true)
 on conflict (id) do update set
   name = excluded.name,
   type = excluded.type,
   price_per_hour = excluded.price_per_hour,
   surface = excluded.surface,
+  image_url = coalesce(public.courts.image_url, excluded.image_url),
   available = excluded.available;

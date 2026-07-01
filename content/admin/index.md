@@ -5,178 +5,98 @@ draft: false
 layout: "admin"
 ---
 
-<div class="flex min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950">
-<aside class="hidden w-72 shrink-0 border-r border-slate-800 bg-slate-950 p-6 text-slate-300 md:block">
-<div class="mb-8">
-<h2 class="text-white font-extrabold text-lg">Admin Console</h2>
-<p class="text-slate-500 text-xs mt-1">Supabase booking management</p>
-</div>
-<nav class="space-y-1">
-<a href="#dashboard" class="admin-nav flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800 text-white font-semibold" data-tab="dashboard">
-<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-Dashboard
-</a>
-<a href="#bookings" class="admin-nav flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition" data-tab="bookings">
-<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-Bookings
-</a>
-<a href="#courts" class="admin-nav flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition" data-tab="courts">
-<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-Courts
-</a>
-<a href="#users" class="admin-nav flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 transition" data-tab="users">
-<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10-4.13a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-Users
-</a>
-</nav>
-</aside>
-
-<main class="flex-1 overflow-auto p-4 sm:p-8">
-<div class="mb-5 flex gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:hidden">
-<button type="button" class="admin-nav-mobile whitespace-nowrap rounded-xl bg-slate-900 px-4 py-2 text-sm font-extrabold text-white dark:bg-white dark:text-slate-950" data-tab="dashboard">Dashboard</button>
-<button type="button" class="admin-nav-mobile whitespace-nowrap rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="bookings">Bookings</button>
-<button type="button" class="admin-nav-mobile whitespace-nowrap rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="courts">Courts</button>
-<button type="button" class="admin-nav-mobile whitespace-nowrap rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="users">Users</button>
-</div>
-<div id="dashboard" class="admin-section">
-<div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+<div class="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950">
+<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+<div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 <div>
-<p class="text-sm font-extrabold uppercase tracking-wide text-teal-700 dark:text-teal-300">Admin</p>
-<h1 class="mt-1 text-3xl font-extrabold text-slate-950 dark:text-white">Operations Dashboard</h1>
-<p class="mt-2 text-slate-600 dark:text-slate-400">Kelola booking, court, dan status operasional langsung dari Supabase.</p>
+<p class="text-sm font-extrabold uppercase tracking-wide text-teal-700 dark:text-teal-300">Admin Console</p>
+<h1 class="mt-1 text-3xl font-extrabold text-slate-950 dark:text-white">PadelGo Operations</h1>
+<p class="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">Kelola booking, approval, court, gambar lapangan, user, dan pendapatan dari satu dashboard.</p>
 </div>
-<button onclick="loadAdminData()" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">Refresh</button>
-</div>
-<div class="grid gap-6 mb-8 sm:grid-cols-2 lg:grid-cols-4">
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-sm text-slate-500 dark:text-slate-400">Total Bookings</p>
-<p class="mt-1 text-3xl font-extrabold text-slate-950 dark:text-white" id="statTotal">-</p>
-<p class="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-300">Live from Supabase</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-sm text-slate-500 dark:text-slate-400">Active Courts</p>
-<p class="mt-1 text-3xl font-extrabold text-slate-950 dark:text-white" id="statCourts">4</p>
-<p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Mengikuti tabel courts</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-sm text-slate-500 dark:text-slate-400">Revenue (est.)</p>
-<p class="mt-1 text-3xl font-extrabold text-slate-950 dark:text-white" id="statRevenue">-</p>
-<p class="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-300">Confirmed + pending</p>
-</div>
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<p class="text-sm text-slate-500 dark:text-slate-400">Users</p>
-<p class="mt-1 text-3xl font-extrabold text-slate-950 dark:text-white" id="statUsers">-</p>
-<p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Profiles table</p>
-</div>
-</div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="border-b border-slate-200 px-6 py-5 dark:border-slate-800">
-<h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Recent Bookings</h2>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full">
-<thead>
-<tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
-<th class="text-left py-3.5 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
-<th class="text-left py-3.5 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Court</th>
-<th class="text-left py-3.5 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-<th class="text-left py-3.5 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Time</th>
-<th class="text-left py-3.5 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-<th class="text-left py-3.5 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
-</tr>
-</thead>
-<tbody id="dashTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
+<div class="flex flex-wrap gap-2">
+<button type="button" onclick="loadAdminData()" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 shadow-sm hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">Refresh</button>
+<a href="/order/" class="rounded-xl bg-teal-700 px-4 py-2 text-sm font-extrabold text-white shadow-sm hover:bg-teal-800">Lihat Booking Page</a>
 </div>
 </div>
 
-<div id="bookings" class="admin-section hidden">
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-<h1 class="text-3xl font-extrabold text-slate-950 dark:text-white">Booking Management</h1>
-<div class="flex flex-wrap gap-3">
-<select id="statusFilter" class="px-4 py-2 bg-white dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-<option value="all">All Status</option>
-<option value="confirmed">Confirmed</option>
-<option value="pending">Pending</option>
-<option value="cancelled">Cancelled</option>
-</select>
-<select id="courtFilter" class="px-4 py-2 bg-white dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-<option value="all">All Courts</option>
-<option value="A1">A1</option>
-<option value="A2">A2</option>
-<option value="B1">B1</option>
-<option value="B2">B2</option>
-</select>
-</div>
-</div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="overflow-x-auto">
-<table class="w-full">
-<thead>
-<tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Court</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Date</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Time</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
-</tr>
-</thead>
-<tbody id="ordersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-<p id="adminError" class="text-sm text-red-600 bg-red-50 p-3 rounded-xl hidden m-6" role="alert"></p>
+<div class="mb-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex min-w-max gap-2">
+<button type="button" class="admin-tab rounded-xl bg-slate-950 px-4 py-2 text-sm font-extrabold text-white dark:bg-white dark:text-slate-950" data-tab="overview">Overview</button>
+<button type="button" class="admin-tab rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="bookings">Bookings</button>
+<button type="button" class="admin-tab rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="courts">Courts</button>
+<button type="button" class="admin-tab rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="finance">Finance</button>
+<button type="button" class="admin-tab rounded-xl px-4 py-2 text-sm font-extrabold text-slate-600 dark:text-slate-300" data-tab="users">Users</button>
 </div>
 </div>
 
-<div id="users" class="admin-section hidden">
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-<div>
-<h1 class="text-3xl font-extrabold text-slate-950 dark:text-white">User Access</h1>
-<p class="mt-2 text-slate-600 dark:text-slate-400">Pantau profil, role, dan akun yang terhubung ke Supabase.</p>
-</div>
-</div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="overflow-x-auto">
-<table class="w-full min-w-[720px]">
-<thead>
-<tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">User</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</th>
-</tr>
-</thead>
-<tbody id="usersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
-</div>
-</div>
-</div>
+<p id="adminError" class="mb-6 hidden rounded-xl bg-red-50 p-3 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></p>
+<p id="adminSuccess" class="mb-6 hidden rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></p>
 
-<div id="courts" class="admin-section hidden">
-<div class="flex items-center justify-between mb-8">
-<h1 class="text-3xl font-extrabold text-slate-950 dark:text-white">Court Management</h1>
+<section id="overview" class="admin-section space-y-6">
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"><p class="text-xs font-bold uppercase text-slate-500">Bookings</p><p id="statTotal" class="mt-2 text-3xl font-extrabold text-slate-950 dark:text-white">-</p></div>
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"><p class="text-xs font-bold uppercase text-slate-500">Pending</p><p id="statPending" class="mt-2 text-3xl font-extrabold text-amber-600">-</p></div>
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"><p class="text-xs font-bold uppercase text-slate-500">Approved</p><p id="statApproved" class="mt-2 text-3xl font-extrabold text-emerald-600">-</p></div>
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"><p class="text-xs font-bold uppercase text-slate-500">Revenue</p><p id="statRevenue" class="mt-2 text-2xl font-extrabold text-slate-950 dark:text-white">-</p></div>
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900"><p class="text-xs font-bold uppercase text-slate-500">Courts</p><p id="statCourts" class="mt-2 text-3xl font-extrabold text-slate-950 dark:text-white">-</p></div>
 </div>
+<div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-<div class="overflow-x-auto">
-<table class="w-full">
-<thead>
-<tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">ID</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Price/Hr</th>
-<th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-</tr>
-</thead>
-<tbody id="courtTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-</table>
+<div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800"><h2 class="text-lg font-extrabold text-slate-950 dark:text-white">Recent Bookings</h2></div>
+<div class="overflow-x-auto"><table class="w-full min-w-[760px]"><thead><tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950"><th class="px-5 py-3">User</th><th class="px-5 py-3">Court</th><th class="px-5 py-3">Date</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Amount</th><th class="px-5 py-3">Action</th></tr></thead><tbody id="recentTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
+</div>
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<h2 class="text-lg font-extrabold text-slate-950 dark:text-white">Finance Snapshot</h2>
+<div class="mt-4 space-y-3 text-sm">
+<div class="flex justify-between rounded-xl bg-slate-50 p-3 dark:bg-slate-950"><span>Approved revenue</span><strong id="financeApproved">-</strong></div>
+<div class="flex justify-between rounded-xl bg-slate-50 p-3 dark:bg-slate-950"><span>Pending pipeline</span><strong id="financePending">-</strong></div>
+<div class="flex justify-between rounded-xl bg-slate-50 p-3 dark:bg-slate-950"><span>Cancelled value</span><strong id="financeCancelled">-</strong></div>
 </div>
 </div>
 </div>
-</main>
+</section>
+
+<section id="bookings" class="admin-section hidden">
+<div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+<div><h2 class="text-2xl font-extrabold text-slate-950 dark:text-white">Booking Approval</h2><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Klik centang hijau untuk approve. User akan melihat status approved.</p></div>
+<div class="flex flex-wrap gap-2">
+<select id="statusFilter" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900"><option value="all">All Status</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="cancelled">Cancelled</option></select>
+<select id="courtFilter" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold dark:border-slate-700 dark:bg-slate-900"><option value="all">All Courts</option></select>
+</div>
+</div>
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"><div class="overflow-x-auto"><table class="w-full min-w-[900px]"><thead><tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950"><th class="px-5 py-3">User</th><th class="px-5 py-3">Court</th><th class="px-5 py-3">Date</th><th class="px-5 py-3">Time</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Amount</th><th class="px-5 py-3">Actions</th></tr></thead><tbody id="ordersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div></div>
+</section>
+
+<section id="courts" class="admin-section hidden">
+<div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+<form id="courtForm" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900" onsubmit="saveCourt(event)">
+<h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Tambah Lapangan</h2>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Lapangan baru otomatis muncul di Home dan Booking.</p>
+<div class="mt-5 space-y-4">
+<div><label class="mb-1 block text-sm font-bold">Nama Lapangan</label><input id="courtName" required placeholder="Court C1" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
+<div><label class="mb-1 block text-sm font-bold">Harga per Jam</label><input id="courtPrice" required type="number" min="1" step="1000" placeholder="150000" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
+<div><label class="mb-1 block text-sm font-bold">Tipe</label><input id="courtType" placeholder="Premium indoor court" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
+<div><label class="mb-1 block text-sm font-bold">Surface</label><input id="courtSurface" placeholder="Artificial Grass" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-950"></div>
+<div><label class="mb-1 block text-sm font-bold">Gambar Lapangan</label><input id="courtImage" type="file" accept="image/*" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"></div>
+<button id="courtSubmit" type="submit" class="w-full rounded-xl bg-teal-700 py-3 font-extrabold text-white hover:bg-teal-800">Simpan Lapangan</button>
+</div>
+</form>
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"><div class="overflow-x-auto"><table class="w-full min-w-[760px]"><thead><tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950"><th class="px-5 py-3">Lapangan</th><th class="px-5 py-3">Harga</th><th class="px-5 py-3">Status</th><th class="px-5 py-3">Actions</th></tr></thead><tbody id="courtTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div></div>
+</div>
+</section>
+
+<section id="finance" class="admin-section hidden">
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<h2 class="text-2xl font-extrabold text-slate-950 dark:text-white">Keuangan</h2>
+<div class="mt-5 grid gap-4 md:grid-cols-3"><div class="rounded-xl bg-emerald-50 p-4 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"><p class="text-sm font-bold">Approved</p><p id="financeCardApproved" class="mt-2 text-2xl font-extrabold">-</p></div><div class="rounded-xl bg-amber-50 p-4 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200"><p class="text-sm font-bold">Pending</p><p id="financeCardPending" class="mt-2 text-2xl font-extrabold">-</p></div><div class="rounded-xl bg-red-50 p-4 text-red-800 dark:bg-red-950/40 dark:text-red-200"><p class="text-sm font-bold">Cancelled</p><p id="financeCardCancelled" class="mt-2 text-2xl font-extrabold">-</p></div></div>
+<div class="mt-6 overflow-x-auto"><table class="w-full min-w-[760px]"><thead><tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950"><th class="px-5 py-3">Court</th><th class="px-5 py-3">Bookings</th><th class="px-5 py-3">Approved Revenue</th><th class="px-5 py-3">Pending Pipeline</th></tr></thead><tbody id="financeTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div>
+</div>
+</section>
+
+<section id="users" class="admin-section hidden">
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900"><div class="border-b border-slate-200 px-5 py-4 dark:border-slate-800"><h2 class="text-xl font-extrabold text-slate-950 dark:text-white">Users</h2></div><div class="overflow-x-auto"><table class="w-full min-w-[760px]"><thead><tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950"><th class="px-5 py-3">User</th><th class="px-5 py-3">Email</th><th class="px-5 py-3">Role</th><th class="px-5 py-3">Joined</th></tr></thead><tbody id="usersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody></table></div></div>
+</section>
+</div>
 </div>
 
 <script src="/js/shared.js"></script>
@@ -185,228 +105,277 @@ let allBookings = [];
 let allCourts = [];
 let allProfiles = [];
 let profileById = new Map();
-let currentUserRole = 'user';
+
+function rupiah(value) {
+  return 'Rp ' + Number(value || 0).toLocaleString('id-ID');
+}
+
+function showAdminMessage(message, type = 'success') {
+  const success = document.getElementById('adminSuccess');
+  const error = document.getElementById('adminError');
+  success.classList.add('hidden');
+  error.classList.add('hidden');
+  const target = type === 'error' ? error : success;
+  target.textContent = message;
+  target.classList.remove('hidden');
+}
+
+async function requireAdmin(supabase) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = '/login/?next=/admin/'; return null; }
+  const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+  if (error || profile?.role !== 'admin') { window.location.href = '/dashboard/'; return null; }
+  return session;
+}
 
 async function loadAdminData() {
-  const supabase = await PadelGo.Supabase.init();
-  if (!supabase) { window.location.href = '/login/?next=/admin/'; return; }
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { window.location.href = '/login/?next=/admin/'; return; }
-  const uid = session.user.id;
-  const { data: profile, error: profileError } = await supabase.from('profiles').select('role').eq('id', uid).single();
-  if (profileError || !profile || profile.role !== 'admin') {
-    window.location.href = '/dashboard/';
-    return;
-  }
-  currentUserRole = profile.role;
   try {
+    const supabase = await PadelGo.Supabase.init();
+    if (!supabase) throw new Error('Supabase belum dikonfigurasi.');
+    const session = await requireAdmin(supabase);
+    if (!session) return;
     const [bookingsRes, courtsRes, profilesRes] = await Promise.all([
-      supabase.from('bookings').select('*').order('date', { ascending: false }),
-      supabase.from('courts').select('*'),
+      supabase.from('bookings').select('*').order('date', { ascending: false }).order('start_time', { ascending: false }),
+      supabase.from('courts').select('*').order('name', { ascending: true }),
       supabase.from('profiles').select('id, name, email, role, avatar_url, created_at').order('created_at', { ascending: false })
     ]);
-    if (bookingsRes.error) throw new Error(bookingsRes.error.message || 'Gagal memuat bookings');
-    if (courtsRes.error) throw new Error(courtsRes.error.message || 'Gagal memuat courts');
-    if (profilesRes.error) throw new Error(profilesRes.error.message || 'Gagal memuat users');
+    if (bookingsRes.error) throw new Error(bookingsRes.error.message);
+    if (courtsRes.error) throw new Error(courtsRes.error.message);
+    if (profilesRes.error) throw new Error(profilesRes.error.message);
     allBookings = bookingsRes.data || [];
     allCourts = courtsRes.data || [];
     allProfiles = profilesRes.data || [];
     profileById = new Map(allProfiles.map(profile => [profile.id, profile]));
-    const totalAmount = allBookings
-      .filter(b => b.status !== 'cancelled')
-      .reduce((sum, b) => sum + (b.amount || 0), 0);
-    document.getElementById('statTotal').textContent = allBookings.length;
-    document.getElementById('statCourts').textContent = allCourts.filter(c => c.available).length || allCourts.length;
-    document.getElementById('statRevenue').textContent = 'Rp ' + totalAmount.toLocaleString('id-ID');
-    document.getElementById('statUsers').textContent = allProfiles.length;
-    renderDashTable(allBookings.slice(0, 5));
-    renderOrders(allBookings);
-    renderCourts();
-    renderUsers();
+    hydrateCourtFilter();
+    renderAll();
   } catch (err) {
-    document.getElementById('adminError').textContent = err.message || 'Gagal memuat data admin.';
-    document.getElementById('adminError').classList.remove('hidden');
+    showAdminMessage(err.message || 'Gagal memuat admin dashboard.', 'error');
   }
 }
 
-function renderDashTable(bookings) {
-  const tbody = document.getElementById('dashTable');
-  tbody.innerHTML = '';
-  bookings.slice(0, 5).forEach((order) => {
-    const courtColors = {'A1': 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-200', 'A2': 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200', 'B1': 'bg-violet-100 text-violet-800 dark:bg-violet-900/50 dark:text-violet-200', 'B2': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'};
-    const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
-    tr.innerHTML = `
-      <td class="py-4 px-6">${renderUserCell(order.user_id)}</td>
-      <td class="py-4 px-6"><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${courtColors[order.court_id] || 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200'}">${escapeHtml(order.court_name || order.court_id)}</span></td>
-      <td class="py-4 px-6 font-medium text-slate-700 dark:text-slate-300">${order.date}</td>
-      <td class="py-4 px-6 font-medium text-slate-700 dark:text-slate-300">${order.start_time || ''}</td>
-      <td class="py-4 px-6"><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${statusClass(order.status)}">${escapeHtml(order.status)}</span></td>
-  <td class="py-4 px-6 font-semibold text-slate-900 dark:text-slate-100">Rp ${(order.amount || 0).toLocaleString('id-ID')}</td>
-`;
-tbody.appendChild(tr);
-});
+function renderAll() {
+  const approved = allBookings.filter(b => b.status === 'approved' || b.status === 'confirmed');
+  const pending = allBookings.filter(b => b.status === 'pending');
+  const cancelled = allBookings.filter(b => b.status === 'cancelled');
+  const approvedRevenue = approved.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+  const pendingRevenue = pending.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+  const cancelledRevenue = cancelled.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+  document.getElementById('statTotal').textContent = allBookings.length;
+  document.getElementById('statPending').textContent = pending.length;
+  document.getElementById('statApproved').textContent = approved.length;
+  document.getElementById('statRevenue').textContent = rupiah(approvedRevenue);
+  document.getElementById('statCourts').textContent = allCourts.filter(c => c.available).length;
+  ['financeApproved', 'financeCardApproved'].forEach(id => document.getElementById(id).textContent = rupiah(approvedRevenue));
+  ['financePending', 'financeCardPending'].forEach(id => document.getElementById(id).textContent = rupiah(pendingRevenue));
+  ['financeCancelled', 'financeCardCancelled'].forEach(id => document.getElementById(id).textContent = rupiah(cancelledRevenue));
+  renderBookings(allBookings.slice(0, 6), 'recentTable');
+  filterBookings();
+  renderCourts();
+  renderFinance();
+  renderUsers();
 }
 
-function renderOrders(bookings) {
-  const tbody = document.getElementById('ordersTable');
-  tbody.innerHTML = '';
-  bookings.forEach((order) => {
-    const courtColors = {'A1': 'bg-sky-100 text-sky-800 dark:bg-sky-900/50 dark:text-sky-200', 'A2': 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200', 'B1': 'bg-violet-100 text-violet-800 dark:bg-violet-900/50 dark:text-violet-200', 'B2': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'};
-    const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
-    tr.innerHTML = `
-      <td class="py-4 px-6">${renderUserCell(order.user_id)}</td>
-      <td class="py-4 px-6"><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${courtColors[order.court_id] || 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200'}">${escapeHtml(order.court_name || order.court_id)}</span></td>
-      <td class="py-4 px-6 font-medium text-slate-700 dark:text-slate-300">${order.date}</td>
-      <td class="py-4 px-6 font-medium text-slate-700 dark:text-slate-300">${order.start_time || ''} - ${order.end_time || ''}</td>
-      <td class="py-4 px-6"><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${statusClass(order.status)}">${escapeHtml(order.status)}</span></td>
-      <td class="py-4 px-6 font-semibold text-slate-900 dark:text-slate-100">Rp ${(order.amount || 0).toLocaleString('id-ID')}</td>
-      <td class="py-4 px-6">
-        <button onclick="cancelBooking('${order.id}')" class="text-sm font-semibold text-red-600 hover:underline">Cancel</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+function hydrateCourtFilter() {
+  const filter = document.getElementById('courtFilter');
+  const current = filter.value || 'all';
+  filter.innerHTML = '<option value="all">All Courts</option>' + allCourts.map(court => `<option value="${escapeHtml(court.id)}">${escapeHtml(court.name || court.id)}</option>`).join('');
+  filter.value = [...filter.options].some(option => option.value === current) ? current : 'all';
+}
+
+function renderBookings(bookings, targetId) {
+  const tbody = document.getElementById(targetId);
+  if (!bookings.length) {
+    tbody.innerHTML = `<tr><td colspan="${targetId === 'ordersTable' ? '7' : '6'}" class="px-5 py-10 text-center text-sm text-slate-500">Belum ada booking.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = bookings.map(order => `
+    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+      <td class="px-5 py-4">${renderUserCell(order.user_id)}</td>
+      <td class="px-5 py-4"><span class="font-bold text-slate-900 dark:text-slate-100">${escapeHtml(order.court_name || order.court_id)}</span></td>
+      <td class="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(order.date || '-')}</td>
+      ${targetId === 'ordersTable' ? `<td class="px-5 py-4 text-sm text-slate-600 dark:text-slate-300">${escapeHtml(order.start_time || '')} - ${escapeHtml(order.end_time || '')}</td>` : ''}
+      <td class="px-5 py-4"><span class="inline-flex rounded-full px-2.5 py-1 text-xs font-extrabold ${statusClass(order.status)}">${statusLabel(order.status)}</span></td>
+      <td class="px-5 py-4 font-extrabold text-slate-900 dark:text-slate-100">${rupiah(order.amount)}</td>
+      <td class="px-5 py-4">${renderBookingActions(order)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderBookingActions(order) {
+  if (order.status === 'approved' || order.status === 'confirmed') {
+    return '<span class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-extrabold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-200">approved</span>';
+  }
+  if (order.status === 'cancelled') {
+    return '<span class="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-extrabold text-red-700 dark:bg-red-950/50 dark:text-red-200">cancelled</span>';
+  }
+  return `
+    <div class="flex items-center gap-2">
+      <button type="button" onclick="setBookingStatus('${escapeAttr(order.id)}','approved')" class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-lg font-extrabold text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-200" title="Approve">✓</button>
+      <button type="button" onclick="setBookingStatus('${escapeAttr(order.id)}','cancelled')" class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-100 text-lg font-extrabold text-red-700 hover:bg-red-200 dark:bg-red-900/50 dark:text-red-200" title="Cancel">×</button>
+    </div>`;
+}
+
+async function setBookingStatus(bookingId, status) {
+  if (status === 'cancelled' && !confirm('Batalkan booking ini?')) return;
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    const { error } = await supabase.from('bookings').update({ status }).eq('id', bookingId);
+    if (error) throw new Error(error.message || 'Gagal update booking.');
+    showAdminMessage(status === 'approved' ? 'Booking approved.' : 'Booking cancelled.');
+    await loadAdminData();
+  } catch (err) {
+    showAdminMessage(err.message || 'Gagal update booking.', 'error');
+  }
+}
+
+async function saveCourt(event) {
+  event.preventDefault();
+  const button = document.getElementById('courtSubmit');
+  const name = document.getElementById('courtName').value.trim();
+  const price = Number(document.getElementById('courtPrice').value);
+  const type = document.getElementById('courtType').value.trim() || 'Padel court';
+  const surface = document.getElementById('courtSurface').value.trim() || '';
+  const image = document.getElementById('courtImage').files[0];
+  if (!name || !price) return showAdminMessage('Nama lapangan dan harga wajib diisi.', 'error');
+  button.disabled = true;
+  button.textContent = 'Menyimpan...';
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    const session = await requireAdmin(supabase);
+    if (!session) return;
+    let imageUrl = '';
+    if (image) {
+      if (image.size > 5 * 1024 * 1024) throw new Error('Ukuran gambar maksimal 5MB.');
+      const ext = image.name.split('.').pop() || 'jpg';
+      const fileName = `${Date.now()}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.${ext}`;
+      const { error: uploadError } = await supabase.storage.from('court-images').upload(fileName, image, { upsert: true, cacheControl: '3600' });
+      if (uploadError) throw new Error(uploadError.message || 'Gagal upload gambar lapangan.');
+      imageUrl = supabase.storage.from('court-images').getPublicUrl(fileName).data?.publicUrl || '';
+    }
+    const id = name.toUpperCase().replace(/^COURT\s+/, '').replace(/[^A-Z0-9]+/g, '').slice(0, 12) || `C${Date.now()}`;
+    const { error } = await supabase.from('courts').upsert({
+      id,
+      name,
+      type,
+      surface,
+      price_per_hour: price,
+      image_url: imageUrl || '/images/padel1.jpg',
+      available: true
+    }, { onConflict: 'id' });
+    if (error) throw new Error(error.message || 'Gagal menyimpan lapangan.');
+    document.getElementById('courtForm').reset();
+    showAdminMessage('Lapangan berhasil ditambahkan.');
+    await loadAdminData();
+  } catch (err) {
+    showAdminMessage(err.message || 'Gagal menyimpan lapangan.', 'error');
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Simpan Lapangan';
+  }
+}
+
+async function toggleCourt(courtId, available) {
+  try {
+    const supabase = await PadelGo.Supabase.init();
+    const { error } = await supabase.from('courts').update({ available }).eq('id', courtId);
+    if (error) throw new Error(error.message);
+    await loadAdminData();
+  } catch (err) {
+    showAdminMessage(err.message || 'Gagal update lapangan.', 'error');
+  }
 }
 
 function renderCourts() {
   const tbody = document.getElementById('courtTable');
-  tbody.innerHTML = '';
-  allCourts.forEach(court => {
-    const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
-    tr.innerHTML = `
-      <td class="py-4 px-6 font-mono text-sm text-slate-500 dark:text-slate-400">${escapeHtml(court.id)}</td>
-      <td class="py-4 px-6 font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(court.name)}</td>
-      <td class="py-4 px-6 text-slate-700 dark:text-slate-300">${escapeHtml(court.type)}</td>
-      <td class="py-4 px-6 text-slate-700 dark:text-slate-300">Rp ${court.price_per_hour.toLocaleString('id-ID')}</td>
-      <td class="py-4 px-6"><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${court.available ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200' : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200'}">${court.available ? 'Available' : 'Unavailable'}</span></td>
-    `;
-    tbody.appendChild(tr);
+  if (!allCourts.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="px-5 py-10 text-center text-sm text-slate-500">Belum ada lapangan.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allCourts.map(court => `
+    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+      <td class="px-5 py-4"><div class="flex items-center gap-3"><img src="${escapeAttr(court.image_url || '/images/padel1.jpg')}" alt="${escapeAttr(court.name || court.id)}" class="h-14 w-20 rounded-xl object-cover"><div><p class="font-extrabold text-slate-950 dark:text-white">${escapeHtml(court.name || court.id)}</p><p class="text-xs text-slate-500">${escapeHtml(court.type || court.surface || court.id)}</p></div></div></td>
+      <td class="px-5 py-4 font-bold">${rupiah(court.price_per_hour)} / jam</td>
+      <td class="px-5 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${court.available ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${court.available ? 'Available' : 'Hidden'}</span></td>
+      <td class="px-5 py-4"><button type="button" onclick="toggleCourt('${escapeAttr(court.id)}', ${court.available ? 'false' : 'true'})" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-extrabold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">${court.available ? 'Hide' : 'Show'}</button></td>
+    </tr>`).join('');
+}
+
+function renderFinance() {
+  const rows = allCourts.map(court => {
+    const items = allBookings.filter(b => b.court_id === court.id);
+    const approved = items.filter(b => b.status === 'approved' || b.status === 'confirmed').reduce((sum, b) => sum + Number(b.amount || 0), 0);
+    const pending = items.filter(b => b.status === 'pending').reduce((sum, b) => sum + Number(b.amount || 0), 0);
+    return `<tr><td class="px-5 py-4 font-extrabold">${escapeHtml(court.name || court.id)}</td><td class="px-5 py-4">${items.length}</td><td class="px-5 py-4 font-bold">${rupiah(approved)}</td><td class="px-5 py-4 font-bold">${rupiah(pending)}</td></tr>`;
   });
+  document.getElementById('financeTable').innerHTML = rows.join('') || '<tr><td colspan="4" class="px-5 py-10 text-center text-sm text-slate-500">Belum ada data.</td></tr>';
 }
 
 function renderUsers() {
   const tbody = document.getElementById('usersTable');
-  tbody.innerHTML = '';
-  if (allProfiles.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="py-10 px-6 text-center text-sm text-slate-500 dark:text-slate-400">Belum ada profile user.</td></tr>';
-    return;
-  }
-  allProfiles.forEach(profile => {
-    const tr = document.createElement('tr');
-    const initials = getInitials(profile.name || profile.email || 'U');
-    tr.className = 'hover:bg-slate-50 transition dark:hover:bg-slate-800/60';
-    tr.innerHTML = `
-      <td class="py-4 px-6">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 overflow-hidden rounded-xl bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-200">
-            ${profile.avatar_url ? `<img src="${escapeHtml(profile.avatar_url)}" alt="${escapeHtml(profile.name || 'User')}" class="h-full w-full object-cover">` : `<span class="flex h-full w-full items-center justify-center text-sm font-extrabold">${escapeHtml(initials)}</span>`}
-          </div>
-          <div>
-            <p class="font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(profile.name || 'User')}</p>
-            <p class="max-w-[220px] truncate text-xs text-slate-500 dark:text-slate-400">${escapeHtml(profile.id)}</p>
-          </div>
-        </div>
-      </td>
-      <td class="py-4 px-6 text-slate-700 dark:text-slate-300">${escapeHtml(profile.email || '-')}</td>
-      <td class="py-4 px-6"><span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${profile.role === 'admin' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'}">${escapeHtml(profile.role || 'user')}</span></td>
-      <td class="py-4 px-6 text-slate-700 dark:text-slate-300">${escapeHtml(PadelGo.Format.date(String(profile.created_at || '').slice(0, 10)))}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function getInitials(value) {
-  return String(value || 'U').trim().split(/\s+/).map(part => part[0]).join('').toUpperCase().slice(0, 2) || 'U';
+  tbody.innerHTML = allProfiles.map(profile => `
+    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
+      <td class="px-5 py-4">${renderUserCell(profile.id)}</td>
+      <td class="px-5 py-4">${escapeHtml(profile.email || '-')}</td>
+      <td class="px-5 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-extrabold ${profile.role === 'admin' ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-700'}">${escapeHtml(profile.role || 'user')}</span></td>
+      <td class="px-5 py-4 text-sm text-slate-500">${escapeHtml(PadelGo.Format.date(String(profile.created_at || '').slice(0, 10)))}</td>
+    </tr>`).join('');
 }
 
 function renderUserCell(userId) {
   const profile = profileById.get(userId);
   const label = profile?.name || profile?.email || userId || 'User';
   const sub = profile?.email && profile?.name ? profile.email : userId || '';
-  return `
-    <div>
-      <p class="font-semibold text-slate-900 dark:text-slate-100">${escapeHtml(label)}</p>
-      <p class="max-w-[220px] truncate text-xs text-slate-500 dark:text-slate-400">${escapeHtml(sub)}</p>
-    </div>
-  `;
+  const avatar = profile?.avatar_url || PadelGo.UI.defaultAvatar();
+  return `<div class="flex items-center gap-3"><img src="${escapeAttr(avatar)}" alt="${escapeAttr(label)}" class="h-10 w-10 rounded-full object-cover"><div><p class="font-extrabold text-slate-950 dark:text-white">${escapeHtml(label)}</p><p class="max-w-[220px] truncate text-xs text-slate-500">${escapeHtml(sub)}</p></div></div>`;
 }
 
-async function cancelBooking(bookingId) {
-  if (!confirm('Batalkan booking ini?')) return;
-  try {
-    const supabase = await PadelGo.Supabase.init();
-    const { error } = await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', bookingId);
-    if (error) throw new Error(error.message || 'Gagal membatalkan');
-    loadAdminData();
-  } catch (err) {
-    document.getElementById('adminError').textContent = err.message || 'Gagal membatalkan.';
-    document.getElementById('adminError').classList.remove('hidden');
-  }
+function filterBookings() {
+  const status = document.getElementById('statusFilter').value;
+  const court = document.getElementById('courtFilter').value;
+  const filtered = allBookings.filter(b => {
+    const normalizedStatus = b.status === 'confirmed' ? 'approved' : b.status;
+    return (status === 'all' || normalizedStatus === status) && (court === 'all' || b.court_id === court);
+  });
+  renderBookings(filtered, 'ordersTable');
 }
 
-document.querySelectorAll('.admin-nav').forEach(link => {
-link.addEventListener('click', function(e) {
-e.preventDefault();
-const tab = this.getAttribute('data-tab');
-switchTab(tab);
-});
-});
-
-document.querySelectorAll('.admin-nav-mobile').forEach(button => {
-button.addEventListener('click', function() {
-const tab = this.getAttribute('data-tab');
-switchTab(tab);
-});
-});
-
-function switchTab(tab) {
-document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
-document.getElementById(tab).classList.remove('hidden');
-document.querySelectorAll('.admin-nav').forEach(link => {
-link.classList.remove('bg-slate-800', 'text-white', 'font-semibold');
-link.classList.add('hover:bg-slate-800');
-if (link.getAttribute('data-tab') === tab) {
-link.classList.add('bg-slate-800', 'text-white', 'font-semibold');
-link.classList.remove('hover:bg-slate-800');
-}
-});
-document.querySelectorAll('.admin-nav-mobile').forEach(button => {
-button.classList.remove('bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-950');
-button.classList.add('text-slate-600', 'dark:text-slate-300');
-if (button.getAttribute('data-tab') === tab) {
-button.classList.add('bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-950');
-button.classList.remove('text-slate-600', 'dark:text-slate-300');
-}
-});
-}
-
-document.getElementById('statusFilter').addEventListener('change', filterAdminOrders);
-document.getElementById('courtFilter').addEventListener('change', filterAdminOrders);
-
-function filterAdminOrders() {
-const status = document.getElementById('statusFilter').value;
-const court = document.getElementById('courtFilter').value;
-const filtered = allBookings.filter(b => {
-const matchStatus = status === 'all' || b.status === status;
-const matchCourt = court === 'all' || b.court_id === court;
-return matchStatus && matchCourt;
-});
-renderOrders(filtered);
+function statusLabel(status) {
+  if (status === 'approved' || status === 'confirmed') return 'approved';
+  if (status === 'pending') return 'pending';
+  return 'cancelled';
 }
 
 function statusClass(status) {
-  if (status === 'confirmed') return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200';
+  if (status === 'approved' || status === 'confirmed') return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200';
   if (status === 'pending') return 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200';
   return 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
 }
 
 function escapeHtml(text) {
-const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
-return String(text || '').replace(/[&<>"']/g, m => map[m]);
+  const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+  return String(text || '').replace(/[&<>"']/g, m => map[m]);
 }
 
+function escapeAttr(text) {
+  return escapeHtml(text).replace(/`/g, '&#096;');
+}
+
+document.querySelectorAll('.admin-tab').forEach(button => {
+  button.addEventListener('click', () => {
+    const tab = button.dataset.tab;
+    document.querySelectorAll('.admin-section').forEach(section => section.classList.toggle('hidden', section.id !== tab));
+    document.querySelectorAll('.admin-tab').forEach(item => {
+      item.classList.toggle('bg-slate-950', item === button);
+      item.classList.toggle('text-white', item === button);
+      item.classList.toggle('dark:bg-white', item === button);
+      item.classList.toggle('dark:text-slate-950', item === button);
+      item.classList.toggle('text-slate-600', item !== button);
+      item.classList.toggle('dark:text-slate-300', item !== button);
+    });
+  });
+});
+
+document.getElementById('statusFilter').addEventListener('change', filterBookings);
+document.getElementById('courtFilter').addEventListener('change', filterBookings);
 document.addEventListener('DOMContentLoaded', loadAdminData);
 </script>
