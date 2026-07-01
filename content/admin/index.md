@@ -52,6 +52,10 @@ layout: "admin"
   <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
   <span>Users</span>
 </button>
+<button type="button" class="admin-tab rounded-xl px-3 sm:px-4 py-2 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-300 whitespace-nowrap flex items-center gap-2" data-tab="reports">
+  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+  <span>Reports</span>
+</button>
 </div>
 </div>
 
@@ -269,6 +273,147 @@ Finance Snapshot
 <tbody id="usersTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
 </table>
 </div>
+</div>
+</section>
+
+<!-- Reports Tab -->
+<section id="reports" class="admin-section hidden">
+<div class="space-y-6">
+
+<!-- Filter Controls -->
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex flex-col lg:flex-row lg:items-end gap-4">
+<div class="flex-1">
+<h3 class="text-lg font-extrabold text-slate-950 dark:text-white mb-4 flex items-center gap-2">
+<svg class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+Filter Laporan
+</h3>
+
+<!-- Quick Filters -->
+<div class="flex flex-wrap gap-2 mb-4">
+<button type="button" onclick="setReportPeriod('today')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="today">Hari Ini</button>
+<button type="button" onclick="setReportPeriod('week')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="week">Minggu Ini</button>
+<button type="button" onclick="setReportPeriod('month')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 active bg-teal-100 border-teal-300 text-teal-700 dark:bg-teal-900/50 dark:border-teal-700 dark:text-teal-300" data-period="month">Bulan Ini</button>
+<button type="button" onclick="setReportPeriod('year')" class="report-quick-btn rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" data-period="year">Tahun Ini</button>
+</div>
+
+<!-- Date Range -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div>
+<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Dari Tanggal</label>
+<input type="date" id="reportDateFrom" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
+</div>
+<div>
+<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Sampai Tanggal</label>
+<input type="date" id="reportDateTo" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
+</div>
+<div>
+<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Court</label>
+<select id="reportCourtFilter" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
+<option value="">Semua Court</option>
+</select>
+</div>
+<div>
+<label class="mb-1 block text-xs font-bold text-slate-600 dark:text-slate-400">Status</label>
+<select id="reportStatusFilter" class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-950" onchange="applyReportFilter()">
+<option value="">Semua Status</option>
+<option value="approved">Approved</option>
+<option value="pending">Pending</option>
+<option value="cancelled">Cancelled</option>
+</select>
+</div>
+</div>
+</div>
+
+<div class="flex flex-col sm:flex-row gap-2 lg:self-end">
+<button type="button" onclick="exportReport('csv')" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-100 active:scale-95 transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+Export CSV
+</button>
+<button type="button" onclick="exportReport('xlsx')" class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-700 active:scale-95 transition shadow-lg shadow-emerald-600/20">
+<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+Export Excel
+</button>
+</div>
+</div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-600 dark:bg-teal-900/50 dark:text-teal-400">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase">Total Booking</p>
+<p id="reportTotalBookings" class="text-xl font-extrabold text-slate-950 dark:text-white">0</p>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase">Total Revenue</p>
+<p id="reportTotalRevenue" class="text-xl font-extrabold text-emerald-600">Rp 0</p>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase">Pending</p>
+<p id="reportPendingCount" class="text-xl font-extrabold text-amber-600">0</p>
+</div>
+</div>
+</div>
+<div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+</div>
+<div>
+<p class="text-xs font-bold text-slate-500 uppercase">User Aktif</p>
+<p id="reportActiveUsers" class="text-xl font-extrabold text-purple-600">0</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Report Table -->
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="overflow-x-auto">
+<table class="w-full min-w-[1000px]">
+<thead>
+<tr class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-950">
+<th class="px-4 py-3">No</th>
+<th class="px-4 py-3">User</th>
+<th class="px-4 py-3">Court</th>
+<th class="px-4 py-3">Tanggal</th>
+<th class="px-4 py-3">Waktu</th>
+<th class="px-4 py-3">Durasi</th>
+<th class="px-4 py-3">Status</th>
+<th class="px-4 py-3 text-right">Amount</th>
+</tr>
+</thead>
+<tbody id="reportTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+</table>
+</div>
+<div id="reportPagination" class="flex items-center justify-between border-t border-slate-200 px-4 py-3 dark:border-slate-800">
+<p id="reportCountText" class="text-sm text-slate-500"></p>
+<div class="flex items-center gap-2">
+<button type="button" id="reportPrevBtn" onclick="reportPageChange(-1)" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 disabled:cursor-not-allowed" disabled>← Prev</button>
+<button type="button" id="reportNextBtn" onclick="reportPageChange(1)" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 disabled:cursor-not-allowed" disabled>Next →</button>
+</div>
+</div>
+</div>
+
 </div>
 </section>
 
@@ -1370,6 +1515,382 @@ function escapeHtml(text) {
 function escapeAttr(text) {
   return escapeHtml(text).replace(/`/g, '&#096;');
 }
+
+// ============================================
+// Reports Functions
+// ============================================
+
+// Report State
+let reportData = [];
+let filteredReportData = [];
+let reportPage = 1;
+const reportPageSize = 20;
+let reportDateFrom = '';
+let reportDateTo = '';
+let reportCourt = '';
+let reportStatus = '';
+
+// Initialize Reports
+function initReports() {
+  // Set initial date range to current month
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  document.getElementById('reportDateFrom').value = formatDateForInput(firstDay);
+  document.getElementById('reportDateTo').value = formatDateForInput(lastDay);
+
+  reportDateFrom = document.getElementById('reportDateFrom').value;
+  reportDateTo = document.getElementById('reportDateTo').value;
+
+  // Populate court filter
+  const courtSelect = document.getElementById('reportCourtFilter');
+  courtSelect.innerHTML = '<option value="">Semua Court</option>' + 
+    allCourts.map(c => `<option value="${escapeAttr(c.id)}">${escapeHtml(c.name || c.id)}</option>`).join('');
+
+  // Set default quick filter
+  setReportPeriod('month');
+}
+
+// Format date for input
+function formatDateForInput(date) {
+  return date.toISOString().split('T')[0];
+}
+
+// Set quick report period
+function setReportPeriod(period) {
+  const now = new Date();
+  let from, to;
+
+  switch(period) {
+    case 'today':
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      break;
+    case 'week':
+      var dayOfWeek = now.getDay();
+      from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
+      to = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (6 - dayOfWeek));
+      break;
+    case 'month':
+      from = new Date(now.getFullYear(), now.getMonth(), 1);
+      to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      break;
+    case 'year':
+      from = new Date(now.getFullYear(), 0, 1);
+      to = new Date(now.getFullYear(), 11, 31);
+      break;
+    default:
+      return;
+  }
+
+  document.getElementById('reportDateFrom').value = formatDateForInput(from);
+  document.getElementById('reportDateTo').value = formatDateForInput(to);
+
+  // Update active button
+  document.querySelectorAll('.report-quick-btn').forEach(btn => {
+    btn.classList.remove('bg-teal-100', 'border-teal-300', 'text-teal-700', 'dark:bg-teal-900/50', 'dark:border-teal-700', 'dark:text-teal-300');
+    btn.classList.add('border-slate-200', 'text-slate-600', 'dark:border-slate-700', 'dark:text-slate-300');
+  });
+  const activeBtn = document.querySelector(`.report-quick-btn[data-period="${period}"]`);
+  if (activeBtn) {
+    activeBtn.classList.remove('border-slate-200', 'text-slate-600', 'dark:border-slate-700', 'dark:text-slate-300');
+    activeBtn.classList.add('bg-teal-100', 'border-teal-300', 'text-teal-700', 'dark:bg-teal-900/50', 'dark:border-teal-700', 'dark:text-teal-300');
+  }
+
+  reportDateFrom = document.getElementById('reportDateFrom').value;
+  reportDateTo = document.getElementById('reportDateTo').value;
+  reportCourt = document.getElementById('reportCourtFilter').value;
+  reportStatus = document.getElementById('reportStatusFilter').value;
+
+  applyReportFilter();
+}
+
+// Apply filter
+function applyReportFilter() {
+  reportDateFrom = document.getElementById('reportDateFrom').value;
+  reportDateTo = document.getElementById('reportDateTo').value;
+  reportCourt = document.getElementById('reportCourtFilter').value;
+  reportStatus = document.getElementById('reportStatusFilter').value;
+
+  filteredReportData = reportData.filter(item => {
+    // Date filter
+    if (reportDateFrom && item.date < reportDateFrom) return false;
+    if (reportDateTo && item.date > reportDateTo) return false;
+    // Court filter
+    if (reportCourt && item.court_id !== reportCourt) return false;
+    // Status filter
+    if (reportStatus) {
+      const normalizedStatus = item.status === 'confirmed' ? 'approved' : item.status;
+      if (normalizedStatus !== reportStatus) return false;
+    }
+    return true;
+  });
+
+  reportPage = 1;
+  renderReportTable();
+  updateReportSummary();
+}
+
+// Update report summary
+function updateReportSummary() {
+  const totalBookings = filteredReportData.length;
+  const totalRevenue = filteredReportData
+    .filter(b => b.status === 'approved' || b.status === 'confirmed')
+    .reduce((sum, b) => sum + Number(b.amount || 0), 0);
+  const pendingCount = filteredReportData.filter(b => b.status === 'pending').length;
+  const activeUsers = new Set(filteredReportData.map(b => b.user_id)).size;
+
+  document.getElementById('reportTotalBookings').textContent = totalBookings;
+  document.getElementById('reportTotalRevenue').textContent = 'Rp ' + totalRevenue.toLocaleString('id-ID');
+  document.getElementById('reportPendingCount').textContent = pendingCount;
+  document.getElementById('reportActiveUsers').textContent = activeUsers;
+}
+
+// Render report table
+function renderReportTable() {
+  const tbody = document.getElementById('reportTableBody');
+  const start = (reportPage - 1) * reportPageSize;
+  const end = start + reportPageSize;
+  const pageData = filteredReportData.slice(start, end);
+
+  if (!pageData.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-12 text-center text-sm text-slate-500">Tidak ada data untuk periode ini.</td></tr>`;
+    document.getElementById('reportCountText').textContent = '0 dari 0';
+    document.getElementById('reportPrevBtn').disabled = true;
+    document.getElementById('reportNextBtn').disabled = true;
+    return;
+  }
+
+  tbody.innerHTML = pageData.map((booking, index) => {
+    const profile = profileById.get(booking.user_id);
+    const userName = profile?.name || profile?.email || 'User';
+    const userAvatar = profile?.avatar_url;
+    const initials = String(userName).slice(0, 2).toUpperCase();
+    const rowNum = start + index + 1;
+
+    const statusClass = booking.status === 'approved' || booking.status === 'confirmed' 
+      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200' 
+      : booking.status === 'pending' 
+        ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200' 
+        : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200';
+    const statusLabel = booking.status === 'approved' || booking.status === 'confirmed' 
+      ? 'Approved' 
+      : booking.status === 'pending' 
+        ? 'Pending' 
+        : 'Cancelled';
+
+    return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+      <td class="px-4 py-3 text-sm text-slate-500">${rowNum}</td>
+      <td class="px-4 py-3">
+        <div class="flex items-center gap-2">
+          ${userAvatar 
+            ? `<img src="${escapeAttr(userAvatar)}" alt="${escapeAttr(userName)}" class="h-8 w-8 rounded-full object-cover" onerror="this.style.display='none'">` 
+            : ''}
+          <div class="h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-xs font-bold text-teal-700 dark:bg-teal-900/50 dark:text-teal-200 ${userAvatar ? 'hidden' : ''}">${initials}</div>
+          <span class="text-sm font-medium text-slate-900 dark:text-white">${escapeHtml(userName)}</span>
+        </div>
+      </td>
+      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${escapeHtml(booking.court_name || booking.court_id)}</td>
+      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${formatDateDisplay(booking.date)}</td>
+      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${escapeHtml(booking.start_time)} - ${escapeHtml(booking.end_time)}</td>
+      <td class="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">${booking.duration_hours || 1} jam</td>
+      <td class="px-4 py-3"><span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-bold ${statusClass}">${statusLabel}</span></td>
+      <td class="px-4 py-3 text-sm font-bold text-slate-900 dark:text-white text-right">${rupiah(booking.amount)}</td>
+    </tr>`;
+  }).join('');
+
+  // Update pagination
+  const totalPages = Math.ceil(filteredReportData.length / reportPageSize);
+  document.getElementById('reportCountText').textContent = `${start + 1}-${Math.min(end, filteredReportData.length)} dari ${filteredReportData.length}`;
+  document.getElementById('reportPrevBtn').disabled = reportPage <= 1;
+  document.getElementById('reportNextBtn').disabled = reportPage >= totalPages;
+}
+
+// Format date for display
+function formatDateDisplay(dateStr) {
+  if (!dateStr) return '-';
+  var date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+// Page change
+function reportPageChange(delta) {
+  const totalPages = Math.ceil(filteredReportData.length / reportPageSize);
+  reportPage = Math.max(1, Math.min(totalPages, reportPage + delta));
+  renderReportTable();
+}
+
+// Export report
+function exportReport(format) {
+  if (!filteredReportData.length) {
+    showAdminMessage('Tidak ada data untuk diexport.', 'error');
+    return;
+  }
+
+  if (format === 'csv') {
+    exportToCSV();
+  } else if (format === 'xlsx') {
+    exportToXLSX();
+  }
+}
+
+// Export to CSV
+function exportToCSV() {
+  const headers = ['No', 'Nama User', 'Email', 'Court', 'Tanggal', 'Jam Mulai', 'Jam Selesai', 'Durasi', 'Status', 'Amount (Rp)'];
+  const rows = filteredReportData.map((booking, index) => {
+    const profile = profileById.get(booking.user_id);
+    return [
+      index + 1,
+      profile?.name || 'User',
+      profile?.email || '-',
+      booking.court_name || booking.court_id,
+      booking.date,
+      booking.start_time,
+      booking.end_time,
+      booking.duration_hours || 1,
+      statusLabel(booking.status),
+      booking.amount || 0
+    ];
+  });
+
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+
+  downloadFile(csvContent, `padelgo-report-${reportDateFrom}-${reportDateTo}.csv`, 'text/csv');
+}
+
+// Export to XLSX (using data URI for simple Excel format)
+function exportToXLSX() {
+  // Create HTML table as Excel
+  let html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <title>PadelGo Report</title>
+      <style>
+        body { font-family: Arial, sans-serif; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #0d9488; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        .approved { color: #059669; font-weight: bold; }
+        .pending { color: #d97706; font-weight: bold; }
+        .cancelled { color: #dc2626; font-weight: bold; }
+        .header-row { background-color: #0d9488; color: white; }
+      </style>
+    </head>
+    <body>
+      <h2>PadelGo Booking Report</h2>
+      <p>Periode: ${formatDateDisplay(reportDateFrom)} - ${formatDateDisplay(reportDateTo)}</p>
+      <p>Dicetak: ${new Date().toLocaleString('id-ID')}</p>
+      <table>
+        <thead>
+          <tr class="header-row">
+            <th>No</th>
+            <th>Nama User</th>
+            <th>Email</th>
+            <th>Court</th>
+            <th>Tanggal</th>
+            <th>Jam Mulai</th>
+            <th>Jam Selesai</th>
+            <th>Durasi</th>
+            <th>Status</th>
+            <th>Amount (Rp)</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  filteredReportData.forEach((booking, index) => {
+    const profile = profileById.get(booking.user_id);
+    const statusClass = booking.status === 'approved' || booking.status === 'confirmed' 
+      ? 'approved' 
+      : booking.status === 'pending' 
+        ? 'pending' 
+        : 'cancelled';
+
+    html += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(profile?.name || 'User')}</td>
+            <td>${escapeHtml(profile?.email || '-')}</td>
+            <td>${escapeHtml(booking.court_name || booking.court_id)}</td>
+            <td>${booking.date}</td>
+            <td>${booking.start_time}</td>
+            <td>${booking.end_time}</td>
+            <td>${booking.duration_hours || 1} jam</td>
+            <td class="${statusClass}">${statusLabel(booking.status)}</td>
+            <td style="mso-number-format:'Rp #,##0'">${booking.amount || 0}</td>
+          </tr>`;
+  });
+
+  // Summary
+  const totalBookings = filteredReportData.length;
+  const totalRevenue = filteredReportData
+    .filter(b => b.status === 'approved' || b.status === 'confirmed')
+    .reduce((sum, b) => sum + Number(b.amount || 0), 0);
+  const pendingCount = filteredReportData.filter(b => b.status === 'pending').length;
+
+  html += `
+        </tbody>
+        <tfoot>
+          <tr style="background-color: #f3f4f6; font-weight: bold;">
+            <td colspan="3">TOTAL</td>
+            <td>${totalBookings} booking</td>
+            <td colspan="4">${pendingCount} pending</td>
+            <td style="mso-number-format:'#,##0'">${totalRevenue}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <br>
+      <h3>Ringkasan</h3>
+      <table>
+        <tr><td>Total Booking</td><td><strong>${totalBookings}</strong></td></tr>
+        <tr><td>Approved</td><td><strong>${filteredReportData.filter(b => b.status === 'approved' || b.status === 'confirmed').length}</strong></td></tr>
+        <tr><td>Pending</td><td><strong>${pendingCount}</strong></td></tr>
+        <tr><td>Cancelled</td><td><strong>${filteredReportData.filter(b => b.status === 'cancelled').length}</strong></td></tr>
+        <tr><td>Total Revenue</td><td><strong>Rp ${totalRevenue.toLocaleString('id-ID')}</strong></td></tr>
+      </table>
+    </body>
+    </html>`;
+
+  downloadFile(html, `padelgo-report-${reportDateFrom}-${reportDateTo}.xls`, 'application/vnd.ms-excel');
+}
+
+// Download file helper
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showAdminMessage(`Report berhasil diexport: ${filename}`);
+}
+
+// Load report data (called when switching to reports tab)
+function loadReportData() {
+  reportData = [...allBookings].sort((a, b) => {
+    if (a.date !== b.date) return b.date.localeCompare(a.date);
+    return (b.start_time || '').localeCompare(a.start_time || '');
+  });
+
+  initReports();
+}
+
+// Hook into tab switch for reports
+const originalSwitchTab = switchTab;
+switchTab = function(tab) {
+  originalSwitchTab(tab);
+  if (tab === 'reports') {
+    loadReportData();
+  }
+};
 
 // ============================================
 // User Management Functions
