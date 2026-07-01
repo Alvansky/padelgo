@@ -41,6 +41,8 @@ create table if not exists public.bookings (
 );
 
 -- Keep existing databases aligned when this file is rerun.
+alter table public.bookings drop constraint if exists bookings_status_check;
+
 update public.profiles set role = 'user' where role is null;
 update public.profiles set avatar_url = null where avatar_url = '';
 update public.courts set available = true where available is null;
@@ -65,7 +67,6 @@ alter table public.bookings alter column status set not null;
 
 do $$
 begin
-  alter table public.bookings drop constraint if exists bookings_status_check;
   alter table public.bookings
     add constraint bookings_status_check
     check (status in ('pending', 'approved', 'confirmed', 'cancelled'));
