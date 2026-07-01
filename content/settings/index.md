@@ -6,64 +6,64 @@ layout: "settings"
 ---
 
 <div class="mx-auto max-w-3xl px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
-  <div class="mb-6 sm:mb-8">
-    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Pengaturan Akun</h1>
-    <p class="mt-1 sm:mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400">Kelola nama, foto profil, dan password Anda.</p>
-  </div>
+<div class="mb-6 sm:mb-8">
+<h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Pengaturan Akun</h1>
+<p class="mt-1 sm:mt-2 text-sm sm:text-base text-slate-500 dark:text-slate-400">Kelola nama, foto profil, dan password Anda.</p>
+</div>
 
-  <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-    <div class="flex flex-col gap-6 sm:gap-8 md:flex-row md:items-start">
-      <div class="flex flex-col items-center">
-        <div class="relative">
-          <img id="avatarPreview" src="" alt="Profile" class="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-slate-100 object-cover shadow-lg dark:border-slate-800">
-          <label for="avatarInput" class="absolute bottom-0 right-0 flex h-7 w-7 sm:h-8 sm:w-8 cursor-pointer items-center justify-center rounded-full bg-teal-700 transition hover:bg-teal-800">
-            <svg class="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          </label>
-          <input id="avatarInput" type="file" accept="image/*" class="hidden" onchange="previewAvatar(event)">
-        </div>
-        <p class="mt-2 sm:mt-3 text-center text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Klik ikon kamera<br>Format: JPG, PNG. Maks 2MB.</p>
-      </div>
+<div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<div class="flex flex-col gap-6 sm:gap-8 md:flex-row md:items-start">
+<div class="flex flex-col items-center">
+<div class="relative">
+<img id="avatarPreview" src="" alt="Profile" class="h-20 w-20 sm:h-24 sm:w-24 rounded-full border-4 border-slate-100 object-cover shadow-lg dark:border-slate-800">
+<label for="avatarInput" class="absolute bottom-0 right-0 flex h-7 w-7 sm:h-8 sm:w-8 cursor-pointer items-center justify-center rounded-full bg-teal-700 transition hover:bg-teal-800">
+<svg class="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+</label>
+<input id="avatarInput" type="file" accept="image/*" class="hidden" onchange="previewAvatar(event)">
+</div>
+<p class="mt-2 sm:mt-3 text-center text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Klik ikon kamera<br>Format: JPG, PNG. Maks 2MB.</p>
+</div>
 
-      <form id="settingsForm" class="flex-1 space-y-5 sm:space-y-6" onsubmit="handleSaveSettings(event)" novalidate>
-        <div>
-          <label for="name" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Nama Lengkap</label>
-          <input id="name" type="text" required autocomplete="name" placeholder="Nama Anda" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white">
-          <p id="nameError" class="mt-1 hidden text-xs font-semibold text-red-600 dark:text-red-300" role="alert"></p>
-        </div>
+<form id="settingsForm" class="flex-1 space-y-5 sm:space-y-6" onsubmit="handleSaveSettings(event)" novalidate>
+<div>
+<label for="name" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Nama Lengkap</label>
+<input id="name" type="text" required autocomplete="name" placeholder="Nama Anda" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white">
+<p id="nameError" class="mt-1 hidden text-xs font-semibold text-red-600 dark:text-red-300" role="alert"></p>
+</div>
 
-        <div>
-          <label for="email" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Email</label>
-          <input id="email" type="email" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400" disabled>
-          <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Email tidak dapat diubah.</p>
-        </div>
+<div>
+<label for="email" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Email</label>
+<input id="email" type="email" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400" disabled>
+<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Email tidak dapat diubah.</p>
+</div>
 
-        <div class="border-t border-slate-200 pt-5 sm:pt-6 dark:border-slate-800">
-          <h3 class="mb-3 sm:mb-4 text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Ubah Password</h3>
+<div class="border-t border-slate-200 pt-5 sm:pt-6 dark:border-slate-800">
+<h3 class="mb-3 sm:mb-4 text-base sm:text-lg font-extrabold text-slate-900 dark:text-white">Ubah Password</h3>
 
-          <div class="space-y-3 sm:space-y-4">
-            <div>
-              <label for="currentPassword" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Password Saat Ini</label>
-              <input id="currentPassword" type="password" placeholder="Kosongkan jika tidak ingin mengganti password" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white">
-            </div>
+<div class="space-y-3 sm:space-y-4">
+<div>
+<label for="currentPassword" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Password Saat Ini</label>
+<input id="currentPassword" type="password" placeholder="Kosongkan jika tidak ingin mengganti password" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white">
+</div>
 
-            <div>
-              <label for="newPassword" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Password Baru</label>
-              <input id="newPassword" type="password" placeholder="Minimal 8 karakter" minlength="8" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white" oninput="renderPasswordStrength(this.value)">
-              <div id="passwordRules" class="mt-2 sm:mt-3 space-y-2"></div>
-            </div>
-          </div>
-        </div>
+<div>
+<label for="newPassword" class="mb-1.5 sm:mb-2 block text-sm font-bold text-slate-700 dark:text-slate-200">Password Baru</label>
+<input id="newPassword" type="password" placeholder="Minimal 8 karakter" minlength="8" class="w-full rounded-xl border border-slate-200 bg-white py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15 dark:border-slate-700 dark:bg-slate-950 dark:text-white" oninput="renderPasswordStrength(this.value)">
+<div id="passwordRules" class="mt-2 sm:mt-3 space-y-2"></div>
+</div>
+</div>
+</div>
 
-        <div id="successMessage" class="hidden rounded-xl bg-emerald-50 p-3 sm:p-4 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></div>
-        <div id="errorMessage" class="hidden rounded-xl bg-red-50 p-3 sm:p-4 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></div>
+<div id="successMessage" class="hidden rounded-xl bg-emerald-50 p-3 sm:p-4 text-sm font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" role="status"></div>
+<div id="errorMessage" class="hidden rounded-xl bg-red-50 p-3 sm:p-4 text-sm font-bold text-red-700 dark:bg-red-950/40 dark:text-red-300" role="alert"></div>
 
-        <div class="flex flex-col gap-3 pt-3 sm:pt-4 sm:flex-row">
-          <button type="submit" class="flex-1 rounded-xl bg-teal-700 py-3 sm:py-3.5 text-sm sm:text-base font-extrabold text-white shadow-lg shadow-teal-700/20 transition hover:bg-teal-800">Simpan Perubahan</button>
-          <button type="button" onclick="if(confirm('Keluar dari akun?')){PadelGo.Auth.clear();window.location.href='/login/';}" class="flex-1 rounded-xl border-2 border-red-200 py-3 sm:py-3.5 text-sm sm:text-base font-extrabold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40">Logout</button>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="flex flex-col gap-3 pt-3 sm:pt-4 sm:flex-row">
+<button type="submit" class="flex-1 rounded-xl bg-teal-700 py-3 sm:py-3.5 text-sm sm:text-base font-extrabold text-white shadow-lg shadow-teal-700/20 transition hover:bg-teal-800">Simpan Perubahan</button>
+<button type="button" onclick="if(confirm('Keluar dari akun?')){PadelGo.Auth.clear();window.location.href='/login/';}" class="flex-1 rounded-xl border-2 border-red-200 py-3 sm:py-3.5 text-sm sm:text-base font-extrabold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40">Logout</button>
+</div>
+</form>
+</div>
+</div>
 </div>
 
 <script src="/js/shared.js"></script>
@@ -96,31 +96,26 @@ function hideMessages() {
 }
 
 async function uploadAvatarToStorage(supabase, userId, file) {
-  // Generate unique filename
   const ext = file.name.split('.').pop() || 'jpg';
-  const fileName = `avatar-${userId}-${Date.now()}.${ext}`;
-  const filePath = `avatars/${fileName}`;
+  const fileName = `avatars/avatar-${userId}-${Date.now()}.${ext}`;
 
-  // Upload to Supabase Storage
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from('avatars')
-    .upload(filePath, file, {
+    .upload(fileName, file, {
       cacheControl: '3600',
       upsert: true
     });
 
   if (uploadError) {
-    // If bucket doesn't exist, try creating it via the API
     if (uploadError.message && uploadError.message.includes('bucket')) {
       throw new Error('Storage bucket "avatars" belum dibuat. Silakan buat di Supabase Dashboard > Storage.');
     }
     throw new Error(uploadError.message || 'Gagal upload foto');
   }
 
-  // Get public URL
   const { data: publicUrlData } = supabase.storage
     .from('avatars')
-    .getPublicUrl(filePath);
+    .getPublicUrl(fileName);
 
   return publicUrlData?.publicUrl || null;
 }
@@ -181,7 +176,6 @@ async function handleSaveSettings(e) {
     if (!session) throw new Error('Sesi berakhir. Login kembali.');
     const userId = session.user.id;
 
-    // Upload avatar to Supabase Storage if a new file is selected
     let avatarUrl = null;
     const avatarFile = avatarInput.files[0];
     if (avatarFile) {
@@ -192,11 +186,9 @@ async function handleSaveSettings(e) {
         submitBtn.textContent = 'Simpan Perubahan';
         return;
       }
-      // Upload to Supabase Storage
       avatarUrl = await uploadAvatarToStorage(supabase, userId, avatarFile);
     }
 
-    // Re-authenticate if changing password
     if (currentPassword) {
       const { error: reauthError } = await supabase.auth.signInWithPassword({
         email: session.user.email,
@@ -205,20 +197,17 @@ async function handleSaveSettings(e) {
       if (reauthError) throw new Error('Password saat ini salah.');
     }
 
-    // Update profile in database
     const updateData = { id: userId, name, updated_at: new Date().toISOString() };
     if (avatarUrl) updateData.avatar_url = avatarUrl;
 
     const { error: profileError } = await supabase.from('profiles').upsert(updateData, { onConflict: 'id' });
     if (profileError) throw new Error(profileError.message || 'Gagal menyimpan.');
 
-    // Update password if requested
     if (newPassword) {
       const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
       if (updateError) throw new Error(updateError.message || 'Gagal update password');
     }
 
-    // Update local state
     const user = PadelGo.Auth.getUser();
     user.name = name;
     PadelGo.Auth.setUser(user);
@@ -227,13 +216,11 @@ async function handleSaveSettings(e) {
       PadelGo.UI.updateNav(user);
     }
 
-    // Show success popup
     PadelGo.UI.toast('Perubahan berhasil disimpan!', 'success');
     successEl.textContent = '✓ Perubahan berhasil disimpan.';
     successEl.classList.remove('hidden');
     setTimeout(() => successEl.classList.add('hidden'), 4000);
 
-    // Reset form
     document.getElementById('currentPassword').value = '';
     document.getElementById('newPassword').value = '';
     document.getElementById('passwordRules').innerHTML = '';
