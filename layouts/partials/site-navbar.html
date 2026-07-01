@@ -6,12 +6,15 @@
       </span>
       <span class="text-lg font-extrabold text-slate-950 dark:text-white">PadelGo</span>
     </a>
+
+    <!-- Desktop Nav -->
     <div class="hidden items-center gap-1 md:flex">
       <a href="/" class="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Home</a>
       <a href="/order/" class="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Booking</a>
       <a href="/dashboard/" class="nav-dashboard-link hidden rounded-lg px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Dashboard</a>
       <a href="/admin/" class="nav-admin-link hidden rounded-lg px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Admin</a>
     </div>
+
     <div class="flex items-center gap-2">
        <a href="/login/" class="nav-login-link hidden inline-flex rounded-lg px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900">Login</a>
        <a href="/register/" class="nav-register-link hidden inline-flex rounded-lg bg-teal-700 px-4 py-2 text-sm font-extrabold text-white hover:bg-teal-800">Get Started</a>
@@ -22,10 +25,57 @@
         </a>
         <button onclick="logout()" class="rounded-lg px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40">Logout</button>
       </div>
+
+      <!-- Mobile Hamburger -->
+      <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900 md:hidden" title="Menu">
+        <svg id="menuIconOpen" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg id="menuIconClose" class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
       <button onclick="toggleDarkMode()" class="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900" title="Toggle theme">
         <svg data-theme-icon="moon" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
         <svg data-theme-icon="sun" class="hidden h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
       </button>
     </div>
   </div>
+
+  <!-- Mobile Menu Dropdown -->
+  <div id="mobileMenu" class="hidden border-t border-slate-200 bg-white px-4 pb-4 pt-2 dark:border-slate-800 dark:bg-slate-950 md:hidden">
+    <div class="flex flex-col gap-1">
+      <a href="/" class="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Home</a>
+      <a href="/order/" class="rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Booking</a>
+      <a href="/dashboard/" class="nav-dashboard-link-mobile hidden rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Dashboard</a>
+      <a href="/admin/" class="nav-admin-link-mobile hidden rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Admin</a>
+      <a href="/settings/" class="nav-settings-link-mobile hidden rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 hover:text-teal-700 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-teal-300">Settings</a>
+      <hr class="my-2 border-slate-200 dark:border-slate-800">
+      <a href="/login/" class="nav-login-link-mobile hidden rounded-lg px-3 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900">Login</a>
+      <a href="/register/" class="nav-register-link-mobile hidden rounded-lg bg-teal-700 px-3 py-2.5 text-center text-sm font-extrabold text-white hover:bg-teal-800">Get Started</a>
+      <button onclick="logout()" class="nav-logout-btn-mobile hidden rounded-lg px-3 py-2.5 text-left text-sm font-bold text-red-600 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40">Logout</button>
+    </div>
+  </div>
 </nav>
+
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const iconOpen = document.getElementById('menuIconOpen');
+  const iconClose = document.getElementById('menuIconClose');
+  menu.classList.toggle('hidden');
+  iconOpen.classList.toggle('hidden');
+  iconClose.classList.toggle('hidden');
+}
+
+// Update mobile nav visibility alongside desktop
+const origUpdateNav = PadelGo.UI.updateNav;
+PadelGo.UI.updateNav = function(user) {
+  origUpdateNav(user);
+  const hasSession = !!PadelGo.Cookies.get('sess');
+  const role = (user && user.role) || 'user';
+  
+  document.querySelectorAll('.nav-dashboard-link-mobile').forEach(el => el.classList.toggle('hidden', !hasSession));
+  document.querySelectorAll('.nav-admin-link-mobile').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
+  document.querySelectorAll('.nav-settings-link-mobile').forEach(el => el.classList.toggle('hidden', !hasSession));
+  document.querySelectorAll('.nav-login-link-mobile, .nav-register-link-mobile').forEach(el => el.classList.toggle('hidden', hasSession));
+  document.querySelectorAll('.nav-logout-btn-mobile').forEach(el => el.classList.toggle('hidden', !hasSession));
+};
+</script>

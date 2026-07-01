@@ -9,38 +9,39 @@ draft: false
 <img src="/images/home-background.webp" alt="Padel court 1" class="slide absolute inset-0 h-full w-full object-cover opacity-100 transition-opacity duration-[2000ms] ease-in-out">
 <img src="/images/home-background2.jpg" alt="Padel court 2" class="slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[2000ms] ease-in-out">
 </div>
-<div class="absolute inset-0 bg-white/20 dark:bg-slate-950/70"></div>
+<!-- Improved overlay: lighter in dark mode so images/text are readable -->
+<div class="absolute inset-0 bg-white/30 dark:bg-slate-950/50"></div>
 <div class="relative mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-7xl items-center px-4 py-16 sm:px-6 lg:px-8">
 <div class="grid w-full gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
 <div class="max-w-3xl">
-<div class="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm font-bold text-teal-800 dark:border-white/15 dark:bg-white/10 dark:text-teal-100">
+<div class="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50/90 px-4 py-2 text-sm font-bold text-teal-800 backdrop-blur-sm dark:border-white/20 dark:bg-white/10 dark:text-teal-100">
 <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Padel court booking platform
 </div>
-<h1 class="text-5xl font-extrabold leading-tight sm:text-6xl lg:text-7xl text-gray-900 dark:text-white">Booking lapangan padel lebih cepat dan jelas.</h1>
-<p class="mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-slate-300">PadelGo membantu pemain memilih jadwal, melihat ketersediaan, dan menyimpan booking Anda.</p>
+<h1 class="text-5xl font-extrabold leading-tight sm:text-6xl lg:text-7xl text-gray-900 drop-shadow-sm dark:text-white dark:drop-shadow-lg">Booking lapangan padel lebih cepat dan jelas.</h1>
+<p class="mt-6 max-w-2xl text-lg leading-8 text-gray-700 drop-shadow-sm dark:text-slate-200 dark:drop-shadow-md">PadelGo membantu pemain memilih jadwal, melihat ketersediaan, dan menyimpan booking Anda.</p>
 <div class="mt-8 flex flex-wrap gap-3">
 <a href="/order/" class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-6 py-3 font-extrabold text-white shadow-lg shadow-teal-700/25 transition hover:bg-teal-800">Book Court
 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
 </a>
-<a href="#courts" class="inline-flex items-center justify-center rounded-xl border border-teal-300 bg-teal-50 px-6 py-3 font-extrabold text-teal-800 transition hover:bg-teal-100 dark:border-white/25 dark:bg-white/10 dark:text-white dark:hover:bg-white/15">View Courts</a>
+<a href="#courts" class="inline-flex items-center justify-center rounded-xl border border-teal-300 bg-teal-50/90 px-6 py-3 font-extrabold text-teal-800 backdrop-blur-sm transition hover:bg-teal-100 dark:border-white/25 dark:bg-white/10 dark:text-white dark:hover:bg-white/15">View Courts</a>
 </div>
 <div class="mt-12 grid max-w-2xl grid-cols-3 gap-3">
-<div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/10">
+<div class="rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur-sm dark:border-white/15 dark:bg-white/10">
 <p class="text-3xl font-extrabold text-gray-900 dark:text-white">4</p>
-<p class="mt-1 text-sm text-gray-600 dark:text-slate-300">Active courts</p>
+<p class="mt-1 text-sm text-gray-600 dark:text-slate-200">Active courts</p>
 </div>
-<div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/10">
+<div class="rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur-sm dark:border-white/15 dark:bg-white/10">
 <p class="text-3xl font-extrabold text-gray-900 dark:text-white">24</p>
-<p class="mt-1 text-sm text-gray-600 dark:text-slate-300">Playing hours</p>
+<p class="mt-1 text-sm text-gray-600 dark:text-slate-200">Playing hours</p>
 </div>
-<div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-white/10">
+<div class="rounded-2xl border border-gray-200 bg-white/80 p-4 backdrop-blur-sm dark:border-white/15 dark:bg-white/10">
 <p class="text-3xl font-extrabold text-gray-900 dark:text-white">24/7</p>
-<p class="mt-1 text-sm text-gray-600 dark:text-slate-300">Online booking</p>
+<p class="mt-1 text-sm text-gray-600 dark:text-slate-200">Online booking</p>
 </div>
 </div>
 </div>
 <div class="hidden lg:block">
-<div class="ml-auto max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/15 dark:bg-white/10 dark:text-white">
+<div class="ml-auto max-w-md rounded-2xl border border-gray-200 bg-white/90 p-6 shadow-xl backdrop-blur-sm dark:border-white/15 dark:bg-white/10 dark:text-white">
 <div class="flex items-center justify-between">
 <div>
 <p class="text-sm font-bold uppercase tracking-wide text-blue-600 dark:text-blue-200">Today</p>

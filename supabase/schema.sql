@@ -296,6 +296,48 @@ create policy "Admins manage all bookings"
 grant execute on function public.get_booked_slots(text, text) to anon, authenticated;
 grant execute on function public.is_admin() to authenticated;
 
+-- Storage bucket for avatars (requires supabase client library, run once)
+-- To create the bucket: Run this in Supabase SQL editor or use Dashboard > Storage
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+select 'avatars', 'avatars', true, 2097152, array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+where not exists (select 1 from storage.buckets where id = 'avatars');
+
+-- Allow authenticated users to upload their own avatars
+drop policy if exists "Users can upload their own avatar" on storage.objects;
+drop policy if exists "Users can view avatars" on storage.objects;
+drop policy if exists "Users can update their own avatar" on storage.objects;
+
+create policy "Users can upload their own avatar"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'avatars' and
+    (storage.foldername(name))[1] = 'avatars' and
+    (storage.foldername(name))[2] = auth.uid()::text
+  );
+
+create policy "Users can view avatars"
+  on storage.objects
+  for select
+  using (bucket_id = 'avatars');
+
+create policy "Users can update their own avatar"
+  on storage.objects
+  for update
+  to authenticated
+  using (
+    bucket_id = 'avatars' and
+    (storage.foldername(name))[1] = 'avatars' and
+    (storage.foldername(name))[2] = auth.uid()::text
+  );
+
+-- Allow public reads for avatars (since bucket is public)
+create policy "Anyone can view avatars"
+  on storage.objects
+  for select
+  using (bucket_id = 'avatars');
+
 -- Seed courts. Admin account creation is intentionally not included here.
 insert into public.courts (id, name, type, price_per_hour, surface, available) values
   ('A1', 'Pista Norte', 'Exterior', 150000, 'Artificial Grass', true),

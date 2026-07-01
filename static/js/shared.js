@@ -179,21 +179,32 @@ PadelGo.UI = {
       el.src = stored || user.avatar || this.avatar(displayName);
       el.alt = displayName;
     });
+
+    // Mobile nav sync
+    document.querySelectorAll('.nav-dashboard-link-mobile').forEach(el => el.classList.toggle('hidden', !hasSession));
+    document.querySelectorAll('.nav-admin-link-mobile').forEach(el => el.classList.toggle('hidden', !hasSession || role !== 'admin'));
+    document.querySelectorAll('.nav-settings-link-mobile').forEach(el => el.classList.toggle('hidden', !hasSession));
+    document.querySelectorAll('.nav-login-link-mobile, .nav-register-link-mobile').forEach(el => el.classList.toggle('hidden', hasSession));
+    document.querySelectorAll('.nav-logout-btn-mobile').forEach(el => el.classList.toggle('hidden', !hasSession));
   },
   toast(message, type = 'success') {
     let holder = document.getElementById('toastHost');
     if (!holder) {
       holder = document.createElement('div');
       holder.id = 'toastHost';
-      holder.className = 'fixed right-4 top-20 z-[80] space-y-3';
+      holder.className = 'fixed right-2 sm:right-4 top-20 z-[80] space-y-3 w-[calc(100%-16px)] sm:w-auto max-w-sm';
       document.body.appendChild(holder);
     }
     const node = document.createElement('div');
     const color = type === 'error' ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200' : 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200';
-    node.className = `max-w-sm rounded-xl border px-4 py-3 text-sm font-bold shadow-xl ${color}`;
+    node.className = `max-w-sm rounded-xl border px-4 py-3 text-sm font-bold shadow-xl ${color} w-full sm:w-auto`;
     node.textContent = message;
     holder.appendChild(node);
-    window.setTimeout(() => node.remove(), 3600);
+    window.setTimeout(() => {
+      node.style.transition = 'opacity 0.3s';
+      node.style.opacity = '0';
+      setTimeout(() => node.remove(), 300);
+    }, 3600);
   },
 };
 
@@ -208,11 +219,17 @@ window.getAvatarDataUrl = function getAvatarDataUrl(name) {
 window.logout = async function logout() {
   try {
     const client = await PadelGo.Supabase.init();
-    if (client) await client.auth.signOut();
-  } finally {
-    PadelGo.Auth.clear();
-    window.location.href = '/login/';
+    if (client) {
+      const { data: { session } } = await client.auth.getSession();
+      if (session) {
+        await client.auth.signOut();
+      }
+    }
+  } catch (e) {
+    // Continue clearing even if signOut fails
   }
+  PadelGo.Auth.clear();
+  window.location.href = '/login/';
 };
 
 PadelGo.PasswordStrength = {
