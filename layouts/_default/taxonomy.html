@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{ partial "site-head.html" . }}
+</head>
+<body class="font-sans antialiased bg-slate-50 text-slate-950 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+  {{ partial "site-navbar.html" . }}
+  <div class="pt-16">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+      <h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ .Title }}</h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-400">Semua {{ .Title }}</p>
+      <div class="mt-8 flex flex-wrap gap-2">
+        {{ range .Data.Terms }}
+        <a href="{{ .Page.RelPermalink }}" class="rounded-xl bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-teal-100 hover:text-teal-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-teal-900/30 dark:hover:text-teal-300">
+          {{ .Page.Title }} ({{ .Count }})
+        </a>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

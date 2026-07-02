@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {{ partial "site-head.html" . }}
+</head>
+<body class="font-sans antialiased bg-slate-50 text-slate-950 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+  {{ partial "site-navbar.html" . }}
+  <div class="pt-16 flex items-center justify-center min-h-[calc(100vh-4rem)]">
+    <div class="text-center">
+      <div class="text-8xl font-extrabold text-slate-200 dark:text-slate-800">404</div>
+      <h1 class="mt-4 text-2xl font-bold text-slate-900 dark:text-white">Halaman Tidak Ditemukan</h1>
+      <p class="mt-2 text-slate-600 dark:text-slate-400">Maaf, halaman yang Anda cari tidak tersedia.</p>
+      <a href="/" class="mt-6 inline-block rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 px-6 py-3 font-bold text-white shadow-lg hover:from-teal-600 hover:to-teal-700">
+        Kembali ke Beranda
+      </a>
+    </div>
+  </div>
+</body>
+</html>

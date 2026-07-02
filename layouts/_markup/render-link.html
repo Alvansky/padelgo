@@ -1,0 +1,9 @@
+{{ $link := .Destination }}
+{{ $isRemote := strings.HasPrefix $link "http" }}
+{{ if $isRemote }}
+<a href="{{ $link }}"{{ with .Title }} title="{{ . }}"{{ end }}{{ with .Target }} target="{{ . }}"{{ end }} class="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 underline underline-offset-2">
+{{ else }}
+<a href="{{ $link | relURL }}" class="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 underline underline-offset-2">
+{{ end }}
+{{ with .Text }}{{ . | safeHTML }}{{ end }}
+</a>

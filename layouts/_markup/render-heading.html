@@ -1,0 +1,7 @@
+<div class="language-switcher flex items-center gap-2 p-4">
+  {{ range .AllTranslations }}
+  <a href="{{ .RelPermalink }}" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {{ if eq .Lang $.Lang }}bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300{{ else }}text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800{{ end }}">
+    {{ .Language.LanguageName }}
+  </a>
+  {{ end }}
+</div>
