@@ -137,7 +137,12 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  is_admin_email BOOLEAN;
 BEGIN
+  -- Check if this is the admin email
+  is_admin_email := new.email ILIKE '%@admin@padelgo%' OR new.email = 'admin@padelgo.com';
+
   INSERT INTO public.profiles (id, name, email, avatar_url, role)
   VALUES (
     new.id,
@@ -147,12 +152,16 @@ BEGIN
       NULLIF(new.raw_user_meta_data->>'avatar_url', ''),
       NULLIF(new.raw_user_meta_data->>'avatar', '')
     ),
-    'user'
+    CASE WHEN is_admin_email THEN 'admin' ELSE 'user' END
   )
   ON CONFLICT (id) DO UPDATE SET
     email = excluded.email,
     name = COALESCE(public.profiles.name, excluded.name),
-    avatar_url = COALESCE(public.profiles.avatar_url, excluded.avatar_url);
+    avatar_url = COALESCE(public.profiles.avatar_url, excluded.avatar_url),
+    role = CASE
+      WHEN excluded.email = 'admin@padelgo.com' OR excluded.email ILIKE '%@admin@padelgo%' THEN 'admin'
+      ELSE COALESCE(NULLIF(public.profiles.role, 'user'), excluded.role)
+    END;
   RETURN new;
 END;
 $$;
@@ -543,7 +552,16 @@ ON CONFLICT (id) DO UPDATE SET
   image_url = COALESCE(public.courts.image_url, excluded.image_url),
   available = excluded.available;
 
--- Admin bootstrap (create auth user first, then run this)
--- 1. Go to Supabase Dashboard > Authentication > Add User
+-- ============================================================================
+-- ADMIN ACCOUNT SETUP
+-- ============================================================================
+-- Admin account will be created automatically when user signs up with:
+-- Email: admin@padelgo.com
+--
+-- To create the admin manually (if user already exists):
+-- 1. Create user in Supabase Dashboard > Authentication > Add User
 -- 2. Email: admin@padelgo.com
--- 3. Run: UPDATE public.profiles SET role = 'admin' WHERE email = 'admin@padelgo.com';
+-- 3. The trigger will automatically set role='admin' on first profile creation
+-- 4. OR run this SQL manually:
+--    UPDATE public.profiles SET role = 'admin' WHERE email = 'admin@padelgo.com';
+-- ============================================================================
