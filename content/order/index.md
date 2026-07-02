@@ -8,19 +8,6 @@ layout: "order"
 <section class="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 via-slate-100 to-teal-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/20 py-6 sm:py-8">
 <div class="mx-auto max-w-6xl px-4 lg:px-8">
 
-<!-- Header - Centered with Icon -->
-<div class="mb-6 text-center">
-<div class="inline-flex items-center justify-center gap-3">
-<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 shadow-lg shadow-teal-500/20">
-<svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-</div>
-<div class="text-left">
-<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">PadelGo Courts</h1>
-<p class="text-xs text-slate-500 dark:text-slate-400">Reserve your preferred time</p>
-</div>
-</div>
-</div>
-
 <!-- Auth Notice -->
 <div id="authNotice" class="mb-6 rounded-xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-orange-50 p-4 shadow-sm dark:border-amber-800/50 dark:from-amber-950/50 dark:to-orange-950/50">
 <div class="flex items-center gap-3">
