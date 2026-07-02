@@ -113,7 +113,7 @@ END $$;
 
 -- Update existing records with booking_id
 UPDATE public.bookings
-SET booking_id = 'PG' || upper(substr(replace(uuid_generate_v4()::text, '-', ''), 1, 6))
+SET booking_id = 'PG' || upper(substr(replace(uuid_generate_v4()::TEXT, '-', ''), 1, 6))
 WHERE booking_id IS NULL OR booking_id = '';
 
 -- ============================================================================
@@ -369,7 +369,7 @@ BEGIN
     WHERE b.court_id = new.court_id
       AND b.date = new.date
       AND b.status != 'cancelled'
-      AND b.id != COALESCE(new.id, gen_random_uuid())
+      AND b.id != COALESCE(new.id, '00000000-0000-0000-0000-000000000000'::UUID)
       AND split_part(b.start_time, ':', 1)::INTEGER < end_hour
       AND split_part(b.end_time, ':', 1)::INTEGER > start_hour
   ) THEN
