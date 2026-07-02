@@ -827,8 +827,12 @@ async function init() {
   setInitTimeout();
 
   try {
-    // Load Supabase library if not already loaded
-    if (!window.supabase) {
+    // Check if Supabase is already loaded (from shared.js)
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      log('Supabase SDK already loaded');
+      supabase = window.supabase.createClient(SB_URL, SB_KEY);
+    } else {
+      // Load Supabase library
       log('Loading Supabase SDK...');
       await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
@@ -848,11 +852,9 @@ async function init() {
         };
         document.head.appendChild(s);
       });
+      supabase = window.supabase.createClient(SB_URL, SB_KEY);
     }
 
-    // Create Supabase client
-    log('Creating Supabase client...');
-    supabase = window.supabase.createClient(SB_URL, SB_KEY);
     log('Supabase client created');
 
     // Check auth
