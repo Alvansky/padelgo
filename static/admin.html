@@ -1,494 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Dashboard - PadelGo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-        }
-      }
-    };
-  </script>
-  <script src="/js/shared.js"></script>
-  <script src="/js/admin.js"></script>
-  <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - PadelGo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{font-family:'Inter',sans-serif}</style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 min-h-screen">
+<body class="bg-gray-100 min-h-screen">
 
-  <!-- Loading State -->
-  <div id="adminLoading" class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-slate-950">
-    <div class="text-center">
-      <div class="w-16 h-16 border-4 border-slate-200 border-t-teal-500 rounded-full animate-spin mx-auto"></div>
-      <p class="mt-4 text-slate-600 dark:text-slate-400 font-medium">Memuat Dashboard...</p>
-    </div>
-  </div>
+<div id="loading" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+<div class="text-center"><div class="w-12 h-12 border-4 border-gray-200 border-t-teal-500 rounded-full animate-spin mx-auto"></div><p class="mt-4 text-gray-600">Memuat...</p></div>
+</div>
 
-  <!-- Error State -->
-  <div id="adminError" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-slate-950">
-    <div class="text-center max-w-md mx-auto px-4">
-      <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-        <svg class="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-      </div>
-      <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Akses Ditolak</h2>
-      <p id="adminErrorText" class="text-slate-600 dark:text-slate-400 mb-6"></p>
-      <a href="/login/" class="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-xl font-bold transition-colors">
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-        </svg>
-        Login Sekarang
-      </a>
-    </div>
-  </div>
+<div id="errorPage" class="hidden fixed inset-0 flex items-center justify-center bg-white z-50">
+<div class="text-center p-8"><h2 class="text-2xl font-bold text-gray-900 mb-2">Akses Ditolak</h2><p id="errorMsg" class="text-gray-600 mb-6"></p><a href="/login/" class="bg-teal-500 text-white px-6 py-3 rounded-lg font-bold">Login</a></div>
+</div>
 
-  <!-- Toast Container -->
-  <div id="toastContainer" class="fixed top-4 right-4 z-50 hidden"></div>
+<div id="mainPage" class="hidden">
+<header class="bg-white shadow-sm"><div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-700 rounded-xl flex items-center justify-center"><span class="text-white font-bold">P</span></div><span class="font-bold text-xl">PadelGo</span><span class="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-bold">Admin</span></div><button onclick="refreshData()" class="p-2 hover:bg-gray-100 rounded-lg">🔄</button><button onclick="logoutUser()" class="p-2 hover:bg-red-50 text-red-600 rounded-lg">🚪</button></div></header>
 
-  <!-- Admin Content -->
-  <div id="adminContent" class="hidden">
+<main class="max-w-6xl mx-auto px-4 py-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-gray-500">Total</p><p id="totalAll" class="text-2xl font-bold">0</p></div>
+<div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-amber-600">Pending</p><p id="totalPending" class="text-2xl font-bold text-amber-600">0</p></div>
+<div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-emerald-600">Approved</p><p id="totalApproved" class="text-2xl font-bold text-emerald-600">0</p></div>
+<div class="bg-white rounded-xl p-5 shadow-sm"><p class="text-sm text-purple-600">Revenue</p><p id="totalRevenue" class="text-xl font-bold text-purple-600">Rp 0</p></div>
+</div>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-      <div class="flex items-center justify-between px-4 py-3">
-        <div class="flex items-center gap-3">
-          <button onclick="adminToggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-6 h-6 text-slate-600 dark:text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-teal-700 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16c3.5-4.5 6.5-7.5 10-9m-8 12 8-8m-8 0 8 8"/>
-              </svg>
-            </div>
-            <span class="font-bold text-slate-900 dark:text-white">PadelGo</span>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button onclick="adminRefresh()" class="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
-            <span class="hidden sm:inline text-sm font-medium">Refresh</span>
-          </button>
-          <div class="flex items-center gap-2 px-3 py-2 bg-teal-50 dark:bg-teal-900/30 rounded-lg border border-teal-200 dark:border-teal-800">
-            <svg class="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="text-sm font-bold text-teal-700 dark:text-teal-300">Admin</span>
-          </div>
-        </div>
-      </div>
-    </header>
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+<div class="flex border-b border-gray-200">
+<button onclick="showPanel('bookings')" id="btnBookings" class="px-6 py-4 font-semibold text-teal-600 border-b-2 border-teal-500">Booking</button>
+<button onclick="showPanel('manual')" id="btnManual" class="px-6 py-4 font-semibold text-gray-500">Manual</button>
+<button onclick="showPanel('finance')" id="btnFinance" class="px-6 py-4 font-semibold text-gray-500">Keuangan</button>
+<button onclick="showPanel('users')" id="btnUsers" class="px-6 py-4 font-semibold text-gray-500">Users</button>
+</div>
 
-    <div class="flex">
-      <!-- Sidebar -->
-      <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform pt-16">
+<div id="panelBookings" class="p-6 space-y-3"></div>
 
-        <!-- Admin Info -->
-        <div class="p-4 border-b border-slate-200 dark:border-slate-800">
-          <div class="flex items-center gap-3">
-            <div id="adminAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold">A</div>
-            <div>
-              <p id="adminName" class="font-bold text-slate-900 dark:text-white">Admin</p>
-              <p class="text-xs text-slate-500">Administrator</p>
-            </div>
-          </div>
-        </div>
+<div id="panelManual" class="p-6 hidden">
+<form id="bookingForm" class="max-w-lg space-y-4">
+<div class="grid md:grid-cols-2 gap-4">
+<input type="text" id="fName" placeholder="Nama *" required class="w-full px-4 py-3 border rounded-xl">
+<input type="email" id="fEmail" placeholder="Email *" required class="w-full px-4 py-3 border rounded-xl">
+<input type="tel" id="fPhone" placeholder="Telepon *" required class="w-full px-4 py-3 border rounded-xl">
+<input type="date" id="fDate" required class="w-full px-4 py-3 border rounded-xl">
+<select id="fCourt" required class="w-full px-4 py-3 border rounded-xl"><option value="">Pilih Lapangan</option></select>
+<select id="fDuration" class="w-full px-4 py-3 border rounded-xl"><option value="1">1 Jam</option><option value="2">2 Jam</option><option value="3">3 Jam</option><option value="4">4 Jam</option></select>
+<select id="fTime" required class="w-full px-4 py-3 border rounded-xl"><option value="">Pilih Waktu</option><option>06:00</option><option>07:00</option><option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option><option>17:00</option><option>18:00</option><option>19:00</option><option>20:00</option><option>21:00</option></select>
+</div>
+<button type="submit" class="w-full bg-teal-500 text-white py-4 rounded-xl font-bold">Buat Booking</button>
+</form>
+</div>
 
-        <!-- Navigation -->
-        <nav class="p-3 space-y-1">
-          <button onclick="adminNavigate('overview')" data-page="overview" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-            Overview
-          </button>
+<div id="panelFinance" class="p-6 hidden">
+<div class="grid grid-cols-3 gap-4 mb-6">
+<div class="bg-emerald-50 rounded-xl p-4"><p class="text-sm text-emerald-700">Approved</p><p id="finApproved" class="text-lg font-bold text-emerald-600">Rp 0</p></div>
+<div class="bg-amber-50 rounded-xl p-4"><p class="text-sm text-amber-700">Pending</p><p id="finPending" class="text-lg font-bold text-amber-600">Rp 0</p></div>
+<div class="bg-red-50 rounded-xl p-4"><p class="text-sm text-red-700">Cancelled</p><p id="finCancelled" class="text-lg font-bold text-red-600">Rp 0</p></div>
+</div>
+<div id="financeData"></div>
+</div>
 
-          <button onclick="adminNavigate('bookings')" data-page="bookings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Booking List
-            <span id="pendingBadge" class="hidden ml-auto px-2 py-0.5 bg-amber-500 text-white text-xs font-bold rounded-full"></span>
-          </button>
+<div id="panelUsers" class="p-6 hidden"><div id="usersData"></div></div>
+</div>
+</main>
+</div>
 
-          <button onclick="adminNavigate('manual')" data-page="manual" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-            Booking Manual
-          </button>
+<div id="toast" class="hidden fixed bottom-4 right-4 px-6 py-3 rounded-xl font-semibold shadow-lg z-50"></div>
 
-          <button onclick="adminNavigate('finance')" data-page="finance" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            Keuangan
-          </button>
+<script>
+var SB_URL = 'https://fgjmqqdwyvawtvfkzgrr.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnam1xcWR3eXZhd3R2Zmt6Z3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTkzNTksImV4cCI6MjA5ODM5NTM1OX0.rEGjOsJ3oIY2SryTdPFSOt3lxjsycxbHtifzeUnwYlE';
+var supabase, bookings = [], courts = [], users = [];
 
-          <button onclick="adminNavigate('reports')" data-page="reports" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            Laporan
-          </button>
+function E(id) { return document.getElementById(id); }
+function RP(n) { return 'Rp ' + Number(n||0).toLocaleString('id-ID'); }
+function EH(s) { if(!s)return''; return s.replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
-          <button onclick="adminNavigate('courts')" data-page="courts" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
-            Lapangan
-          </button>
+function showToast(msg, err) {
+  var t = E('toast');
+  t.textContent = msg;
+  t.className = 'fixed bottom-4 right-4 px-6 py-3 rounded-xl font-semibold shadow-lg z-50 ' + (err?'bg-red-500 text-white':'bg-gray-900 text-white');
+  t.classList.remove('hidden');
+  setTimeout(function(){ t.classList.add('hidden'); }, 3000);
+}
 
-          <button onclick="adminNavigate('users')" data-page="users" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-            Users
-          </button>
-        </nav>
+async function init() {
+  try {
+    if (!window.supabase) {
+      await new Promise(function(res, rej) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
-        <!-- Logout -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-200 dark:border-slate-800">
-          <button onclick="adminLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-            Logout
-          </button>
-        </div>
-      </aside>
+    var res = await supabase.auth.getSession();
+    if (!res.data || !res.data.session) throw new Error('Silakan login dulu');
 
-      <!-- Sidebar Overlay -->
-      <div id="sidebarOverlay" onclick="adminToggleSidebar()" class="fixed inset-0 z-40 bg-black/50 opacity-0 invisible lg:hidden transition-opacity"></div>
+    var profile = await supabase.from('profiles').select('*').eq('id', res.data.session.user.id).single();
+    if (!profile.data) throw new Error('Profile tidak ditemukan');
+    if (profile.data.role !== 'admin') throw new Error('Anda bukan admin');
 
-      <!-- Main Content -->
-      <main class="flex-1 lg:ml-64 p-6">
+    var b = await supabase.from('bookings').select('*').order('created_at', {ascending:false});
+    var c = await supabase.from('courts').select('*').order('name');
+    var u = await supabase.from('profiles').select('*').order('created_at', {ascending:false});
 
-        <!-- ============ OVERVIEW PAGE ============ -->
-        <section id="page-overview" class="admin-page">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Dashboard Overview</h1>
+    bookings = b.data || [];
+    courts = c.data || [];
+    users = u.data || [];
 
-          <!-- Stats -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-              <p class="text-sm text-slate-500 mb-1">Total Booking</p>
-              <p id="statTotal" class="text-3xl font-bold text-slate-900 dark:text-white">0</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-              <p class="text-sm text-amber-600 mb-1">Pending</p>
-              <p id="statPending" class="text-3xl font-bold text-amber-600">0</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-              <p class="text-sm text-emerald-600 mb-1">Approved</p>
-              <p id="statApproved" class="text-3xl font-bold text-emerald-600">0</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-              <p class="text-sm text-purple-600 mb-1">Revenue</p>
-              <p id="statRevenue" class="text-2xl font-bold text-purple-600">Rp 0</p>
-            </div>
-          </div>
+    E('loading').classList.add('hidden');
+    E('mainPage').classList.remove('hidden');
+    renderAll();
+  } catch(e) {
+    E('loading').classList.add('hidden');
+    E('errorMsg').textContent = e.message;
+    E('errorPage').classList.remove('hidden');
+  }
+}
 
-          <div class="grid lg:grid-cols-3 gap-6">
-            <!-- Calendar -->
-            <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-              <div class="flex items-center justify-between mb-4">
-                <h2 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <svg class="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                  Kalender
-                </h2>
-                <span id="calMonth" class="font-bold text-slate-900 dark:text-white"></span>
-              </div>
-              <div class="grid grid-cols-7 gap-2 text-center text-xs mb-2">
-                <div class="text-slate-400 py-2">Min</div>
-                <div class="text-slate-500 py-2">Sen</div>
-                <div class="text-slate-500 py-2">Sel</div>
-                <div class="text-slate-500 py-2">Rab</div>
-                <div class="text-slate-500 py-2">Kam</div>
-                <div class="text-slate-500 py-2">Jum</div>
-                <div class="text-slate-400 py-2">Sab</div>
-              </div>
-              <div id="calGrid" class="grid grid-cols-7 gap-2"></div>
-              <div class="mt-4 flex items-center justify-center gap-6 text-xs text-slate-500">
-                <span class="flex items-center gap-1"><span class="w-3 h-3 bg-emerald-500 rounded-full"></span> Approved</span>
-                <span class="flex items-center gap-1"><span class="w-3 h-3 bg-amber-500 rounded-full"></span> Pending</span>
-              </div>
-            </div>
+function renderAll() {
+  var approved = bookings.filter(function(b){return b.status==='approved'});
+  var pending = bookings.filter(function(b){return b.status==='pending'});
 
-            <!-- Quick Stats -->
-            <div class="space-y-4">
-              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white mb-3">Ringkasan</h3>
-                <div class="space-y-3">
-                  <div class="flex justify-between p-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/20">
-                    <span class="text-sm text-emerald-800 dark:text-emerald-200">Revenue</span>
-                    <span id="finApproved" class="font-bold text-emerald-600 dark:text-emerald-400">Rp 0</span>
-                  </div>
-                  <div class="flex justify-between p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-                    <span class="text-sm text-amber-800 dark:text-amber-200">Pending</span>
-                    <span id="finPending" class="font-bold text-amber-600 dark:text-amber-400">Rp 0</span>
-                  </div>
-                  <div class="flex justify-between p-2 rounded-lg bg-red-50 dark:bg-red-900/20">
-                    <span class="text-sm text-red-800 dark:text-red-200">Cancelled</span>
-                    <span id="finCancelled" class="font-bold text-red-600 dark:text-red-400">Rp 0</span>
-                  </div>
-                </div>
-              </div>
+  E('totalAll').textContent = bookings.length;
+  E('totalPending').textContent = pending.length;
+  E('totalApproved').textContent = approved.length;
+  E('totalRevenue').textContent = RP(approved.reduce(function(s,b){return s+(b.amount||0)},0));
 
-              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white mb-3">Booking Terbaru</h3>
-                <div id="recentList" class="space-y-2"></div>
-              </div>
-            </div>
-          </div>
-        </section>
+  E('finApproved').textContent = RP(approved.reduce(function(s,b){return s+(b.amount||0)},0));
+  E('finPending').textContent = RP(pending.reduce(function(s,b){return s+(b.amount||0)},0));
+  E('finCancelled').textContent = RP(bookings.filter(function(b){return b.status==='cancelled'}).reduce(function(s,b){return s+(b.amount||0)},0));
 
-        <!-- ============ BOOKINGS PAGE ============ -->
-        <section id="page-bookings" class="admin-page hidden">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Booking List</h1>
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead class="bg-slate-50 dark:bg-slate-800">
-                  <tr>
-                    <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">User</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Lapangan</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Tanggal</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Waktu</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Status</th>
-                    <th class="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Jumlah</th>
-                    <th class="px-4 py-3 text-center text-xs font-bold uppercase text-slate-500">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="bookingsBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+  var courtOpts = '<option value="">Pilih Lapangan</option>';
+  courts.forEach(function(c){ if(c.available) courtOpts += '<option value="'+c.id+'">'+EH(c.name)+' - '+RP(c.price_per_hour)+'/jam</option>'; });
+  E('fCourt').innerHTML = courtOpts;
 
-        <!-- ============ MANUAL BOOKING PAGE ============ -->
-        <section id="page-manual" class="admin-page hidden">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Booking Manual</h1>
-          <form onsubmit="adminSubmitManualBooking(event)" class="max-w-2xl space-y-6">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-              <h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <svg class="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                Data Customer (Wajib)
-              </h3>
-              <div class="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap *</label>
-                  <input id="mbName" required placeholder="Nama lengkap" class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email *</label>
-                  <input id="mbEmail" type="email" required placeholder="email@example.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">No. Telepon *</label>
-                  <input id="mbPhone" type="tel" required placeholder="08xxxxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none">
-                </div>
-              </div>
-            </div>
+  var today = new Date().toISOString().split('T')[0];
+  E('fDate').min = today;
+  E('fDate').value = today;
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-              <h3 class="font-bold text-slate-900 dark:text-white mb-4">Detail Booking</h3>
-              <div class="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tanggal *</label>
-                  <input id="mbDate" type="date" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 outline-none">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Lapangan *</label>
-                  <select id="mbCourt" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 outline-none">
-                    <option value="">Pilih Lapangan</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Durasi</label>
-                  <select id="mbDuration" class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 outline-none">
-                    <option value="1">1 Jam</option>
-                    <option value="2">2 Jam</option>
-                    <option value="3">3 Jam</option>
-                    <option value="4">4 Jam</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Waktu Mulai</label>
-                  <select id="mbTime" required class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:border-teal-500 outline-none">
-                    <option value="">Pilih Waktu</option>
-                    <option value="06:00">06:00</option>
-                    <option value="07:00">07:00</option>
-                    <option value="08:00">08:00</option>
-                    <option value="09:00">09:00</option>
-                    <option value="10:00">10:00</option>
-                    <option value="11:00">11:00</option>
-                    <option value="12:00">12:00</option>
-                    <option value="13:00">13:00</option>
-                    <option value="14:00">14:00</option>
-                    <option value="15:00">15:00</option>
-                    <option value="16:00">16:00</option>
-                    <option value="17:00">17:00</option>
-                    <option value="18:00">18:00</option>
-                    <option value="19:00">19:00</option>
-                    <option value="20:00">20:00</option>
-                    <option value="21:00">21:00</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+  renderBookings();
+  renderFinance();
+  renderUsers();
+}
 
-            <button type="submit" class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-bold transition-colors">
-              Buat Booking (Auto-Approved)
-            </button>
-          </form>
-        </section>
+function renderBookings() {
+  var html = '';
+  if (bookings.length === 0) {
+    html = '<p class="text-center text-gray-500 py-8">Belum ada booking</p>';
+  } else {
+    bookings.forEach(function(b) {
+      var color = b.status==='approved'?'bg-emerald-100 text-emerald-700':b.status==='pending'?'bg-amber-100 text-amber-700':'bg-red-100 text-red-700';
+      var user = users.find(function(u){return u.id===b.user_id});
+      html += '<div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">';
+      html += '<div><p class="font-semibold">'+EH(b.court_name)+'</p><p class="text-sm text-gray-500">'+b.date+' '+b.start_time+'-'+b.end_time+'</p><p class="text-sm text-gray-500">'+EH(user?(user.name||user.email):'-')+'</p></div>';
+      html += '<div class="text-right"><span class="px-3 py-1 rounded-full text-sm font-bold '+color+'">'+b.status+'</span>';
+      html += '<p class="font-bold mt-1">'+RP(b.amount)+'</p>';
+      if (b.status === 'pending') {
+        html += '<button onclick="setStatus(\''+b.id+'\',\'approved\')" class="mt-2 px-3 py-1 bg-emerald-500 text-white text-sm rounded-lg">Approve</button>';
+      }
+      html += '</div></div>';
+    });
+  }
+  E('panelBookings').innerHTML = html;
+}
 
-        <!-- ============ FINANCE PAGE ============ -->
-        <section id="page-finance" class="admin-page hidden">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Keuangan</h1>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 p-5">
-              <p class="text-sm text-emerald-700 dark:text-emerald-300">Total Approved</p>
-              <p id="finTotalApproved" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">Rp 0</p>
-            </div>
-            <div class="bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800 p-5">
-              <p class="text-sm text-amber-700 dark:text-amber-300">Pending Pipeline</p>
-              <p id="finTotalPending" class="text-xl font-bold text-amber-600 dark:text-amber-400">Rp 0</p>
-            </div>
-            <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800 p-5">
-              <p class="text-sm text-red-700 dark:text-red-300">Cancelled</p>
-              <p id="finTotalCancelled" class="text-xl font-bold text-red-600 dark:text-red-400">Rp 0</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5">
-              <p class="text-sm text-slate-500">Total Booking</p>
-              <p id="finTotalCount" class="text-xl font-bold text-slate-700 dark:text-slate-300">0</p>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <table class="w-full">
-              <thead class="bg-slate-50 dark:bg-slate-800">
-                <tr>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Lapangan</th>
-                  <th class="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Total</th>
-                  <th class="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Approved</th>
-                  <th class="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Pending</th>
-                  <th class="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Cancelled</th>
-                </tr>
-              </thead>
-              <tbody id="financeBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-            </table>
-          </div>
-        </section>
+function renderFinance() {
+  var byCourt = {};
+  bookings.forEach(function(b) {
+    if (!byCourt[b.court_name]) byCourt[b.court_name] = {approved:0,pending:0,cancelled:0,amount:0};
+    if (b.status==='approved') byCourt[b.court_name].approved++;
+    else if (b.status==='pending') byCourt[b.court_name].pending++;
+    else byCourt[b.court_name].cancelled++;
+    if (b.status==='approved') byCourt[b.court_name].amount += b.amount||0;
+  });
 
-        <!-- ============ REPORTS PAGE ============ -->
-        <section id="page-reports" class="admin-page hidden">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Laporan</h1>
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 mb-6">
-            <div class="grid sm:grid-cols-4 gap-4 mb-4">
-              <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">Dari Tanggal</label>
-                <input id="repFrom" type="date" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">Sampai Tanggal</label>
-                <input id="repTo" type="date" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">Lapangan</label>
-                <select id="repCourt" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                  <option value="">Semua</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-slate-500 mb-1">Status</label>
-                <select id="repStatus" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                  <option value="">Semua</option>
-                  <option value="approved">Approved</option>
-                  <option value="pending">Pending</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-            </div>
-            <button onclick="adminGenerateReport()" class="bg-teal-500 hover:bg-teal-600 text-white px-5 py-2 rounded-lg font-bold transition-colors mr-2">Generate</button>
-            <button onclick="adminExportCSV()" class="bg-slate-700 hover:bg-slate-800 text-white px-5 py-2 rounded-lg font-bold transition-colors">Download CSV</button>
-          </div>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4">
-              <p class="text-xs text-slate-500 uppercase">Total Booking</p>
-              <p id="repTotal" class="text-2xl font-bold text-slate-900 dark:text-white">0</p>
-            </div>
-            <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 p-4">
-              <p class="text-xs text-emerald-600 uppercase">Revenue</p>
-              <p id="repRevenue" class="text-2xl font-bold text-emerald-600">Rp 0</p>
-            </div>
-            <div class="bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800 p-4">
-              <p class="text-xs text-amber-600 uppercase">Pending</p>
-              <p id="repPending" class="text-2xl font-bold text-amber-600">0</p>
-            </div>
-            <div class="bg-purple-50 dark:bg-purple-900/20 rounded-2xl border border-purple-200 dark:border-purple-800 p-4">
-              <p class="text-xs text-purple-600 uppercase">User Aktif</p>
-              <p id="repUsers" class="text-2xl font-bold text-purple-600">0</p>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <table class="w-full">
-              <thead class="bg-slate-50 dark:bg-slate-800">
-                <tr>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">#</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Lapangan</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Tanggal</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Waktu</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Durasi</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Status</th>
-                  <th class="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Jumlah</th>
-                </tr>
-              </thead>
-              <tbody id="reportBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-            </table>
-          </div>
-        </section>
+  var html = '';
+  var keys = Object.keys(byCourt);
+  if (keys.length === 0) {
+    html = '<p class="text-center text-gray-500 py-8">Tidak ada data</p>';
+  } else {
+    keys.forEach(function(court) {
+      var d = byCourt[court];
+      html += '<div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">';
+      html += '<p class="font-semibold">'+EH(court)+'</p>';
+      html += '<div class="flex gap-4 text-sm">';
+      html += '<span class="text-emerald-600">✓ '+d.approved+'</span>';
+      html += '<span class="text-amber-600">⏳ '+d.pending+'</span>';
+      html += '<span class="text-red-600">✕ '+d.cancelled+'</span>';
+      html += '<span class="font-bold">'+RP(d.amount)+'</span></div></div>';
+    });
+  }
+  E('financeData').innerHTML = html;
+}
 
-        <!-- ============ COURTS PAGE ============ -->
-        <section id="page-courts" class="admin-page hidden">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Lapangan</h1>
-          <div id="courtsList" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-        </section>
+function renderUsers() {
+  var html = '';
+  if (users.length === 0) {
+    html = '<p class="text-center text-gray-500 py-8">Belum ada user</p>';
+  } else {
+    users.forEach(function(u) {
+      var rc = u.role==='admin'?'bg-purple-100 text-purple-700':'bg-gray-100 text-gray-700';
+      html += '<div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">';
+      html += '<div><p class="font-semibold">'+EH(u.name||'-')+'</p><p class="text-sm text-gray-500">'+EH(u.email||'-')+'</p></div>';
+      html += '<span class="px-3 py-1 rounded-full text-sm font-bold '+rc+'">'+(u.role||'user')+'</span></div>';
+    });
+  }
+  E('usersData').innerHTML = html;
+}
 
-        <!-- ============ USERS PAGE ============ -->
-        <section id="page-users" class="admin-page hidden">
-          <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">Users</h1>
-          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <table class="w-full">
-              <thead class="bg-slate-50 dark:bg-slate-800">
-                <tr>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Nama</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Email</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Telepon</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Role</th>
-                  <th class="px-4 py-3 text-left text-xs font-bold uppercase text-slate-500">Bergabung</th>
-                </tr>
-              </thead>
-              <tbody id="usersBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-            </table>
-          </div>
-        </section>
+async function setStatus(id, status) {
+  try {
+    await supabase.from('bookings').update({status:status}).eq('id',id);
+    showToast('Status updated');
+    var b = await supabase.from('bookings').select('*').order('created_at',{ascending:false});
+    bookings = b.data||[];
+    renderAll();
+  } catch(e) { showToast('Error: '+e.message, true); }
+}
 
-      </main>
-    </div>
-  </div>
+function showPanel(name) {
+  var panels = ['panelBookings','panelManual','panelFinance','panelUsers'];
+  var btns = ['btnBookings','btnManual','btnFinance','btnUsers'];
+  var names = ['bookings','manual','finance','users'];
+  panels.forEach(function(p){ E(p).classList.add('hidden'); });
+  btns.forEach(function(b){
+    E(b).classList.remove('text-teal-600','border-b-2','border-teal-500');
+    E(b).classList.add('text-gray-500');
+  });
+  var idx = names.indexOf(name);
+  if (idx >= 0) {
+    E(panels[idx]).classList.remove('hidden');
+    E(btns[idx]).classList.add('text-teal-600','border-b-2','border-teal-500');
+    E(btns[idx]).classList.remove('text-gray-500');
+  }
+}
 
-  <!-- Day Modal -->
-  <div id="dayModal" class="hidden fixed inset-0 z-50">
-    <div class="absolute inset-0 bg-black/50" onclick="adminCloseDayModal()"></div>
-    <div class="absolute inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden">
-      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
-        <h3 id="dayTitle" class="font-bold text-slate-900 dark:text-white"></h3>
-        <button onclick="adminCloseDayModal()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
-          <svg class="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div id="dayContent" class="p-4 max-h-[60vh] overflow-y-auto"></div>
-    </div>
-  </div>
+async function refreshData() {
+  try {
+    var b = await supabase.from('bookings').select('*').order('created_at',{ascending:false});
+    var c = await supabase.from('courts').select('*').order('name');
+    var u = await supabase.from('profiles').select('*').order('created_at',{ascending:false});
+    bookings = b.data||[];
+    courts = c.data||[];
+    users = u.data||[];
+    renderAll();
+    showToast('Data refreshed');
+  } catch(e) { showToast('Error: '+e.message, true); }
+}
 
+function logoutUser() {
+  supabase.auth.signOut();
+  window.location.href = '/login/';
+}
+
+E('bookingForm').onsubmit = async function(e) {
+  e.preventDefault();
+  var name = E('fName').value.trim();
+  var email = E('fEmail').value.trim();
+  var phone = E('fPhone').value.trim();
+  var date = E('fDate').value;
+  var courtId = E('fCourt').value;
+  var duration = parseInt(E('fDuration').value)||1;
+  var time = E('fTime').value;
+
+  if (!name||!email||!phone||!date||!courtId||!time) {
+    showToast('Lengkapi semua data!', true);
+    return;
+  }
+
+  try {
+    var userR = await supabase.from('profiles').select('id').eq('email',email).single();
+    if (!userR.data) {
+      showToast('User tidak ditemukan. Harap daftar dulu.', true);
+      return;
+    }
+    var court = courts.find(function(c){return c.id===courtId});
+    var endH = parseInt(time.split(':')[0]) + duration;
+    var amount = (court?court.price_per_hour:150000) * duration;
+
+    await supabase.from('bookings').insert({
+      id: 'BK'+Date.now(),
+      user_id: userR.data.id,
+      court_id: courtId,
+      court_name: court?court.name:courtId,
+      date: date,
+      start_time: time,
+      end_time: String(endH).padStart(2,'0')+':00',
+      duration_hours: duration,
+      amount: amount,
+      status: 'approved'
+    });
+
+    showToast('Booking berhasil!');
+    E('bookingForm').reset();
+    await refreshData();
+  } catch(err) { showToast('Error: '+err.message, true); }
+};
+
+init();
+</script>
 </body>
 </html>
