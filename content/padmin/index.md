@@ -997,8 +997,10 @@ async function adminLoad() {
     
     // Update admin info in sidebar
     var adminName = profileRes.data.name || profileRes.data.email || 'Admin';
-    document.getElementById('adminName').textContent = adminName;
-    document.getElementById('adminAvatar').textContent = adminName.charAt(0).toUpperCase();
+    var adminNameEl = document.getElementById('adminName');
+    var adminAvatarEl = document.getElementById('adminAvatar');
+    if (adminNameEl) adminNameEl.textContent = adminName;
+    if (adminAvatarEl) adminAvatarEl.textContent = adminName.charAt(0).toUpperCase();
     
     // Load all data
     var bRes = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
@@ -1010,27 +1012,45 @@ async function adminLoad() {
     adminUsers = uRes.data || [];
     adminProfileById = new Map(adminUsers.map(function(u) { return [u.id, u]; }));
     
-    document.getElementById('adminLoading').style.display = 'none';
-    document.getElementById('adminContent').style.display = 'block';
+    var loadingEl = document.getElementById('adminLoading');
+    var contentEl = document.getElementById('adminContent');
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
     
     adminRenderAll();
   } catch (err) {
-    adminShowError('Error: ' + (err.message || err.toString()));
+    var errorMsg = 'Terjadi kesalahan. Coba lagi.';
+    if (err) {
+      if (typeof err === 'string') {
+        errorMsg = err;
+      } else if (err.message) {
+        errorMsg = String(err.message);
+      } else if (err.error) {
+        errorMsg = String(err.error.message || err.error);
+      }
+    }
+    adminShowError(errorMsg);
     console.error('Admin load error:', err);
   }
 }
 
 function adminShowError(msg) {
-  document.getElementById('adminLoading').style.display = 'none';
-  document.getElementById('adminAuthError').style.display = 'flex';
-  document.getElementById('adminErrorText').textContent = msg;
+  var loading = document.getElementById('adminLoading');
+  var authError = document.getElementById('adminAuthError');
+  var errorText = document.getElementById('adminErrorText');
+  
+  if (loading) loading.style.display = 'none';
+  if (authError) authError.style.display = 'flex';
+  if (errorText) errorText.textContent = msg || 'Terjadi kesalahan.';
 }
 
 function adminShowMessage(msg, type) {
   var msgEl = document.getElementById(type === 'error' ? 'adminErrorMsg' : 'adminSuccessMsg');
-  msgEl.querySelector('p').textContent = msg;
-  msgEl.classList.remove('hidden');
-  setTimeout(function() { msgEl.classList.add('hidden'); }, 5000);
+  if (msgEl && msgEl.querySelector('p')) {
+    msgEl.querySelector('p').textContent = msg || '';
+    msgEl.classList.remove('hidden');
+    setTimeout(function() { msgEl.classList.add('hidden'); }, 5000);
+  }
 }
 
 // Toggle Sidebar
