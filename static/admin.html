@@ -327,7 +327,11 @@ body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(
     <div class="error-icon"><span class="material-icons">error_outline</span></div>
     <h2 class="error-title">Akses Ditolak</h2>
     <p id="errorMsg" class="error-msg"></p>
-    <a href="/login/" class="btn btn-primary"><span class="material-icons">login</span> Login</a>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/login/" class="btn btn-primary"><span class="material-icons">login</span> Login</a>
+      <button class="btn btn-secondary" onclick="retryInit()"><span class="material-icons">refresh</span> Coba Lagi</button>
+    </div>
+    <p style="margin-top:20px;font-size:12px;color:var(--gray-400);">Buka DevTools (F12) > Console untuk melihat error details</p>
   </div>
 </div>
 
@@ -707,12 +711,31 @@ body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(
 const SB_URL = 'https://fgjmqqdwyvawtvfkzgrr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnam1xcWR3eXZhd3R2Zmt6Z3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTkzNTksImV4cCI6MjA5ODM5NTM1OX0.rEGjOsJ3oIY2SryTdPFSOt3lxjsycxbHtifzeUnwYlE';
 
-let supabase;
+let supabase = null;
 let currentUser = null;
 let bookings = [];
 let courts = [];
 let users = [];
 let confirmCallback = null;
+let initTimeout = null;
+
+// Debug mode
+const DEBUG_MODE = true;
+
+function log(...args) {
+  if (DEBUG_MODE) console.log('[Admin]', ...args);
+}
+
+// Force hide loading after timeout
+function setInitTimeout() {
+  if (initTimeout) clearTimeout(initTimeout);
+  initTimeout = setTimeout(() => {
+    log('Init timeout reached');
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('errorMsg').textContent = 'Waktu muat habis. Periksa koneksi internet atau refresh halaman.';
+    document.getElementById('errorPage').style.display = 'flex';
+  }, 15000); // 15 second timeout
+}
 
 // Page config
 const pageConfig = {
@@ -800,46 +823,120 @@ function showPage(pageId) {
 
 // Initialize
 async function init() {
+  log('Starting initialization...');
+  setInitTimeout();
+
   try {
-    // Load Supabase
+    // Load Supabase library if not already loaded
     if (!window.supabase) {
-      await new Promise((res, rej) => {
+      log('Loading Supabase SDK...');
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Timeout loading Supabase SDK'));
+        }, 10000);
+
         const s = document.createElement('script');
         s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-        s.onload = res; s.onerror = rej;
+        s.onload = () => {
+          clearTimeout(timeout);
+          log('Supabase SDK loaded');
+          resolve();
+        };
+        s.onerror = () => {
+          clearTimeout(timeout);
+          reject(new Error('Failed to load Supabase SDK'));
+        };
         document.head.appendChild(s);
       });
     }
+
+    // Create Supabase client
+    log('Creating Supabase client...');
     supabase = window.supabase.createClient(SB_URL, SB_KEY);
+    log('Supabase client created');
 
     // Check auth
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Silakan login terlebih dahulu');
+    log('Checking authentication...');
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-    // Check admin
-    const { data: profile, error } = await supabase
+    if (sessionError) {
+      log('Session error:', sessionError);
+      throw new Error('Gagal mendapatkan sesi: ' + sessionError.message);
+    }
+
+    if (!sessionData || !sessionData.session) {
+      log('No session found');
+      throw new Error('Silakan login terlebih dahulu');
+    }
+
+    log('Session found, user:', sessionData.session.user?.id);
+
+    // Check admin profile
+    log('Checking admin profile...');
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', session.user.id)
+      .eq('id', sessionData.session.user.id)
       .single();
 
-    if (error || !profile) throw new Error('Profile tidak ditemukan');
-    if (profile.role !== 'admin') throw new Error('Anda tidak memiliki akses admin');
+    if (profileError) {
+      log('Profile error:', profileError);
+      // If profile doesn't exist, create one
+      if (profileError.code === 'PGRST116' || profileError.code === 'PSTV') {
+        log('Profile not found, creating...');
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: sessionData.session.user.id,
+            email: sessionData.session.user.email,
+            name: sessionData.session.user.user_metadata?.name || sessionData.session.user.email?.split('@')[0] || 'Admin',
+            role: 'admin'
+          });
 
-    currentUser = profile;
+        if (insertError) {
+          log('Insert error:', insertError);
+          throw new Error('Gagal membuat profile: ' + insertError.message);
+        }
+
+        // Re-fetch profile
+        const { data: newProfile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', sessionData.session.user.id)
+          .single();
+
+        if (!newProfile) throw new Error('Profile tidak ditemukan setelah dibuat');
+        currentUser = newProfile;
+      } else {
+        throw new Error('Error mengambil profile: ' + profileError.message);
+      }
+    } else if (!profile) {
+      throw new Error('Profile tidak ditemukan');
+    } else if (profile.role !== 'admin') {
+      throw new Error('Anda tidak memiliki akses admin');
+    } else {
+      currentUser = profile;
+    }
+
+    log('Admin profile loaded:', currentUser);
 
     // Update user info in sidebar
-    document.getElementById('userName').textContent = profile.name || 'Admin';
-    document.getElementById('userAvatar').textContent = (profile.name || profile.email || 'A').charAt(0).toUpperCase();
+    document.getElementById('userName').textContent = currentUser.name || currentUser.email || 'Admin';
+    document.getElementById('userAvatar').textContent = (currentUser.name || currentUser.email || 'A').charAt(0).toUpperCase();
 
     // Load all data
+    log('Loading data...');
     await loadData();
 
     // Hide loading, show app
+    log('Initialization complete, showing app');
+    if (initTimeout) clearTimeout(initTimeout);
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'flex';
 
   } catch (e) {
+    log('Initialization error:', e);
+    if (initTimeout) clearTimeout(initTimeout);
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('errorMsg').textContent = e.message;
     document.getElementById('errorPage').style.display = 'flex';
@@ -848,22 +945,44 @@ async function init() {
 
 // Load Data
 async function loadData() {
+  log('loadData called');
   try {
+    log('Fetching bookings, courts, profiles...');
+
     const [bRes, cRes, uRes] = await Promise.all([
       supabase.from('bookings').select('*').order('created_at', { ascending: false }),
       supabase.from('courts').select('*').order('name'),
       supabase.from('profiles').select('*').order('created_at', { ascending: false })
     ]);
 
+    log('Bookings response:', bRes);
+    log('Courts response:', cRes);
+    log('Profiles response:', uRes);
+
+    // Check for errors in responses
+    if (bRes.error) {
+      log('Bookings error:', bRes.error);
+      // Don't throw, just log - we can show empty state
+    }
+    if (cRes.error) {
+      log('Courts error:', cRes.error);
+    }
+    if (uRes.error) {
+      log('Profiles error:', uRes.error);
+    }
+
     bookings = bRes.data || [];
     courts = cRes.data || [];
     users = uRes.data || [];
+
+    log(`Loaded: ${bookings.length} bookings, ${courts.length} courts, ${users.length} users`);
 
     renderAll();
     showToast('Data berhasil diperbarui');
 
   } catch (e) {
-    showToast('Error: ' + e.message, true);
+    log('loadData error:', e);
+    showToast('Error memuat data: ' + e.message, true);
   }
 }
 
@@ -1291,6 +1410,13 @@ async function logout() {
 
 // Init on DOM ready
 document.addEventListener('DOMContentLoaded', init);
+
+// Retry initialization
+function retryInit() {
+  document.getElementById('errorPage').style.display = 'none';
+  document.getElementById('loadingScreen').style.display = 'flex';
+  init();
+}
 </script>
 </body>
 </html>
