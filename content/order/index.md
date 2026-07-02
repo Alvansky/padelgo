@@ -11,12 +11,12 @@ layout: "order"
 <!-- Header - Centered with Icon -->
 <div class="mb-6 text-center">
 <div class="inline-flex items-center justify-center gap-3">
-<div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 shadow-xl shadow-teal-500/25">
-<svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 shadow-lg shadow-teal-500/20">
+<svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
 <div class="text-left">
-<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Book a Court</h1>
-<p class="text-sm text-slate-500 dark:text-slate-400">PadelGo Courts</p>
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">PadelGo Courts</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">Reserve your preferred time</p>
 </div>
 </div>
 </div>
@@ -46,7 +46,7 @@ layout: "order"
 <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 text-sm font-bold text-white shadow-md shadow-teal-500/30">1</div>
 <div>
 <h3 class="font-semibold text-slate-900 dark:text-white">Pilih Tanggal & Lapangan</h3>
-<p class="text-xs text-slate-500 dark:text-slate-400">Pilih jadwal yang tersedia</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Select date and court</p>
 </div>
 </div>
 
@@ -54,7 +54,7 @@ layout: "order"
 <!-- Date -->
 <div>
 <label for="date" class="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-<svg class="h-4 w-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+<svg class="h-4 w-4 text-teal-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
 Tanggal Main
 </label>
 <input id="date" type="date" required class="w-full rounded-xl border border-slate-200 bg-white py-3 px-4 text-sm text-slate-900 transition-all placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500">
@@ -63,7 +63,7 @@ Tanggal Main
 <!-- Court Selection -->
 <div>
 <label class="mb-3 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-<svg class="h-4 w-4 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+<svg class="h-4 w-4 text-teal-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
 Lapangan
 </label>
 <div class="grid grid-cols-2 gap-3" id="courtGrid">
@@ -82,7 +82,7 @@ Memuat...
 <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 text-sm font-bold text-white shadow-md shadow-teal-500/30">2</div>
 <div class="flex-1">
 <h3 class="font-semibold text-slate-900 dark:text-white">Pilih Waktu</h3>
-<p class="text-xs text-slate-500 dark:text-slate-400">Jam operasional 06:00 - 22:00</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Operating hours 06:00 - 22:00</p>
 </div>
 <span id="availabilityStatus" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">-</span>
 </div>
@@ -90,7 +90,7 @@ Memuat...
 <div class="p-5">
 <div id="timeGrid" class="grid grid-cols-5 gap-2 sm:grid-cols-6 md:grid-cols-8"></div>
 <div id="timePlaceholder" class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-8 text-center dark:border-slate-800 dark:bg-slate-950/50">
-<svg class="mb-3 h-10 w-10 text-slate-300 dark:text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<svg class="mb-3 h-10 w-10 text-slate-300 dark:text-slate-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pilih tanggal & lapangan terlebih dahulu</p>
 </div>
 <input type="hidden" id="time" required>
@@ -103,34 +103,29 @@ Memuat...
 <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 text-sm font-bold text-white shadow-md shadow-teal-500/30">3</div>
 <div>
 <h3 class="font-semibold text-slate-900 dark:text-white">Durasi Bermain</h3>
-<p class="text-xs text-slate-500 dark:text-slate-400">Pilih durasi yang diinginkan</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Select playing duration</p>
 </div>
 </div>
 
 <div class="p-5">
 <div class="flex flex-wrap gap-2" id="durationGrid">
 <button type="button" data-hours="1" class="duration-btn flex items-center gap-2 rounded-xl border-2 border-teal-500 bg-gradient-to-r from-teal-500 to-teal-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-teal-500/20 transition-all hover:shadow-lg">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 1 Jam
 </button>
 <button type="button" data-hours="2" class="duration-btn flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-all hover:border-teal-400 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 2 Jam
 </button>
 <button type="button" data-hours="3" class="duration-btn flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-all hover:border-teal-400 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 3 Jam
 </button>
 <button type="button" data-hours="4" class="duration-btn flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-all hover:border-teal-400 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 4 Jam
 </button>
 <button type="button" data-hours="5" class="duration-btn flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-all hover:border-teal-400 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 5 Jam
 </button>
 <button type="button" data-hours="6" class="duration-btn flex items-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition-all hover:border-teal-400 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 6 Jam
 </button>
 </div>
@@ -149,19 +144,19 @@ Memuat...
 <div class="overflow-hidden rounded-2xl border border-teal-200/60 bg-gradient-to-br from-teal-50 via-emerald-50/50 to-teal-50/50 shadow-lg shadow-teal-500/10 dark:border-teal-800/60 dark:from-teal-950/50 dark:via-emerald-950/30 dark:to-teal-950/50">
 <div class="flex items-center gap-3 border-b border-teal-200/60 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 px-5 py-4 dark:border-teal-800/60 dark:from-teal-500/10 dark:to-emerald-500/10">
 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-lg shadow-teal-500/30">
-<svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
 <div>
 <h3 class="font-bold text-teal-800 dark:text-teal-200">Ringkasan Booking</h3>
-<p class="text-xs text-teal-600/80 dark:text-teal-400/80">Periksa detail sebelum konfirmasi</p>
+<p class="text-xs text-teal-600/80 dark:text-teal-400/80">Review details</p>
 </div>
 </div>
 
-<div class="p-5 space-y-4">
+<div class="p-5 space-y-3">
 <!-- Court -->
 <div class="flex items-center gap-3 rounded-xl bg-white/80 p-3 dark:bg-slate-900/50">
 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-teal-100 to-emerald-100 dark:from-teal-900/50 dark:to-emerald-900/50">
-<svg class="h-5 w-5 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+<svg class="h-5 w-5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
 </div>
 <div class="flex-1">
 <p class="text-xs text-slate-500 dark:text-slate-400">Lapangan</p>
@@ -173,7 +168,7 @@ Memuat...
 <!-- Date -->
 <div class="flex items-center gap-3 rounded-xl bg-white/80 p-3 dark:bg-slate-900/50">
 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/50 dark:to-indigo-900/50">
-<svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+<svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
 </div>
 <div class="flex-1">
 <p class="text-xs text-slate-500 dark:text-slate-400">Tanggal</p>
@@ -184,7 +179,7 @@ Memuat...
 <!-- Time -->
 <div class="flex items-center gap-3 rounded-xl bg-white/80 p-3 dark:bg-slate-900/50">
 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50">
-<svg class="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<svg class="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
 <div class="flex-1">
 <p class="text-xs text-slate-500 dark:text-slate-400">Waktu</p>
@@ -197,11 +192,11 @@ Memuat...
 <div class="flex items-center justify-between rounded-xl border-2 border-teal-200/80 bg-gradient-to-r from-teal-50 to-emerald-50 p-4 dark:border-teal-800/60 dark:from-teal-950/50 dark:to-emerald-950/50">
 <div class="flex items-center gap-3">
 <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 shadow-lg shadow-teal-500/30">
-<svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
 <div>
 <p class="text-xs text-slate-500 dark:text-slate-400">Total Bayar</p>
-<p class="text-xs text-slate-400 dark:text-slate-500">(Termasuk semua biaya)</p>
+<p class="text-xs text-slate-400 dark:text-slate-500">Including all fees</p>
 </div>
 </div>
 <p id="summaryPrice" class="text-2xl font-bold text-teal-600 dark:text-teal-400">-</p>
@@ -228,10 +223,10 @@ Memuat...
 <div class="overflow-hidden rounded-2xl border-2 border-emerald-200/60 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-emerald-50/50 shadow-xl shadow-emerald-500/10 dark:border-emerald-800/60 dark:from-emerald-950/50 dark:via-teal-950/30 dark:to-emerald-950/50">
 <div class="flex flex-col items-center border-b border-emerald-200/60 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 px-5 py-6 dark:border-emerald-800/60 dark:from-emerald-500/10 dark:to-teal-500/10">
 <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30">
-<svg class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+<svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
 </div>
 <h3 class="text-xl font-bold text-emerald-800 dark:text-emerald-200">Booking Berhasil!</h3>
-<p class="mt-1 text-sm text-emerald-600/80 dark:text-emerald-400/80">Silakan lakukan pembayaran sesuai total</p>
+<p class="mt-1 text-sm text-emerald-600/80 dark:text-emerald-400/80">Silakan lakukan pembayaran</p>
 </div>
 
 <div class="p-5 space-y-4">
@@ -246,18 +241,18 @@ Memuat...
 
 <!-- Warning -->
 <div class="flex items-center gap-3 rounded-xl border border-amber-200/60 bg-gradient-to-r from-amber-50 to-orange-50/50 p-3 dark:border-amber-800/40 dark:from-amber-950/50 dark:to-orange-950/30">
-<svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-<p class="text-xs font-medium text-amber-700 dark:text-amber-400">Menunggu approval dari admin. Mohon lakukan pembayaran dan upload bukti transfer.</p>
+<svg class="h-5 w-5 shrink-0 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<p class="text-xs font-medium text-amber-700 dark:text-amber-400">Menunggu approval dari admin. Mohon lakukan pembayaran.</p>
 </div>
 
 <!-- Actions -->
 <div class="flex flex-col gap-2">
 <a href="/dashboard/" class="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-teal-500/25 transition-all hover:from-teal-600 hover:to-teal-700 hover:shadow-xl">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
 Lihat Booking Saya
 </a>
 <button type="button" onclick="resetAndContinue()" class="flex items-center justify-center gap-2 rounded-xl border-2 border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-all hover:border-teal-400 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+<svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
 Booking Lagi
 </button>
 </div>
