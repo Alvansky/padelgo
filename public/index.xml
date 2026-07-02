@@ -10,16 +10,9 @@
 		
 		
 		
-			<lastBuildDate>Thu, 02 Jul 2026 00:00:00 +0000</lastBuildDate>
+			<lastBuildDate>Mon, 29 Jun 2026 00:00:00 +0000</lastBuildDate>
 		
 			<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-			<item>
-				<title>Admin Dashboard</title>
-				<link>/padmin/</link>
-				<pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
-				<guid>/padmin/</guid>
-				<description>&lt;div id=&#34;adminApp&#34; class=&#34;min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-950 dark:to-slate-900&#34;&gt;&#xD;&#xA;  &lt;!-- Loading State --&gt;&#xD;&#xA;  &lt;div id=&#34;adminLoading&#34; class=&#34;flex items-center justify-center min-h-screen&#34;&gt;&#xD;&#xA;    &lt;div class=&#34;text-center&#34;&gt;&#xD;&#xA;      &lt;div class=&#34;relative&#34;&gt;&#xD;&#xA;        &lt;div class=&#34;h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-teal-500&#34;&gt;&lt;/div&gt;&#xD;&#xA;        &lt;div class=&#34;absolute inset-0 flex items-center justify-center&#34;&gt;&#xD;&#xA;          &lt;svg class=&#34;h-8 w-8 text-teal-500 animate-pulse&#34; fill=&#34;none&#34; viewBox=&#34;0 0 24 24&#34; stroke=&#34;currentColor&#34;&gt;&#xD;&#xA;            &lt;path stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34; stroke-width=&#34;2&#34; d=&#34;M7 16c3.5-4.5 6.5-7.5 10-9m-8 12 8-8m-8 0 8 8&#34;/&gt;&#xD;&#xA;          &lt;/svg&gt;&#xD;&#xA;        &lt;/div&gt;&#xD;&#xA;      &lt;/div&gt;&#xD;&#xA;      &lt;p class=&#34;mt-6 text-lg font-medium text-slate-600 dark:text-slate-400&#34;&gt;Memuat Dashboard...&lt;/p&gt;&#xD;&#xA;    &lt;/div&gt;&#xD;&#xA;  &lt;/div&gt;&#xD;&#xA;  &lt;!-- Auth Error State --&gt;&#xD;&#xA;  &lt;div id=&#34;adminAuthError&#34; class=&#34;hidden min-h-screen flex items-center justify-center p-4&#34;&gt;&#xD;&#xA;    &lt;div class=&#34;text-center max-w-md&#34;&gt;&#xD;&#xA;      &lt;div class=&#34;mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900/40 dark:to-red-800/40&#34;&gt;&#xD;&#xA;        &lt;svg class=&#34;h-10 w-10 text-red-600 dark:text-red-400&#34; fill=&#34;none&#34; viewBox=&#34;0 0 24 24&#34; stroke=&#34;currentColor&#34;&gt;&#xD;&#xA;          &lt;path stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34; stroke-width=&#34;2&#34; d=&#34;M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z&#34;/&gt;&#xD;&#xA;        &lt;/svg&gt;&#xD;&#xA;      &lt;/div&gt;&#xD;&#xA;      &lt;h2 class=&#34;text-2xl font-bold text-slate-900 dark:text-white&#34;&gt;Akses Ditolak&lt;/h2&gt;&#xD;&#xA;      &lt;p id=&#34;adminErrorText&#34; class=&#34;mt-3 text-slate-600 dark:text-slate-400&#34;&gt;Anda harus login sebagai admin untuk mengakses halaman ini.&lt;/p&gt;</description>
-			</item>
 			<item>
 				<title>Account Settings</title>
 				<link>/settings/</link>
