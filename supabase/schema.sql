@@ -1,7 +1,7 @@
 -- ============================================================================
 -- PadelGo Database Schema
 -- Frontend: Hugo (Vercel) | Backend: Supabase (PostgreSQL)
--- Version: 4.0 | Last Updated: 2026-07-03
+-- Version: 5.0 | Last Updated: 2026-07-03
 -- ============================================================================
 -- Run this from Supabase SQL Editor. Intentionally rerunnable.
 -- ============================================================================
@@ -36,6 +36,7 @@ DROP FUNCTION IF EXISTS public.handle_updated_user();
 DROP FUNCTION IF EXISTS public.get_booked_slots(TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.storage_filepath_matches_user(TEXT);
 DROP FUNCTION IF EXISTS public.generate_booking_id();
+DROP FUNCTION IF EXISTS public.set_booking_id();
 
 -- ============================================================================
 -- SECTION 2: TABLES
@@ -62,12 +63,11 @@ CREATE TABLE IF NOT EXISTS public.courts (
   created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Booking ID format: PG-YYYYMMDD-XXXXX (PadelGo-Date-Random)
+-- Booking table - add booking_id column if not exists
 CREATE TABLE IF NOT EXISTS public.bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  booking_id TEXT UNIQUE NOT NULL,
   user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
-  court_id TEXT NOT NULL REFERENCES public.courts(id),
+  court_id TEXT NOT NULL,
   court_name TEXT NOT NULL,
   date TEXT NOT NULL,
   start_time TEXT NOT NULL,
@@ -78,6 +78,29 @@ CREATE TABLE IF NOT EXISTS public.bookings (
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- ============================================================================
+-- SECTION 2.5: ADD booking_id COLUMN (Safe migration)
+-- ============================================================================
+
+-- Add booking_id column if not exists
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'bookings' AND column_name = 'booking_id'
+  ) THEN
+    ALTER TABLE public.bookings ADD COLUMN booking_id TEXT UNIQUE;
+    RAISE NOTICE 'Added booking_id column';
+  ELSE
+    RAISE NOTICE 'booking_id column already exists';
+  END IF;
+END $$;
+
+-- Update existing records with booking_id
+UPDATE public.bookings
+SET booking_id = 'PG' || upper(substr(replace(uuid_generate_v4()::text, '-', ''), 1, 6))
+WHERE booking_id IS NULL OR booking_id = '';
 
 -- ============================================================================
 -- SECTION 3: INDEXES
@@ -96,23 +119,21 @@ CREATE INDEX IF NOT EXISTS idx_bookings_status ON public.bookings(status);
 -- Booking details view with user and court info
 CREATE OR REPLACE VIEW public.booking_details AS
 SELECT
-  b.id,
-  b.booking_id,
-  b.date,
-  -- Format tanggal Indonesia
+  bk.id,
+  bk.booking_id,
+  bk.date,
   TO_CHAR(
     make_date(
-      substring(b.date from 1 for 4)::INTEGER,
-      substring(b.date from 6 for 2)::INTEGER,
-      substring(b.date from 9 for 2)::INTEGER
+      substring(bk.date from 1 for 4)::INTEGER,
+      substring(bk.date from 6 for 2)::INTEGER,
+      substring(bk.date from 9 for 2)::INTEGER
     ),
     'DD Mon YYYY'
   ) AS date_formatted,
-  -- Hari dalam Bahasa Indonesia
   CASE EXTRACT(DOW FROM make_date(
-    substring(b.date from 1 for 4)::INTEGER,
-    substring(b.date from 6 for 2)::INTEGER,
-    substring(b.date from 9 for 2)::INTEGER
+    substring(bk.date from 1 for 4)::INTEGER,
+    substring(bk.date from 6 for 2)::INTEGER,
+    substring(bk.date from 9 for 2)::INTEGER
   ))
     WHEN 0 THEN 'Minggu'
     WHEN 1 THEN 'Senin'
@@ -122,64 +143,39 @@ SELECT
     WHEN 5 THEN 'Jumat'
     WHEN 6 THEN 'Sabtu'
   END AS day_name,
-  b.start_time,
-  b.end_time,
-  b.duration_hours,
-  b.court_id,
-  b.court_name,
-  b.court_type,
-  b.price_per_hour,
-  b.amount,
-  -- Format jumlah dengan separator ribuan
-  TO_CHAR(b.amount, '999,999,999') AS amount_formatted,
-  b.status,
-  -- Status dalam Bahasa Indonesia
-  CASE b.status
+  bk.start_time,
+  bk.end_time,
+  bk.duration_hours,
+  bk.court_id,
+  bk.court_name,
+  c.type AS court_type,
+  c.price_per_hour,
+  bk.amount,
+  TO_CHAR(bk.amount, '999,999,999') AS amount_formatted,
+  bk.status,
+  CASE bk.status
     WHEN 'pending' THEN 'Menunggu'
     WHEN 'approved' THEN 'Diterima'
     WHEN 'cancelled' THEN 'Dibatalkan'
   END AS status_label,
-  -- User info
-  b.user_id,
-  b.user_name,
-  b.user_email,
-  b.user_phone,
-  b.notes,
-  b.created_at,
-  -- Time ago (untuk menampilkan "2 jam lalu", "Kemarin", dll)
+  bk.user_id,
+  p.name AS user_name,
+  p.email AS user_email,
+  p.phone AS user_phone,
+  bk.notes,
+  bk.created_at,
   CASE
-    WHEN b.created_at > now() - interval '1 hour' THEN
-      EXTRACT(EPOCH FROM (now() - b.created_at)) / 3600 || ' jam lalu'
-    WHEN b.created_at > now() - interval '1 day' THEN
-      EXTRACT(EPOCH FROM (now() - b.created_at)) / 86400 || ' hari lalu'
-    ELSE TO_CHAR(b.created_at, 'DD Mon YYYY HH24:MI')
+    WHEN bk.created_at > now() - interval '1 hour' THEN
+      EXTRACT(EPOCH FROM (now() - bk.created_at)) / 3600 || ' jam lalu'
+    WHEN bk.created_at > now() - interval '1 day' THEN
+      EXTRACT(EPOCH FROM (now() - bk.created_at)) / 86400 || ' hari lalu'
+    ELSE TO_CHAR(bk.created_at, 'DD Mon YYYY HH24:MI')
   END AS created_ago
-FROM (
-  SELECT
-    bk.id,
-    bk.booking_id,
-    bk.date,
-    bk.start_time,
-    bk.end_time,
-    bk.duration_hours,
-    bk.court_id,
-    bk.court_name,
-    c.type AS court_type,
-    c.price_per_hour,
-    bk.amount,
-    bk.status,
-    bk.user_id,
-    p.name AS user_name,
-    p.email AS user_email,
-    p.phone AS user_phone,
-    bk.notes,
-    bk.created_at
-  FROM public.bookings bk
-  LEFT JOIN public.courts c ON bk.court_id = c.id
-  LEFT JOIN public.profiles p ON bk.user_id = p.id
-) b;
+FROM public.bookings bk
+LEFT JOIN public.courts c ON bk.court_id = c.id
+LEFT JOIN public.profiles p ON bk.user_id = p.id;
 
--- User booking history view (ringkasan booking per user)
+-- User booking summary view
 CREATE OR REPLACE VIEW public.user_booking_summary AS
 SELECT
   user_id,
@@ -196,7 +192,7 @@ GROUP BY user_id;
 -- SECTION 5: FUNCTIONS
 -- ============================================================================
 
--- Generate unique booking ID: PG + 6 random alphanumeric (uppercase)
+-- Generate unique booking ID: PG + 6 random alphanumeric
 CREATE OR REPLACE FUNCTION public.generate_booking_id()
 RETURNS TEXT LANGUAGE plpgsql AS $$
 DECLARE
@@ -205,13 +201,11 @@ DECLARE
   result TEXT := '';
   i INTEGER;
 BEGIN
-  -- Generate 6 random characters
   FOR i IN 1..6 LOOP
     result := result || substr(chars, floor(random() * 36 + 1)::INTEGER, 1);
   END LOOP;
   new_id := 'PG' || result;
 
-  -- Ensure uniqueness
   WHILE EXISTS (SELECT 1 FROM public.bookings WHERE booking_id = new_id) LOOP
     result := '';
     FOR i IN 1..6 LOOP
@@ -476,8 +470,6 @@ CREATE POLICY "Anyone can view court images" ON storage.objects
 
 GRANT EXECUTE ON FUNCTION public.get_booked_slots(TEXT, TEXT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.generate_booking_id() TO authenticated;
-
--- Grant SELECT on views
 GRANT SELECT ON public.booking_details TO anon, authenticated;
 GRANT SELECT ON public.user_booking_summary TO authenticated;
 
