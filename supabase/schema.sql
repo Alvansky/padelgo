@@ -11,6 +11,7 @@
 -- ============================================================================
 
 DROP TRIGGER IF EXISTS bookings_validate ON public.bookings;
+DROP TRIGGER IF EXISTS bookings_generate_id ON public.bookings;
 DROP TRIGGER IF EXISTS profiles_touch_updated_at ON public.profiles;
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
