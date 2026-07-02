@@ -196,7 +196,6 @@
       var displayEmail = user.email || '';
 
       // Desktop nav
-      document.querySelectorAll('.nav-admin-link').forEach(function(el) { el.classList.toggle('hidden', !hasSession || role !== 'admin'); });
       document.querySelectorAll('.nav-dashboard-link').forEach(function(el) { el.classList.toggle('hidden', !hasSession); });
       document.querySelectorAll('.nav-login-link, .nav-register-link').forEach(function(el) { el.classList.toggle('hidden', hasSession); });
       document.querySelectorAll('.nav-user-menu').forEach(function(el) {
@@ -208,7 +207,6 @@
 
       // Mobile nav
       document.querySelectorAll('.nav-dashboard-link-mobile').forEach(function(el) { el.classList.toggle('hidden', !hasSession); });
-      document.querySelectorAll('.nav-admin-link-mobile').forEach(function(el) { el.classList.toggle('hidden', !hasSession || role !== 'admin'); });
       document.querySelectorAll('.nav-settings-link-mobile').forEach(function(el) { el.classList.toggle('hidden', !hasSession); });
       document.querySelectorAll('.nav-login-link-mobile, .nav-register-link-mobile').forEach(function(el) { el.classList.toggle('hidden', hasSession); });
       document.querySelectorAll('.nav-logout-btn-mobile').forEach(function(el) { el.classList.toggle('hidden', !hasSession); });

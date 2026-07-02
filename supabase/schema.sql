@@ -1,7 +1,7 @@
 -- ============================================================================
 -- PadelGo Database Schema
 -- Frontend: Hugo (Vercel) | Backend: Supabase (PostgreSQL)
--- Version: 2.0 | Last Updated: 2026-07-02
+-- Version: 3.0 | Last Updated: 2026-07-03
 -- ============================================================================
 -- Run this from Supabase SQL Editor. Intentionally rerunnable.
 -- ============================================================================
@@ -17,35 +17,26 @@ DROP TRIGGER IF EXISTS profiles_touch_updated_at ON public.profiles;
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
 
--- Drop policies (they depend on functions/tables)
+-- Drop policies
 DROP POLICY IF EXISTS "Users view own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users update own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Admins view all profiles" ON public.profiles;
-DROP POLICY IF EXISTS "Admins update all profiles" ON public.profiles;
 DROP POLICY IF EXISTS "Anyone view courts" ON public.courts;
-DROP POLICY IF EXISTS "Admins manage courts" ON public.courts;
 DROP POLICY IF EXISTS "Users view own bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Users create bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Users update own bookings" ON public.bookings;
-DROP POLICY IF EXISTS "Admins view all bookings" ON public.bookings;
-DROP POLICY IF EXISTS "Admins manage all bookings" ON public.bookings;
 DROP POLICY IF EXISTS "Users can upload avatar" ON storage.objects;
 DROP POLICY IF EXISTS "Users can view avatars" ON storage.objects;
 DROP POLICY IF EXISTS "Users can update avatar" ON storage.objects;
 DROP POLICY IF EXISTS "Users can delete avatar" ON storage.objects;
 DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
 DROP POLICY IF EXISTS "Anyone can view court images" ON storage.objects;
-DROP POLICY IF EXISTS "Admins can upload court images" ON storage.objects;
-DROP POLICY IF EXISTS "Admins can update court images" ON storage.objects;
-DROP POLICY IF EXISTS "Admins can delete court images" ON storage.objects;
 
 -- Drop functions
 DROP FUNCTION IF EXISTS public.validate_booking();
 DROP FUNCTION IF EXISTS public.touch_updated_at();
 DROP FUNCTION IF EXISTS public.handle_new_user();
 DROP FUNCTION IF EXISTS public.handle_updated_user();
-DROP FUNCTION IF EXISTS public.is_admin();
 DROP FUNCTION IF EXISTS public.get_booked_slots(TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.storage_filepath_matches_user(TEXT);
 
@@ -53,25 +44,18 @@ DROP FUNCTION IF EXISTS public.storage_filepath_matches_user(TEXT);
 -- SECTION 2: TABLES
 -- ============================================================================
 
--- -------------------------------------------------------
--- Table: profiles
--- Extends auth.users with additional user information
--- -------------------------------------------------------
+-- Table: profiles - User information
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   name TEXT,
-  email TEXT,
+  email TEXT UNIQUE,
   phone TEXT,
   avatar_url TEXT,
-  role TEXT DEFAULT 'user' NOT NULL CHECK (role IN ('user', 'admin')),
   created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- -------------------------------------------------------
--- Table: courts
--- Stores padel court information and pricing
--- -------------------------------------------------------
+-- Table: courts - Padel court information
 CREATE TABLE IF NOT EXISTS public.courts (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -83,10 +67,7 @@ CREATE TABLE IF NOT EXISTS public.courts (
   created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- -------------------------------------------------------
--- Table: bookings
--- Stores all booking/reservation records
--- -------------------------------------------------------
+-- Table: bookings - Booking records
 CREATE TABLE IF NOT EXISTS public.bookings (
   id TEXT PRIMARY KEY,
   user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
@@ -107,67 +88,28 @@ CREATE TABLE IF NOT EXISTS public.bookings (
 -- ============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
-CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON public.bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_court_date ON public.bookings(court_id, date);
-CREATE INDEX IF NOT EXISTS idx_bookings_date ON public.bookings(date);
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON public.bookings(status);
 
 -- ============================================================================
--- SECTION 4: HELPER FUNCTIONS
+-- SECTION 4: FUNCTIONS
 -- ============================================================================
 
--- -------------------------------------------------------
--- Function: is_admin()
--- Checks if the current user has admin role
--- -------------------------------------------------------
-CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
-  SELECT EXISTS (
-    SELECT 1
-    FROM public.profiles
-    WHERE id = auth.uid()
-      AND role = 'admin'
-  );
-$$;
-
--- -------------------------------------------------------
--- Function: touch_updated_at()
--- Auto-updates the updated_at timestamp on row update
--- -------------------------------------------------------
+-- Function: touch_updated_at() - Auto-update timestamp
 CREATE OR REPLACE FUNCTION public.touch_updated_at()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SET search_path = public
-AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SET search_path = public AS $$
 BEGIN
   new.updated_at = timezone('utc'::text, now());
   RETURN new;
 END;
 $$;
 
--- -------------------------------------------------------
--- Function: handle_new_user()
--- Creates profile automatically when new user signs up
--- -------------------------------------------------------
+-- Function: handle_new_user() - Create profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-  is_admin_email BOOLEAN;
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
-  -- Check if this is an admin email
-  is_admin_email := new.email ILIKE '%@admin@padelgo%' OR new.email = 'admin@padelgo.com';
-
-  INSERT INTO public.profiles (id, name, email, avatar_url, role)
+  INSERT INTO public.profiles (id, name, email, avatar_url)
   VALUES (
     new.id,
     COALESCE(NULLIF(new.raw_user_meta_data->>'name', ''), 'Player'),
@@ -175,31 +117,19 @@ BEGIN
     COALESCE(
       NULLIF(new.raw_user_meta_data->>'avatar_url', ''),
       NULLIF(new.raw_user_meta_data->>'avatar', '')
-    ),
-    CASE WHEN is_admin_email THEN 'admin' ELSE 'user' END
+    )
   )
   ON CONFLICT (id) DO UPDATE SET
     email = excluded.email,
     name = COALESCE(public.profiles.name, excluded.name),
-    avatar_url = COALESCE(public.profiles.avatar_url, excluded.avatar_url),
-    role = CASE
-      WHEN excluded.email = 'admin@padelgo.com' OR excluded.email ILIKE '%@admin@padelgo%' THEN 'admin'
-      ELSE COALESCE(NULLIF(public.profiles.role, 'user'), excluded.role)
-    END;
+    avatar_url = COALESCE(public.profiles.avatar_url, excluded.avatar_url);
   RETURN new;
 END;
 $$;
 
--- -------------------------------------------------------
--- Function: handle_updated_user()
--- Updates profile when user metadata changes
--- -------------------------------------------------------
+-- Function: handle_updated_user() - Update profile on metadata change
 CREATE OR REPLACE FUNCTION public.handle_updated_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
   UPDATE public.profiles
   SET
@@ -215,26 +145,10 @@ BEGIN
 END;
 $$;
 
--- -------------------------------------------------------
--- Function: get_booked_slots()
--- Returns booked time slots for a court on a specific date
--- Used by frontend to show availability
--- -------------------------------------------------------
-CREATE OR REPLACE FUNCTION public.get_booked_slots(
-  p_court_id TEXT,
-  p_date TEXT
-)
-RETURNS TABLE (
-  start_time TEXT,
-  end_time TEXT,
-  duration_hours INTEGER,
-  status TEXT
-)
-LANGUAGE SQL
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
+-- Function: get_booked_slots() - Get booked time slots
+CREATE OR REPLACE FUNCTION public.get_booked_slots(p_court_id TEXT, p_date TEXT)
+RETURNS TABLE (start_time TEXT, end_time TEXT, duration_hours INTEGER, status TEXT)
+LANGUAGE SQL STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT b.start_time, b.end_time, b.duration_hours, b.status
   FROM public.bookings b
   WHERE b.court_id = p_court_id
@@ -243,44 +157,30 @@ AS $$
   ORDER BY b.start_time;
 $$;
 
--- -------------------------------------------------------
--- Function: validate_booking()
--- Validates and auto-populates booking data before insert/update
--- Prevents double-booking, validates times, etc.
--- -------------------------------------------------------
+-- Function: validate_booking() - Validate and auto-populate booking
 CREATE OR REPLACE FUNCTION public.validate_booking()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   court_record RECORD;
   start_hour INTEGER;
   end_hour INTEGER;
 BEGIN
   -- Set default status
-  IF new.status IS NULL THEN
-    new.status := 'pending';
-  END IF;
-
-  -- Non-admin users can only create pending bookings
-  IF tg_op = 'INSERT' AND NOT public.is_admin() THEN
-    new.status := 'pending';
-  END IF;
+  IF new.status IS NULL THEN new.status := 'pending'; END IF;
 
   -- User can only cancel their own bookings
-  IF tg_op = 'UPDATE' AND NOT public.is_admin() THEN
-    -- Allow user to cancel their own booking
-    IF old.user_id = auth.uid()
-      AND new.user_id = old.user_id
-      AND old.status != 'cancelled'
-      AND new.status = 'cancelled'
-    THEN
+  IF tg_op = 'UPDATE' AND old.user_id = auth.uid() THEN
+    IF old.status != 'cancelled' AND new.status = 'cancelled' THEN
       RETURN new;
     END IF;
-    -- Block any other updates by non-admin users
-    RAISE EXCEPTION 'User hanya dapat membatalkan booking miliknya sendiri.';
+    IF new.status != 'cancelled' THEN
+      RAISE EXCEPTION 'User hanya dapat mengubah status booking miliknya sendiri.';
+    END IF;
+  END IF;
+
+  -- Block non-owners from updating
+  IF tg_op = 'UPDATE' AND old.user_id != auth.uid() THEN
+    RAISE EXCEPTION 'Anda tidak memiliki akses untuk mengubah booking ini.';
   END IF;
 
   -- Validate date format (YYYY-MM-DD)
@@ -297,21 +197,18 @@ BEGIN
   IF new.start_time !~ '^([01][0-9]|2[0-3]):00$' THEN
     RAISE EXCEPTION 'Jam mulai harus memakai format HH:00';
   END IF;
-
   IF new.end_time !~ '^([01][0-9]|2[0-4]):00$' THEN
     RAISE EXCEPTION 'Jam selesai harus memakai format HH:00';
   END IF;
 
-  -- Parse hours
+  -- Parse and validate time range
   start_hour := split_part(new.start_time, ':', 1)::INTEGER;
   end_hour := split_part(new.end_time, ':', 1)::INTEGER;
 
-  -- Validate time range
   IF end_hour <= start_hour OR end_hour > 24 THEN
     RAISE EXCEPTION 'Rentang jam booking tidak valid';
   END IF;
 
-  -- Validate duration (1-4 hours)
   IF (end_hour - start_hour) NOT BETWEEN 1 AND 4 THEN
     RAISE EXCEPTION 'Durasi booking harus 1 sampai 4 jam';
   END IF;
@@ -319,24 +216,22 @@ BEGIN
   -- Verify court exists and is available
   SELECT * INTO court_record
   FROM public.courts
-  WHERE id = new.court_id
-    AND available = true;
+  WHERE id = new.court_id AND available = true;
 
   IF NOT found THEN
     RAISE EXCEPTION 'Court tidak tersedia';
   END IF;
 
-  -- Trust database for derived fields
+  -- Auto-populate derived fields
   new.duration_hours := end_hour - start_hour;
   new.court_name := court_record.name;
   new.amount := court_record.price_per_hour * new.duration_hours;
 
-  -- Prevent double booking (race condition safe)
+  -- Prevent double booking
   PERFORM pg_advisory_xact_lock(hashtext(new.court_id || ':' || new.date));
 
   IF new.status != 'cancelled' AND EXISTS (
-    SELECT 1
-    FROM public.bookings b
+    SELECT 1 FROM public.bookings b
     WHERE b.court_id = new.court_id
       AND b.date = new.date
       AND b.status != 'cancelled'
@@ -355,22 +250,18 @@ $$;
 -- SECTION 5: TRIGGERS
 -- ============================================================================
 
--- Profile auto-update timestamp
 CREATE TRIGGER profiles_touch_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
--- Create profile on signup
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Update profile on metadata change
 CREATE TRIGGER on_auth_user_updated
   AFTER UPDATE OF email, raw_user_meta_data ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
 
--- Validate booking
 CREATE TRIGGER bookings_validate
   BEFORE INSERT OR UPDATE ON public.bookings
   FOR EACH ROW EXECUTE FUNCTION public.validate_booking();
@@ -383,178 +274,87 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.courts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 
--- -------------------------------------------------------
--- Profiles Policies
--- -------------------------------------------------------
-CREATE POLICY "Users view own profile"
-  ON public.profiles FOR SELECT
-  USING (auth.uid() = id);
+-- Profiles: Users can only manage their own profile
+CREATE POLICY "Users view own profile" ON public.profiles
+  FOR SELECT USING (auth.uid() = id);
 
-CREATE POLICY "Users insert own profile"
-  ON public.profiles FOR INSERT
-  WITH CHECK (auth.uid() = id);
+CREATE POLICY "Users insert own profile" ON public.profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
 
-CREATE POLICY "Users update own profile"
-  ON public.profiles FOR UPDATE
-  USING (auth.uid() = id)
-  WITH CHECK (auth.uid() = id AND (role IS NULL OR role = 'user'));
+CREATE POLICY "Users update own profile" ON public.profiles
+  FOR UPDATE USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
-CREATE POLICY "Admins view all profiles"
-  ON public.profiles FOR SELECT
-  USING (public.is_admin());
+-- Courts: Anyone can view courts
+CREATE POLICY "Anyone view courts" ON public.courts
+  FOR SELECT USING (true);
 
-CREATE POLICY "Admins update all profiles"
-  ON public.profiles FOR ALL
-  USING (public.is_admin())
-  WITH CHECK (public.is_admin());
+-- Bookings: Users can manage their own bookings
+CREATE POLICY "Users view own bookings" ON public.bookings
+  FOR SELECT USING (auth.uid() = user_id);
 
--- -------------------------------------------------------
--- Courts Policies
--- -------------------------------------------------------
-CREATE POLICY "Anyone view courts"
-  ON public.courts FOR SELECT
-  USING (true);
+CREATE POLICY "Users create bookings" ON public.bookings
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Admins manage courts"
-  ON public.courts FOR ALL
-  USING (public.is_admin())
-  WITH CHECK (public.is_admin());
-
--- -------------------------------------------------------
--- Bookings Policies
--- -------------------------------------------------------
-CREATE POLICY "Users view own bookings"
-  ON public.bookings FOR SELECT
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users create bookings"
-  ON public.bookings FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users update own bookings"
-  ON public.bookings FOR UPDATE
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Admins view all bookings"
-  ON public.bookings FOR SELECT
-  USING (public.is_admin());
-
-CREATE POLICY "Admins manage all bookings"
-  ON public.bookings FOR ALL
-  USING (public.is_admin())
-  WITH CHECK (public.is_admin());
+CREATE POLICY "Users update own bookings" ON public.bookings
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
 -- ============================================================================
--- SECTION 7: STORAGE BUCKETS & POLICIES
+-- SECTION 7: STORAGE
 -- ============================================================================
 
--- Helper function to check folder ownership
 CREATE OR REPLACE FUNCTION public.storage_filepath_matches_user(filepath TEXT)
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-SECURITY DEFINER
-SET search_path = public
-AS $$
+RETURNS BOOLEAN LANGUAGE SQL STABLE SECURITY DEFINER SET search_path = public AS $$
   SELECT filepath LIKE auth.uid()::TEXT || '/%';
 $$;
 
 GRANT EXECUTE ON FUNCTION public.storage_filepath_matches_user(TEXT) TO authenticated;
 
--- -------------------------------------------------------
--- Avatars Bucket (2MB limit)
--- -------------------------------------------------------
+-- Avatars bucket (2MB)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 SELECT 'avatars', 'avatars', true, 2097152, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'avatars');
 
-CREATE POLICY "Users can upload avatar"
-  ON storage.objects FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    bucket_id = 'avatars'
-    AND public.storage_filepath_matches_user(name)
+CREATE POLICY "Users can upload avatar" ON storage.objects
+  FOR INSERT TO authenticated WITH CHECK (
+    bucket_id = 'avatars' AND public.storage_filepath_matches_user(name)
   );
 
-CREATE POLICY "Users can view avatars"
-  ON storage.objects FOR SELECT
-  USING (bucket_id = 'avatars');
+CREATE POLICY "Users can view avatars" ON storage.objects
+  FOR SELECT USING (bucket_id = 'avatars');
 
-CREATE POLICY "Users can update avatar"
-  ON storage.objects FOR UPDATE
-  TO authenticated
-  USING (
-    bucket_id = 'avatars'
-    AND public.storage_filepath_matches_user(name)
-  )
-  WITH CHECK (
-    bucket_id = 'avatars'
-    AND public.storage_filepath_matches_user(name)
+CREATE POLICY "Users can update avatar" ON storage.objects
+  FOR UPDATE TO authenticated USING (
+    bucket_id = 'avatars' AND public.storage_filepath_matches_user(name)
+  ) WITH CHECK (
+    bucket_id = 'avatars' AND public.storage_filepath_matches_user(name)
   );
 
-CREATE POLICY "Users can delete avatar"
-  ON storage.objects FOR DELETE
-  TO authenticated
-  USING (
-    bucket_id = 'avatars'
-    AND public.storage_filepath_matches_user(name)
+CREATE POLICY "Users can delete avatar" ON storage.objects
+  FOR DELETE TO authenticated USING (
+    bucket_id = 'avatars' AND public.storage_filepath_matches_user(name)
   );
 
-CREATE POLICY "Anyone can view avatars"
-  ON storage.objects FOR SELECT
-  USING (bucket_id = 'avatars');
+CREATE POLICY "Anyone can view avatars" ON storage.objects
+  FOR SELECT USING (bucket_id = 'avatars');
 
--- -------------------------------------------------------
--- Court Images Bucket (5MB limit)
--- -------------------------------------------------------
+-- Court images bucket (5MB)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 SELECT 'court-images', 'court-images', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp']
 WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'court-images');
 
-CREATE POLICY "Anyone can view court images"
-  ON storage.objects FOR SELECT
-  USING (bucket_id = 'court-images');
-
-CREATE POLICY "Admins can upload court images"
-  ON storage.objects FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    bucket_id = 'court-images'
-    AND public.is_admin()
-  );
-
-CREATE POLICY "Admins can update court images"
-  ON storage.objects FOR UPDATE
-  TO authenticated
-  USING (
-    bucket_id = 'court-images'
-    AND public.is_admin()
-  )
-  WITH CHECK (
-    bucket_id = 'court-images'
-    AND public.is_admin()
-  );
-
-CREATE POLICY "Admins can delete court images"
-  ON storage.objects FOR DELETE
-  TO authenticated
-  USING (
-    bucket_id = 'court-images'
-    AND public.is_admin()
-  );
+CREATE POLICY "Anyone can view court images" ON storage.objects
+  FOR SELECT USING (bucket_id = 'court-images');
 
 -- ============================================================================
--- SECTION 8: FUNCTION GRANTS
+-- SECTION 8: GRANTS
 -- ============================================================================
 
 GRANT EXECUTE ON FUNCTION public.get_booked_slots(TEXT, TEXT) TO anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 
 -- ============================================================================
 -- SECTION 9: SEED DATA
 -- ============================================================================
 
--- Default courts
 INSERT INTO public.courts (id, name, type, price_per_hour, surface, image_url, available) VALUES
   ('C1', 'Court 1 - Premium Indoor', 'Premium indoor court', 150000, 'Artificial Grass', '/images/padel1.jpg', true),
   ('C2', 'Court 2 - Standard Indoor', 'Standard indoor court', 100000, 'Artificial Grass', '/images/padel2.jpg', true),
@@ -569,14 +369,5 @@ ON CONFLICT (id) DO UPDATE SET
   available = excluded.available;
 
 -- ============================================================================
--- SECTION 10: ADMIN ACCOUNT SETUP
--- ============================================================================
--- Admin account is created automatically when user signs up with:
--- Email: admin@padelgo.com OR any email containing @admin@padelgo
---
--- To manually set a user as admin:
--- 1. Go to Supabase Dashboard > Authentication > Users
--- 2. Find the user you want to make admin
--- 3. Run this SQL:
---    UPDATE public.profiles SET role = 'admin' WHERE email = 'user@example.com';
+-- END OF SCHEMA
 -- ============================================================================
