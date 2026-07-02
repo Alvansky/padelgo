@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS public.bookings (
 );
 
 -- ============================================================================
--- SECTION 2.5: ADD booking_id COLUMN (Safe migration)
+-- SECTION 2.5: ADD MISSING COLUMNS (Safe migration)
 -- ============================================================================
 
 -- Add booking_id column if not exists
@@ -94,6 +94,20 @@ BEGIN
     RAISE NOTICE 'Added booking_id column';
   ELSE
     RAISE NOTICE 'booking_id column already exists';
+  END IF;
+END $$;
+
+-- Add notes column if not exists
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'bookings' AND column_name = 'notes'
+  ) THEN
+    ALTER TABLE public.bookings ADD COLUMN notes TEXT;
+    RAISE NOTICE 'Added notes column';
+  ELSE
+    RAISE NOTICE 'notes column already exists';
   END IF;
 END $$;
 
