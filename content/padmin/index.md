@@ -1005,13 +1005,16 @@ function adminInit() {
 async function adminLoad() {
   try {
     // Ensure PadelGo is ready
-    if (typeof PadelGo === 'undefined' || typeof PadelGo.Supabase === 'undefined') {
-      throw new Error('Supabase belum dimuat. Refresh halaman.');
+    if (typeof PadelGo === 'undefined') {
+      throw new Error('PadelGo belum dimuat.');
+    }
+    if (typeof PadelGo.Supabase === 'undefined') {
+      throw new Error('PadelGo.Supabase belum tersedia.');
     }
     
     var supabase = await PadelGo.Supabase.init();
     if (!supabase) {
-      throw new Error('Supabase belum dikonfigurasi. Hubungi administrator.');
+      throw new Error('Supabase belum dikonfigurasi.');
     }
     
     var res = await supabase.auth.getSession();
@@ -1021,14 +1024,13 @@ async function adminLoad() {
     
     // Get admin profile
     var profileRes = await supabase.from('profiles').select('*').eq('id', res.data.session.user.id).single();
-    console.log('Profile response:', profileRes);
     
     if (!profileRes.data) {
       throw new Error('Profile tidak ditemukan.');
     }
     
     if (profileRes.data.role !== 'admin') {
-      throw new Error('Anda bukan admin. Role Anda: ' + (profileRes.data.role || 'tidak ditemukan') + '. Hubungi super admin untuk akses.');
+      throw new Error('Anda bukan admin. Role Anda: ' + (profileRes.data.role || 'tidak ada') + '. Hubungi super admin.');
     }
     
     // Update admin info in sidebar
@@ -1958,20 +1960,59 @@ function adminToast(msg, type) {
   }
 }
 
-// Event listeners for manual booking
-document.addEventListener('DOMContentLoaded', function() {
-  var dateInput = document.getElementById('mb-date');
-  if (dateInput) dateInput.addEventListener('change', adminRenderMbTimes);
-  var courtInput = document.getElementById('mb-court');
-  if (courtInput) courtInput.addEventListener('change', adminRenderMbTimes);
-  var nameInput = document.getElementById('mb-name');
-  if (nameInput) nameInput.addEventListener('input', adminUpdateMbSummary);
-  var emailInput = document.getElementById('mb-email');
-  if (emailInput) emailInput.addEventListener('input', adminUpdateMbSummary);
-  var phoneInput = document.getElementById('mb-phone');
-  if (phoneInput) phoneInput.addEventListener('input', adminUpdateMbSummary);
-});
+// Start admin initialization
+function startAdminInit() {
+  // Try immediately first
+  if (typeof PadelGo !== 'undefined' && typeof PadelGo.Supabase !== 'undefined') {
+    adminInit();
+    return;
+  }
+  
+  // Try on DOMContentLoaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        if (typeof PadelGo !== 'undefined' && typeof PadelGo.Supabase !== 'undefined') {
+          adminInit();
+        } else {
+          // Fallback: wait for shared.js to load
+          var checkCount = 0;
+          var checkInterval = setInterval(function() {
+            checkCount++;
+            if (typeof PadelGo !== 'undefined' && typeof PadelGo.Supabase !== 'undefined') {
+              clearInterval(checkInterval);
+              adminInit();
+            } else if (checkCount > 50) { // 5 seconds timeout
+              clearInterval(checkInterval);
+              adminShowError('Shared.js gagal dimuat. Refresh halaman.');
+            }
+          }, 100);
+        }
+      }, 100);
+    });
+  } else {
+    // DOM already loaded, check PadelGo
+    setTimeout(function() {
+      if (typeof PadelGo !== 'undefined' && typeof PadelGo.Supabase !== 'undefined') {
+        adminInit();
+      } else {
+        // Wait for shared.js
+        var checkCount = 0;
+        var checkInterval = setInterval(function() {
+          checkCount++;
+          if (typeof PadelGo !== 'undefined' && typeof PadelGo.Supabase !== 'undefined') {
+            clearInterval(checkInterval);
+            adminInit();
+          } else if (checkCount > 50) {
+            clearInterval(checkInterval);
+            adminShowError('Shared.js gagal dimuat. Refresh halaman.');
+          }
+        }, 100);
+      }
+    }, 100);
+  }
+}
 
-// Start
-adminInit();
+// Start initialization
+startAdminInit();
 </script>
