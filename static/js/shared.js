@@ -1,13 +1,11 @@
 window.PadelGo = window.PadelGo || {};
 
-// Only set defaults if not already configured by site-head.html
-if (!window.PadelGo.Config) {
-  window.PadelGo.Config = {
-    SUPABASE_URL: 'https://fgjmqqdwyvawtvfkzgrr.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnam1xcWR3eXZhd3R2Zmt6Z3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTkzNTksImV4cCI6MjA5ODM5NTM1OX0.rEGjOsJ3oIY2SryTdPFSOt3lxjsycxbHtifzeUnwYlE',
-    API_BASE: '/api'
-  };
-}
+// Default Supabase credentials - will be overridden by site-head.html or env vars
+window.PadelGo.Config = window.PadelGo.Config || {
+  SUPABASE_URL: 'https://fgjmqqdwyvawtvfkzgrr.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnam1xcWR3eXZhd3R2Zmt6Z3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTkzNTksImV4cCI6MjA5ODM5NTM1OX0.rEGjOsJ3oIY2SryTdPFSOt3lxjsycxbHtifzeUnwYlE',
+  API_BASE: '/api'
+};
 
 // Supabase will be loaded dynamically
 PadelGo.Supabase = {
