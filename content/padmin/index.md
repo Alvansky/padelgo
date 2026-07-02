@@ -948,6 +948,23 @@ layout: "padmin"
 // Admin Dashboard JavaScript
 // ============================================
 
+// Helper to safely set textContent
+function adminSetText(id, text) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = text || '';
+}
+
+// Helper to safely set display
+function adminSetDisplay(id, display) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = display || 'none';
+}
+
+// Helper to safely get element
+function adminEl(id) {
+  return document.getElementById(id);
+}
+
 // State
 var adminBookings = [];
 var adminCourts = [];
@@ -978,7 +995,7 @@ async function adminLoad() {
   try {
     var supabase = await PadelGo.Supabase.init();
     if (!supabase) {
-      adminShowError('Supabase belum dikonfigurasi.');
+      adminShowError('Supabase belum dikonfigurasi. Hubungi administrator.');
       return;
     }
     
@@ -991,16 +1008,14 @@ async function adminLoad() {
     // Get admin profile
     var profileRes = await supabase.from('profiles').select('*').eq('id', res.data.session.user.id).single();
     if (!profileRes.data || profileRes.data.role !== 'admin') {
-      adminShowError('Anda bukan admin. Hubungi super admin untuk akses.');
+      adminShowError('Anda bukan admin. Role Anda: ' + (profileRes.data?.role || 'tidak ditemukan') + '. Hubungi super admin untuk akses.');
       return;
     }
     
     // Update admin info in sidebar
     var adminName = profileRes.data.name || profileRes.data.email || 'Admin';
-    var adminNameEl = document.getElementById('adminName');
-    var adminAvatarEl = document.getElementById('adminAvatar');
-    if (adminNameEl) adminNameEl.textContent = adminName;
-    if (adminAvatarEl) adminAvatarEl.textContent = adminName.charAt(0).toUpperCase();
+    adminSetText('adminName', adminName);
+    adminSetText('adminAvatar', adminName.charAt(0).toUpperCase());
     
     // Load all data
     var bRes = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
@@ -1012,14 +1027,12 @@ async function adminLoad() {
     adminUsers = uRes.data || [];
     adminProfileById = new Map(adminUsers.map(function(u) { return [u.id, u]; }));
     
-    var loadingEl = document.getElementById('adminLoading');
-    var contentEl = document.getElementById('adminContent');
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (contentEl) contentEl.style.display = 'block';
+    adminSetDisplay('adminLoading', 'none');
+    adminSetDisplay('adminContent', 'block');
     
     adminRenderAll();
   } catch (err) {
-    var errorMsg = 'Terjadi kesalahan. Coba lagi.';
+    var errorMsg = 'Terjadi kesalahan.';
     if (err) {
       if (typeof err === 'string') {
         errorMsg = err;
@@ -1035,17 +1048,13 @@ async function adminLoad() {
 }
 
 function adminShowError(msg) {
-  var loading = document.getElementById('adminLoading');
-  var authError = document.getElementById('adminAuthError');
-  var errorText = document.getElementById('adminErrorText');
-  
-  if (loading) loading.style.display = 'none';
-  if (authError) authError.style.display = 'flex';
-  if (errorText) errorText.textContent = msg || 'Terjadi kesalahan.';
+  adminSetDisplay('adminLoading', 'none');
+  adminSetDisplay('adminAuthError', 'flex');
+  adminSetText('adminErrorText', msg || 'Terjadi kesalahan.');
 }
 
 function adminShowMessage(msg, type) {
-  var msgEl = document.getElementById(type === 'error' ? 'adminErrorMsg' : 'adminSuccessMsg');
+  var msgEl = adminEl(type === 'error' ? 'adminErrorMsg' : 'adminSuccessMsg');
   if (msgEl && msgEl.querySelector('p')) {
     msgEl.querySelector('p').textContent = msg || '';
     msgEl.classList.remove('hidden');
@@ -1066,7 +1075,8 @@ function toggleAdminSidebar() {
 function adminNavigate(page) {
   adminCurrentPage = page;
   document.querySelectorAll('.admin-page').forEach(function(p) { p.classList.add('hidden'); });
-  document.getElementById('page-' + page).classList.remove('hidden');
+  var targetPage = adminEl('page-' + page);
+  if (targetPage) targetPage.classList.remove('hidden');
   
   document.querySelectorAll('.admin-nav-btn').forEach(function(btn) {
     if (btn.dataset.page === page) {
@@ -1093,23 +1103,25 @@ function adminRenderAll() {
   var revenue = approved.reduce(function(s, b) { return s + (b.amount || 0); }, 0);
   
   // Stats
-  document.getElementById('stat-total').textContent = adminBookings.length;
-  document.getElementById('stat-pending').textContent = pending.length;
-  document.getElementById('stat-approved').textContent = approved.length;
-  document.getElementById('stat-revenue').textContent = adminRupiah(revenue);
+  adminSetText('stat-total', adminBookings.length);
+  adminSetText('stat-pending', pending.length);
+  adminSetText('stat-approved', approved.length);
+  adminSetText('stat-revenue', adminRupiah(revenue));
   
-  document.getElementById('fin-approved').textContent = adminRupiah(revenue);
-  document.getElementById('fin-pending').textContent = adminRupiah(pending.reduce(function(s, b) { return s + (b.amount || 0); }, 0));
-  document.getElementById('fin-cancelled').textContent = adminRupiah(adminBookings.filter(function(b) { return b.status === 'cancelled'; }).reduce(function(s, b) { return s + (b.amount || 0); }, 0));
+  adminSetText('fin-approved', adminRupiah(revenue));
+  adminSetText('fin-pending', adminRupiah(pending.reduce(function(s, b) { return s + (b.amount || 0); }, 0)));
+  adminSetText('fin-cancelled', adminRupiah(adminBookings.filter(function(b) { return b.status === 'cancelled'; }).reduce(function(s, b) { return s + (b.amount || 0); }, 0)));
   
   // Pending badge
   var pendingCount = pending.length;
-  var sidebarBadge = document.getElementById('sidebarPendingBadge');
-  if (pendingCount > 0) {
-    sidebarBadge.textContent = pendingCount;
-    sidebarBadge.classList.remove('hidden');
-  } else {
-    sidebarBadge.classList.add('hidden');
+  var sidebarBadge = adminEl('sidebarPendingBadge');
+  if (sidebarBadge) {
+    if (pendingCount > 0) {
+      sidebarBadge.textContent = pendingCount;
+      sidebarBadge.classList.remove('hidden');
+    } else {
+      sidebarBadge.classList.add('hidden');
+    }
   }
   
   adminRenderCalendar();
@@ -1134,7 +1146,7 @@ function adminCalNext() {
 
 function adminRenderCalendar() {
   var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-  document.getElementById('cal-month').textContent = months[adminCalDate.getMonth()] + ' ' + adminCalDate.getFullYear();
+  adminSetText('cal-month', months[adminCalDate.getMonth()] + ' ' + adminCalDate.getFullYear());
   
   var year = adminCalDate.getFullYear();
   var month = adminCalDate.getMonth();
