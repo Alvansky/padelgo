@@ -8,14 +8,16 @@ layout: "order"
 <section class="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 via-slate-100 to-teal-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/20 py-6 sm:py-8">
 <div class="mx-auto max-w-6xl px-4 lg:px-8">
 
-<!-- Header - Minimal -->
-<div class="mb-6 flex items-center gap-3">
-<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 shadow-lg shadow-teal-500/25">
-<svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<!-- Header - Centered Minimal -->
+<div class="mb-6 text-center">
+<div class="inline-flex items-center justify-center gap-3">
+<div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 shadow-xl shadow-teal-500/25">
+<svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
-<div>
-<h1 class="text-xl font-bold text-slate-900 dark:text-white">Reservasi</h1>
+<div class="text-left">
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Book a Court</h1>
 <p class="text-sm text-slate-500 dark:text-slate-400">PadelGo Courts</p>
+</div>
 </div>
 </div>
 
@@ -302,9 +304,11 @@ function selectCourt(court, courtData, button) {
   selectedCourt = court;
   document.getElementById('court').value = court;
   document.querySelectorAll('.court-btn').forEach(btn => {
-    btn.className = 'court-btn rounded-xl border-2 border-slate-200 bg-white p-4 text-left transition-all hover:border-teal-400 hover:bg-teal-50/50 dark:border-slate-700 dark:bg-slate-950';
+    btn.className = 'court-btn group relative overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-100 transition-all hover:border-teal-400 dark:border-slate-700 dark:bg-slate-900';
+    btn.querySelector('img').className = 'h-full w-full object-cover opacity-30 dark:opacity-20 group-hover:opacity-40 dark:group-hover:opacity-30 transition-opacity';
   });
-  button.className = 'court-btn rounded-xl border-2 border-teal-500 bg-gradient-to-br from-teal-50 to-emerald-50 p-4 text-left transition-all dark:from-teal-900/30 dark:to-emerald-900/30';
+  button.className = 'court-btn group relative overflow-hidden rounded-2xl border-2 border-teal-500 bg-gradient-to-br from-teal-500/20 to-emerald-500/20 transition-all dark:from-teal-500/30 dark:to-emerald-500/30';
+  button.querySelector('img').className = 'h-full w-full object-cover opacity-50 dark:opacity-40 transition-opacity';
   loadAvailability();
   updateSummary();
 }
@@ -343,15 +347,37 @@ function renderCourts() {
     grid.innerHTML = '<div class="col-span-2 rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-400 dark:border-slate-700">Tidak ada lapangan tersedia</div>';
     return;
   }
-  grid.innerHTML = courts.map(court => `
-    <button type="button" data-court="${court.id}" class="court-btn rounded-xl border-2 border-slate-200 bg-white p-4 text-left transition-all hover:border-teal-400 hover:bg-teal-50/50 dark:border-slate-700 dark:bg-slate-950" onclick="selectCourt('${court.id}', ${JSON.stringify(court).replace(/"/g, '&quot;')}, this)">
-      <div class="mb-2 flex items-center justify-between">
-        <span class="font-bold text-slate-900 dark:text-white">${court.name}</span>
-        <span class="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-semibold text-teal-700 dark:bg-teal-900/50 dark:text-teal-300">${court.type}</span>
+  
+  // Court images mapping
+  const courtImages = {
+    'C1': 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop',
+    'C2': 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop',
+    'C3': 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop',
+    'C4': 'https://images.unsplash.com/photo-1592789705501-f9ae4278a9c9?w=400&h=300&fit=crop'
+  };
+  
+  grid.innerHTML = courts.map(court => {
+    const imgUrl = courtImages[court.id] || 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=300&fit=crop';
+    return `
+    <button type="button" data-court="${court.id}" class="court-btn group relative overflow-hidden rounded-2xl border-2 border-slate-200 bg-slate-100 transition-all hover:border-teal-400 dark:border-slate-700 dark:bg-slate-900" onclick="selectCourt('${court.id}', ${JSON.stringify(court).replace(/"/g, '&quot;')}, this)">
+      <!-- Background Image with Overlay -->
+      <div class="absolute inset-0 overflow-hidden">
+        <img src="${imgUrl}" alt="${court.name}" class="h-full w-full object-cover opacity-30 dark:opacity-20 group-hover:opacity-40 dark:group-hover:opacity-30 transition-opacity">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/40 to-transparent"></div>
       </div>
-      <p class="text-xl font-bold text-teal-600 dark:text-teal-400">${PadelGo.Format.rupiah(court.price_per_hour)}<span class="text-xs font-normal text-slate-400"> /jam</span></p>
+      <!-- Content -->
+      <div class="relative z-10 p-4">
+        <div class="mb-2 flex items-center justify-between">
+          <span class="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold text-teal-700 shadow-sm backdrop-blur-sm dark:bg-slate-900/90 dark:text-teal-300">${court.type}</span>
+          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-xs font-bold text-slate-700 shadow-sm backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity dark:bg-slate-900/90">
+            <svg class="h-4 w-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </span>
+        </div>
+        <h4 class="mb-1 font-bold text-white drop-shadow-lg">${court.name}</h4>
+        <p class="text-xl font-bold text-white drop-shadow-lg">${PadelGo.Format.rupiah(court.price_per_hour)}<span class="text-xs font-normal text-white/70"> /jam</span></p>
+      </div>
     </button>
-  `).join('');
+  `}).join('');
 }
 
 async function loadAvailability() {

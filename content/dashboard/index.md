@@ -7,11 +7,10 @@ layout: "dashboard"
 
 <div class="min-h-[calc(100vh-3.5rem)] bg-slate-50 dark:bg-slate-950">
 
-<!-- Profile Header - Clean design with dark background for better contrast -->
+<!-- Profile Header - Centered -->
 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 shadow-sm dark:border-slate-700 mb-4 sm:mb-6">
 <div class="h-24 sm:h-28 bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800 relative"></div>
 <div class="px-4 sm:px-6 pb-6 sm:pb-8 md:px-8 -mt-14 sm:-mt-16 relative">
-<!-- Profile Header - Rapi dengan Avatar di kiri, Info di kanan -->
 <div class="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6">
   <!-- Avatar -->
   <div class="relative flex-shrink-0">
@@ -21,11 +20,10 @@ layout: "dashboard"
     </div>
   </div>
 
-  <!-- User Info - White text on dark background -->
+  <!-- User Info - Centered -->
   <div class="text-center sm:text-left flex-1 min-w-0">
     <h1 id="userName" class="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-lg">Loading...</h1>
     <p id="userEmail" class="text-sm text-slate-300 mt-1"></p>
-    <!-- Badges -->
     <div class="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
       <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-bold border border-emerald-500/30">
         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -38,7 +36,7 @@ layout: "dashboard"
     </div>
   </div>
 
-  <!-- Settings & Stats -->
+  <!-- Stats & Settings -->
   <div class="flex flex-col sm:items-end gap-3 w-full sm:w-auto">
     <a href="/settings/" class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 backdrop-blur px-4 py-2 text-sm font-bold text-white hover:bg-white/20 transition border border-white/10">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
