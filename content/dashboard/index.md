@@ -139,19 +139,16 @@ Booking Court
 
 <script src="/js/shared.js"></script>
 <script>
-const statusConfig = {
-  approved: { label: 'Approved', bg: 'bg-emerald-100', text: 'text-emerald-700', darkBg: 'dark:bg-emerald-900/50', darkText: 'dark:text-emerald-200', icon: '✓', gradient: 'from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30', border: 'border-emerald-200 dark:border-emerald-800' },
-  confirmed: { label: 'Confirmed', bg: 'bg-emerald-100', text: 'text-emerald-700', darkBg: 'dark:bg-emerald-900/50', darkText: 'dark:text-emerald-200', icon: '✓', gradient: 'from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30', border: 'border-emerald-200 dark:border-emerald-800' },
-  pending: { label: 'Pending', bg: 'bg-amber-100', text: 'text-amber-700', darkBg: 'dark:bg-amber-900/50', darkText: 'dark:text-amber-200', icon: '⏳', gradient: 'from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30', border: 'border-amber-200 dark:border-amber-800' },
-  cancelled: { label: 'Cancelled', bg: 'bg-red-100', text: 'text-red-700', darkBg: 'dark:bg-red-900/50', darkText: 'dark:text-red-200', icon: '✗', gradient: 'from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30', border: 'border-red-200 dark:border-red-800' }
-};
-
 function getCourtImage(courtId) {
   const images = {
     'A1': '/images/padel1.jpg',
     'A2': '/images/padel2.jpg',
     'B1': '/images/padel3.jpg',
-    'B2': '/images/padel4.jpg'
+    'B2': '/images/padel4.jpg',
+    'C1': '/images/padel1.jpg',
+    'C2': '/images/padel2.jpg',
+    'C3': '/images/padel3.jpg',
+    'C4': '/images/padel4.jpg'
   };
   return images[courtId] || '/images/padel1.jpg';
 }
@@ -160,13 +157,6 @@ function formatDateShort(dateStr) {
   if (!dateStr) return '-';
   const date = new Date(dateStr + 'T00:00:00');
   const options = { weekday: 'short', day: 'numeric', month: 'short' };
-  return date.toLocaleDateString('id-ID', options);
-}
-
-function formatDateFull(dateStr) {
-  if (!dateStr) return '-';
-  const date = new Date(dateStr + 'T00:00:00');
-  const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
   return date.toLocaleDateString('id-ID', options);
 }
 
@@ -294,17 +284,28 @@ function renderBookingHistory(bookings) {
 }
 
 function createBookingCard(booking, isUpcoming) {
-  const config = statusConfig[booking.status] || statusConfig.pending;
+  // Status label mapping - Bahasa Indonesia
+  const statusLabels = {
+    approved: { label: 'Diterima', icon: '✓', bg: 'bg-emerald-100', text: 'text-emerald-700', darkBg: 'dark:bg-emerald-900/50', darkText: 'dark:text-emerald-200' },
+    pending: { label: 'Menunggu', icon: '⏳', bg: 'bg-amber-100', text: 'text-amber-700', darkBg: 'dark:bg-amber-900/50', darkText: 'dark:text-amber-200' },
+    cancelled: { label: 'Dibatalkan', icon: '✗', bg: 'bg-red-100', text: 'text-red-700', darkBg: 'dark:bg-red-900/50', darkText: 'dark:text-red-200' }
+  };
+  const status = statusLabels[booking.status] || statusLabels.pending;
+  
   const card = document.createElement('div');
-  card.className = `p-4 sm:p-5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer group`;
+  card.className = 'p-4 sm:p-5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition cursor-pointer group';
 
+  // Format tanggal
+  const dateObj = new Date(booking.date + 'T00:00:00');
+  const dateFormatted = dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+  
   card.innerHTML = `
     <div class="flex gap-3 sm:gap-4">
       <!-- Court Image -->
       <div class="shrink-0 relative">
         <img src="${getCourtImage(booking.court_id)}" alt="${escapeHtml(booking.court_name || booking.court_id)}"
           class="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover shadow-sm">
-        ${isUpcoming && (booking.status === 'approved' || booking.status === 'confirmed') ? `
+        ${isUpcoming && booking.status === 'approved' ? `
           <div class="absolute -top-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
             <svg class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
           </div>
@@ -313,39 +314,47 @@ function createBookingCard(booking, isUpcoming) {
 
       <!-- Info -->
       <div class="flex-1 min-w-0">
-        <div class="flex items-start justify-between gap-2">
+        <!-- Header Row: Booking ID + Status -->
+        <div class="flex items-start justify-between gap-2 mb-2">
           <div>
-            <h4 class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base leading-tight">${escapeHtml(booking.court_name || booking.court_id)}</h4>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-              ${formatDateFull(booking.date)}
+            <!-- Booking ID Badge -->
+            <p class="inline-flex items-center gap-1 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-mono font-bold text-slate-600 dark:text-slate-300">
+              <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+              ${escapeHtml(booking.booking_id)}
             </p>
+            <h4 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base mt-0.5">${escapeHtml(booking.court_name || booking.court_id)}</h4>
           </div>
-          <span class="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-extrabold ${config.bg} ${config.text} ${config.darkBg} ${config.darkText}">
-            ${config.icon} ${config.label}
+          <span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold ${status.bg} ${status.text} ${status.darkBg} ${status.darkText}">
+            ${status.icon} ${status.label}
           </span>
         </div>
 
-        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-          <div class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span class="font-medium">${escapeHtml(booking.start_time)} - ${escapeHtml(booking.end_time)}</span>
+        <!-- Date & Time Row -->
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+          <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span class="font-medium">${dateFormatted}</span>
           </div>
-          <div class="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span class="font-extrabold text-teal-700 dark:text-teal-300">${rupiah(booking.amount)}</span>
+          <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="font-medium">${escapeHtml(booking.start_time)} - ${escapeHtml(booking.end_time)}</span>
+            <span class="text-slate-400">(${booking.duration_hours || 1}j)</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-slate-600 dark:text-slate-300">
+            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="font-bold text-teal-600 dark:text-teal-400">${rupiah(booking.amount)}</span>
           </div>
         </div>
 
         ${isUpcoming && booking.status === 'pending' ? `
-          <p class="mt-2 text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p class="mt-2 text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-1.5 font-medium">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             Menunggu approval admin
           </p>
         ` : ''}
 
         ${booking.notes ? `
-          <p class="mt-2 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 italic truncate">${escapeHtml(booking.notes)}</p>
+          <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 italic truncate">${escapeHtml(booking.notes)}</p>
         ` : ''}
       </div>
     </div>

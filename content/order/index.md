@@ -5,11 +5,11 @@ draft: false
 layout: "order"
 ---
 
-<section class="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-950">
+<section class="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
 <div class="mx-auto max-w-7xl px-4 py-8 sm:py-12 lg:px-8">
 
 <!-- Header -->
-<div class="mb-8">
+<div class="mb-8 text-center sm:text-left">
 <div class="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-xs font-semibold text-teal-700 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-300">
 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 Book a Court
@@ -31,18 +31,24 @@ Book a Court
 
 <div class="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
 <!-- Booking Form -->
-<div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
+<div class="rounded-2xl border border-slate-200/80 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-8">
 <form id="orderForm" class="space-y-6" onsubmit="handleBooking(event)" novalidate>
 
 <!-- Date -->
 <div>
-<label for="date" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">Date</label>
-<input id="date" type="date" required class="w-full rounded-xl border border-slate-200 bg-white py-3.5 px-4 text-slate-950 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-tealal-500 dark:focus:ring-teal-500/20">
+<label for="date" class="mb-2 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+<svg class="inline h-4 w-4 mr-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+Date
+</label>
+<input id="date" type="date" required class="w-full rounded-xl border border-slate-200 bg-white py-3.5 px-4 text-slate-950 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-teal-500 dark:focus:ring-teal-500/20">
 </div>
 
 <!-- Court Selection -->
 <div>
-<label class="mb-3 block text-sm font-semibold text-slate-700 dark:text-slate-200">Court</label>
+<label class="mb-3 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+<svg class="inline h-4 w-4 mr-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+Court
+</label>
 <div class="grid grid-cols-2 gap-3" id="courtGrid">
 <div class="col-span-2 rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
 Loading courts...
@@ -54,8 +60,11 @@ Loading courts...
 <!-- Time Selection -->
 <div>
 <div class="mb-3 flex items-center justify-between">
-<label class="text-sm font-semibold text-slate-700 dark:text-slate-200">Start Time</label>
-<span id="availabilityStatus" class="text-xs text-slate-500">Select date and court</span>
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+<svg class="inline h-4 w-4 mr-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+Start Time
+</label>
+<span id="availabilityStatus" class="text-xs rounded-full bg-slate-100 px-2.5 py-1 text-slate-500 dark:bg-slate-800 dark:text-slate-400">Select date & court</span>
 </div>
 <div id="timeGrid" class="grid grid-cols-4 gap-2 sm:grid-cols-6"></div>
 <div id="timePlaceholder" class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
@@ -66,49 +75,83 @@ Select date and court to see available times
 
 <!-- Duration -->
 <div>
-<label class="mb-3 block text-sm font-semibold text-slate-700 dark:text-slate-200">Duration</label>
+<label class="mb-3 block text-sm font-semibold text-slate-700 dark:text-slate-200">
+<svg class="inline h-4 w-4 mr-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+Duration
+</label>
 <div class="flex flex-wrap gap-2" id="durationGrid">
-<button type="button" data-hours="1" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">1 hour</button>
-<button type="button" data-hours="2" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">2 hours</button>
-<button type="button" data-hours="3" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">3 hours</button>
-<button type="button" data-hours="4" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">4 hours</button>
-<button type="button" data-hours="5" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">5 hours</button>
-<button type="button" data-hours="6" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">6 hours</button>
+<button type="button" data-hours="1" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">1 hr</button>
+<button type="button" data-hours="2" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">2 hrs</button>
+<button type="button" data-hours="3" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">3 hrs</button>
+<button type="button" data-hours="4" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">4 hrs</button>
+<button type="button" data-hours="5" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">5 hrs</button>
+<button type="button" data-hours="6" class="duration-btn rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-teal-500 hover:bg-teal-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-500/10">6 hrs</button>
 </div>
 <input type="hidden" id="duration" value="1">
 </div>
 
 <!-- Summary -->
-<div id="selectedSummary" class="hidden rounded-xl border border-teal-200 bg-tealal-50/50 p-4 dark:border-teal-800 dark:bg-teal-950/30">
+<div id="selectedSummary" class="hidden rounded-xl border-2 border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50 p-4 dark:border-teal-800 dark:from-teal-950/50 dark:to-emerald-950/50">
 <div class="flex items-center gap-4">
-<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/50">
-<svg class="h-5 w-5 text-teal-600 dark:text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<div class="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100 dark:bg-teal-900/50">
+<svg class="h-6 w-6 text-teal-600 dark:text-teal-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
-<div>
-<p class="font-semibold text-slate-900 dark:text-white" id="summaryText"></p>
+<div class="flex-1">
+<p class="font-bold text-slate-900 dark:text-white" id="summaryText"></p>
 <p class="mt-1 text-sm font-bold text-teal-600 dark:text-teal-400" id="summaryPrice"></p>
 </div>
 </div>
 </div>
 
 <!-- Messages -->
-<p id="bookingError" class="hidden rounded-lg border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300" role="alert"></p>
-<p id="bookingSuccess" class="hidden rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300" role="status"></p>
+<p id="bookingError" class="hidden rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300" role="alert"></p>
+
+<!-- Success Message (will be shown after booking) -->
+<div id="bookingSuccessPanel" class="hidden">
+<div class="rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 p-6 dark:border-emerald-800 dark:from-emerald-950/50 dark:to-teal-950/50">
+<div class="flex items-start gap-4">
+<div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
+<svg class="h-7 w-7 text-emerald-600 dark:text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+</div>
+<div class="flex-1">
+<p class="text-lg font-bold text-emerald-800 dark:text-emerald-200">Booking Berhasil!</p>
+<div class="mt-2 space-y-1">
+<p class="text-sm text-slate-600 dark:text-slate-300">ID Booking:</p>
+<p id="successBookingId" class="font-mono text-xl font-bold text-teal-600 dark:text-teal-400"></p>
+</div>
+<div id="successDetails" class="mt-3 rounded-lg bg-white/60 p-3 dark:bg-slate-900/50"></div>
+<p class="mt-3 text-xs font-medium text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+Menunggu approval dari admin
+</p>
+</div>
+</div>
+<div class="mt-4 flex gap-2">
+<a href="/dashboard/" class="flex-1 rounded-lg bg-teal-600 px-4 py-2.5 text-center text-sm font-bold text-white transition hover:bg-teal-700">
+Lihat Booking Saya
+</a>
+<button type="button" onclick="resetAndContinue()" class="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+Booking Lagi
+</button>
+</div>
+</div>
+</div>
 
 <!-- Submit -->
-<button type="submit" id="submitBtn" class="w-full rounded-xl bg-teal-600 py-4 text-sm font-bold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed">
-<span id="submitText">Confirm Booking</span>
+<button type="submit" id="submitBtn" class="w-full rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 py-4 text-sm font-bold text-white shadow-lg transition hover:from-teal-700 hover:to-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed">
+<span id="submitText">Konfirmasi Booking</span>
 </button>
 </form>
 </div>
 
 <!-- Court Map -->
 <div class="space-y-6">
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+<!-- Court Map Card -->
+<div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-lg dark:border-slate-800 dark:bg-slate-900">
 <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4 dark:border-slate-800">
 <div>
-<h2 class="text-base font-semibold text-slate-950 dark:text-white">Court Map</h2>
-<p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Tap to select</p>
+<h2 class="text-base font-semibold text-slate-950 dark:text-white">Peta Court</h2>
+<p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Tap untuk memilih</p>
 </div>
 <div id="courtCount" class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">0 courts</div>
 </div>
@@ -117,26 +160,41 @@ Select date and court to see available times
 
 <!-- Info Cards -->
 <div class="grid gap-4 sm:grid-cols-3">
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-900">
-<div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-<svg class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+<div class="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-900">
+<div class="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
+<svg class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
 </div>
 <p class="text-sm font-semibold text-slate-900 dark:text-white">Login Required</p>
-<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Must be logged in to book</p>
+<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Harus login untuk booking</p>
 </div>
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-900">
-<div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-<svg class="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+<div class="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-900">
+<div class="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+<svg class="h-5 w-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
 </div>
 <p class="text-sm font-semibold text-slate-900 dark:text-white">No Double-book</p>
-<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Conflicting slots blocked</p>
+<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Slot bentrok diblokir</p>
 </div>
-<div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-900">
-<div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-<svg class="h-4 w-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+<div class="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-900">
+<div class="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+<svg class="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
 </div>
 <p class="text-sm font-semibold text-slate-900 dark:text-white">24/7 Booking</p>
-<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Book any time slot</p>
+<p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Booking kapan saja</p>
+</div>
+</div>
+
+<!-- Price Info -->
+<div class="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-teal-600 to-teal-800 p-5 shadow-lg dark:from-slate-800 dark:to-slate-900">
+<h3 class="text-base font-bold text-white">Info Harga</h3>
+<div class="mt-3 space-y-2 text-sm text-teal-100">
+<div class="flex justify-between">
+<span>Premium Indoor/Glass</span>
+<span class="font-bold text-white">Rp 150.000/jam</span>
+</div>
+<div class="flex justify-between">
+<span>Standard Indoor/Glass</span>
+<span class="font-bold text-white">Rp 100.000/jam</span>
+</div>
 </div>
 </div>
 </div>
@@ -186,6 +244,7 @@ function selectCourt(court, button) {
   document.querySelectorAll('.court-map-card').forEach(card => {
     card.classList.toggle('ring-2', card.dataset.court === court);
     card.classList.toggle('ring-teal-500', card.dataset.court === court);
+    card.classList.toggle('border-teal-500', card.dataset.court === court);
   });
   loadAvailability();
   updateSummary();
@@ -259,12 +318,12 @@ async function loadAvailability() {
   const status = document.getElementById('availabilityStatus');
   const date = document.getElementById('date').value;
   if (!date || !selectedCourt) {
-    status.textContent = 'Select date and court';
-    status.className = 'text-xs text-slate-500';
+    status.textContent = 'Select date & court';
+    status.className = 'text-xs rounded-full bg-slate-100 px-2.5 py-1 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
     return;
   }
   status.textContent = 'Checking...';
-  status.className = 'text-xs text-amber-600';
+  status.className = 'text-xs rounded-full bg-amber-100 px-2.5 py-1 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400';
   try {
     const supabase = await PadelGo.Supabase.init();
     if (!supabase) throw new Error('Not configured');
@@ -280,11 +339,11 @@ async function loadAvailability() {
       }
     });
     status.textContent = 'Available';
-    status.className = 'text-xs text-emerald-600';
+    status.className = 'text-xs rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400';
   } catch {
     bookedSlots[selectedCourt] = bookedSlots[selectedCourt] || [];
     status.textContent = 'Checking';
-    status.className = 'text-xs text-slate-500';
+    status.className = 'text-xs rounded-full bg-slate-100 px-2.5 py-1 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
   }
   renderTimeSlots();
 }
@@ -375,13 +434,19 @@ function resetFormState() {
     btn.classList.remove('border-teal-500', 'bg-teal-500', 'text-white');
     btn.classList.add('border-slate-200', 'bg-white', 'text-slate-700', 'dark:border-slate-700', 'dark:bg-slate-950', 'dark:text-slate-300');
   });
-  document.querySelectorAll('.court-map-card').forEach(card => card.classList.remove('ring-2', 'ring-teal-500'));
+  document.querySelectorAll('.court-map-card').forEach(card => card.classList.remove('ring-2', 'ring-teal-500', 'border-teal-500'));
   document.getElementById('selectedSummary').classList.add('hidden');
   document.getElementById('bookingError').classList.add('hidden');
-  document.getElementById('bookingSuccess').classList.add('hidden');
+  document.getElementById('bookingSuccessPanel').classList.add('hidden');
   document.getElementById('timePlaceholder').classList.remove('hidden');
   document.getElementById('timeGrid').classList.add('hidden');
   document.getElementById('timeGrid').innerHTML = '';
+}
+
+function resetAndContinue() {
+  resetFormState();
+  document.getElementById('submitBtn').classList.remove('hidden');
+  document.getElementById('date').focus();
 }
 
 function getTodayLocalDate() {
@@ -392,11 +457,11 @@ function getTodayLocalDate() {
 async function handleBooking(e) {
   e.preventDefault();
   const errorEl = document.getElementById('bookingError');
-  const successEl = document.getElementById('bookingSuccess');
+  const successPanel = document.getElementById('bookingSuccessPanel');
   const submitBtn = document.getElementById('submitBtn');
   const submitText = document.getElementById('submitText');
   errorEl.classList.add('hidden');
-  successEl.classList.add('hidden');
+  successPanel.classList.add('hidden');
 
   const supabase = await PadelGo.Supabase.init();
   if (!supabase) {
@@ -423,20 +488,19 @@ async function handleBooking(e) {
   }
 
   submitBtn.disabled = true;
-  submitText.textContent = 'Processing...';
+  submitText.textContent = 'Memproses...';
 
   try {
     const dateVal = document.getElementById('date').value;
     const startHour = Number(selectedTime.split(':')[0]);
     const endHour = startHour + selectedDuration;
     const endTime = String(endHour).padStart(2, '0') + ':00';
-    const { data: court } = await supabase.from('courts').select('name, price_per_hour').eq('id', selectedCourt).single();
+    const court = courts.find(c => c.id === selectedCourt);
     const pricePerHour = court?.price_per_hour || 150000;
     const amount = pricePerHour * selectedDuration;
-    const bookingId = 'BK-' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
 
-    const { error: insertError } = await supabase.from('bookings').insert({
-      id: bookingId,
+    // Insert booking - booking_id akan di-generate otomatis oleh trigger
+    const { data: newBooking, error: insertError } = await supabase.from('bookings').insert({
       user_id: session.user.id,
       court_id: selectedCourt,
       court_name: court?.name || selectedCourt,
@@ -446,20 +510,57 @@ async function handleBooking(e) {
       duration_hours: selectedDuration,
       amount: amount,
       status: 'pending',
-    });
+    }).select('booking_id').single();
 
     if (insertError) throw new Error(insertError.message || 'Booking failed');
-    resetFormState();
-    successEl.textContent = 'Booking confirmed. Court: ' + (court?.name || selectedCourt) + ', ' + dateVal + ' at ' + selectedTime + '-' + endTime;
-    successEl.classList.remove('hidden');
-    PadelGo.UI.toast('Booking submitted. Waiting for approval.');
+
+    const displayBookingId = newBooking?.booking_id || 'Pending';
+    
+    // Format tanggal untuk display
+    const dateDisplay = new Date(dateVal + 'T00:00:00').toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+
+    // Tampilkan success panel
+    document.getElementById('successBookingId').textContent = displayBookingId;
+    document.getElementById('successDetails').innerHTML = `
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Court</p>
+          <p class="font-semibold text-slate-900 dark:text-white">${escapeHtml(court?.name || selectedCourt)}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Tanggal</p>
+          <p class="font-semibold text-slate-900 dark:text-white">${dateDisplay}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Waktu</p>
+          <p class="font-semibold text-slate-900 dark:text-white">${selectedTime} - ${endTime}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Durasi</p>
+          <p class="font-semibold text-slate-900 dark:text-white">${selectedDuration} jam</p>
+        </div>
+        <div class="col-span-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Total Bayar</p>
+          <p class="text-lg font-bold text-teal-600 dark:text-teal-400">${PadelGo.Format.rupiah(amount)}</p>
+        </div>
+      </div>
+    `;
+    
+    successPanel.classList.remove('hidden');
+    submitBtn.classList.add('hidden');
+    PadelGo.UI.toast('Booking submitted successfully!');
     loadAvailability();
   } catch (err) {
     errorEl.textContent = err.message || 'Booking failed.';
     errorEl.classList.remove('hidden');
   } finally {
     submitBtn.disabled = false;
-    submitText.textContent = 'Confirm Booking';
+    submitText.textContent = 'Konfirmasi Booking';
   }
 }
 
