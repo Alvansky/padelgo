@@ -711,7 +711,9 @@ body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(
 const SB_URL = 'https://fgjmqqdwyvawtvfkzgrr.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZnam1xcWR3eXZhd3R2Zmt6Z3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MTkzNTksImV4cCI6MjA5ODM5NTM1OX0.rEGjOsJ3oIY2SryTdPFSOt3lxjsycxbHtifzeUnwYlE';
 
-let supabase = null;
+// Use window.supabase directly - SDK sudah dimuat dari shared.js
+const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
 let currentUser = null;
 let bookings = [];
 let courts = [];
@@ -827,50 +829,10 @@ async function init() {
   setInitTimeout();
 
   try {
-    // Wait for Supabase to be available (either from shared.js or load ourselves)
-    log('Waiting for Supabase...');
-
-    // Try to use PadelGo.Supabase first if available
-    if (window.PadelGo && window.PadelGo.Supabase) {
-      log('Using PadelGo.Supabase...');
-      const client = await window.PadelGo.Supabase.init();
-      if (client) {
-        supabase = client;
-        log('Supabase client from PadelGo');
-      } else {
-        throw new Error('Gagal inisialisasi Supabase');
-      }
+    // Check if Supabase is available
+    if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') {
+      throw new Error('Supabase SDK belum dimuat. Pastikan koneksi internet stabil dan refresh halaman.');
     }
-    // Fallback: check if window.supabase exists and has createClient
-    else if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
-      log('Using window.supabase directly...');
-      supabase = window.supabase.createClient(SB_URL, SB_KEY);
-    }
-    // Last resort: load the script ourselves
-    else {
-      log('Loading Supabase SDK from CDN...');
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('Timeout loading Supabase')), 15000);
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-        s.onload = () => {
-          clearTimeout(timeout);
-          log('Supabase SDK loaded');
-          resolve();
-        };
-        s.onerror = () => {
-          clearTimeout(timeout);
-          reject(new Error('Gagal memuat Supabase SDK'));
-        };
-        document.head.appendChild(s);
-      });
-      if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') {
-        throw new Error('Supabase SDK tidak tersedia setelah dimuat');
-      }
-      supabase = window.supabase.createClient(SB_URL, SB_KEY);
-    }
-
-    log('Supabase client ready');
 
     // Check auth
     log('Checking authentication...');
