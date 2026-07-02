@@ -8,10 +8,17 @@ layout: "order"
 <section class="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-slate-50 via-slate-100 to-teal-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/20 py-6 sm:py-8">
 <div class="mx-auto max-w-6xl px-4 lg:px-8">
 
-<!-- Header - Simple Centered -->
+<!-- Header - Centered with Icon -->
 <div class="mb-6 text-center">
+<div class="inline-flex items-center justify-center gap-3">
+<div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 shadow-xl shadow-teal-500/25">
+<svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+</div>
+<div class="text-left">
 <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Book a Court</h1>
 <p class="text-sm text-slate-500 dark:text-slate-400">PadelGo Courts</p>
+</div>
+</div>
 </div>
 
 <!-- Auth Notice -->
