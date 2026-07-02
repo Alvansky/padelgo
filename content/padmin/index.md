@@ -954,6 +954,12 @@ function adminSetText(id, text) {
   if (el) el.textContent = text || '';
 }
 
+// Helper to safely set innerHTML
+function adminSetHTML(id, html) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = html || '';
+}
+
 // Helper to safely set display
 function adminSetDisplay(id, display) {
   var el = document.getElementById(id);
@@ -981,35 +987,48 @@ var adminReportPageNum = 1;
 var adminReportSize = 20;
 var adminCurrentPage = 'overview';
 
-// Initialize
+// Initialize - wrapped in try-catch
 function adminInit() {
-  if (typeof PadelGo === 'undefined' || typeof PadelGo.Supabase === 'undefined') {
-    setTimeout(adminInit, 100);
-    return;
+  try {
+    if (typeof PadelGo === 'undefined' || typeof PadelGo.Supabase === 'undefined') {
+      setTimeout(adminInit, 200);
+      return;
+    }
+    adminLoad();
+  } catch (err) {
+    console.error('adminInit error:', err);
+    adminShowError('Error initializing: ' + (err.message || 'Unknown error'));
   }
-  adminLoad();
 }
 
 // Load all data
 async function adminLoad() {
   try {
+    // Ensure PadelGo is ready
+    if (typeof PadelGo === 'undefined' || typeof PadelGo.Supabase === 'undefined') {
+      throw new Error('Supabase belum dimuat. Refresh halaman.');
+    }
+    
     var supabase = await PadelGo.Supabase.init();
     if (!supabase) {
-      adminShowError('Supabase belum dikonfigurasi. Hubungi administrator.');
-      return;
+      throw new Error('Supabase belum dikonfigurasi. Hubungi administrator.');
     }
     
     var res = await supabase.auth.getSession();
     if (!res.data || !res.data.session) {
-      adminShowError('Anda harus login terlebih dahulu.');
-      return;
+      throw new Error('Anda harus login terlebih dahulu.');
     }
     
     // Get admin profile
     var profileRes = await supabase.from('profiles').select('*').eq('id', res.data.session.user.id).single();
-    if (!profileRes.data || profileRes.data.role !== 'admin') {
-      adminShowError('Anda bukan admin. Role Anda: ' + (profileRes.data?.role || 'tidak ditemukan') + '. Hubungi super admin untuk akses.');
-      return;
+    console.log('Profile response:', profileRes);
+    
+    if (!profileRes.data) {
+      throw new Error('Profile tidak ditemukan.');
+    }
+    
+    if (profileRes.data.role !== 'admin') {
+      throw new Error('Anda bukan admin. Role Anda: ' + (profileRes.data.role || 'tidak ditemukan') + '. Hubungi super admin untuk akses.');
     }
     
     // Update admin info in sidebar
@@ -1032,18 +1051,9 @@ async function adminLoad() {
     
     adminRenderAll();
   } catch (err) {
-    var errorMsg = 'Terjadi kesalahan.';
-    if (err) {
-      if (typeof err === 'string') {
-        errorMsg = err;
-      } else if (err.message) {
-        errorMsg = String(err.message);
-      } else if (err.error) {
-        errorMsg = String(err.error.message || err.error);
-      }
-    }
-    adminShowError(errorMsg);
     console.error('Admin load error:', err);
+    var errorMsg = err.message || 'Terjadi kesalahan.';
+    adminShowError(errorMsg);
   }
 }
 
@@ -1192,7 +1202,7 @@ function adminRenderCalendar() {
     }
     html += '</button>';
   }
-  document.getElementById('cal-grid').innerHTML = html;
+  adminSetHTML('cal-grid', html);
 }
 
 function adminShowDay(dateStr) {
@@ -1204,7 +1214,7 @@ function adminShowDay(dateStr) {
   document.getElementById('day-subtitle').textContent = dayBookings.length + ' booking';
   
   if (!dayBookings.length) {
-    document.getElementById('day-content').innerHTML = '<div class="text-center py-12"><svg class="mx-auto h-16 w-16 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p class="mt-4 text-slate-500">Tidak ada booking pada hari ini.</p></div>';
+    adminSetHTML('day-content', '<div class="text-center py-12"><svg class="mx-auto h-16 w-16 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p class="mt-4 text-slate-500">Tidak ada booking pada hari ini.</p></div>';
   } else {
     var html = '<div class="space-y-3">';
     dayBookings.forEach(function(b) {
@@ -1231,7 +1241,7 @@ function adminShowDay(dateStr) {
       html += '</div></div>';
     });
     html += '</div>';
-    document.getElementById('day-content').innerHTML = html;
+    adminSetHTML('day-content', html;
   }
   
   document.getElementById('day-modal').classList.remove('hidden');
@@ -1245,7 +1255,7 @@ function adminCloseDayModal() {
 function adminRenderRecentBookings() {
   var recent = adminBookings.slice(0, 5);
   if (!recent.length) {
-    document.getElementById('recent-list').innerHTML = '<div class="text-center py-8"><p class="text-sm text-slate-500">Belum ada booking.</p></div>';
+    adminSetHTML('recent-list', '<div class="text-center py-8"><p class="text-sm text-slate-500">Belum ada booking.</p></div>';
     return;
   }
   var html = '';
@@ -1264,7 +1274,7 @@ function adminRenderRecentBookings() {
     html += '<p class="mt-1 text-sm font-bold text-teal-600">' + adminRupiah(b.amount) + '</p>';
     html += '</div></div>';
   });
-  document.getElementById('recent-list').innerHTML = html;
+  adminSetHTML('recent-list', html;
 }
 
 // Bookings Table
@@ -1286,7 +1296,7 @@ function adminFilterBookings() {
 
 function adminRenderBookingsTable(bookings) {
   if (!bookings || !bookings.length) {
-    document.getElementById('bookings-table').innerHTML = '<tr><td colspan="7" class="px-4 py-12 text-center text-slate-500">Tidak ada booking.</td></tr>';
+    adminSetHTML('bookings-table', '<tr><td colspan="7" class="px-4 py-12 text-center text-slate-500">Tidak ada booking.</td></tr>';
     return;
   }
   var html = '';
@@ -1310,7 +1320,7 @@ function adminRenderBookingsTable(bookings) {
     html += '<td class="px-4 py-3 text-right font-bold text-sm text-slate-900 dark:text-white">' + adminRupiah(b.amount) + '</td>';
     html += '<td class="px-4 py-3 text-center">' + actions + '</td></tr>';
   });
-  document.getElementById('bookings-table').innerHTML = html;
+  adminSetHTML('bookings-table', html;
 }
 
 async function adminSetStatus(id, status) {
@@ -1329,7 +1339,7 @@ async function adminSetStatus(id, status) {
 // Courts
 function adminRenderCourts() {
   if (!adminCourts.length) {
-    document.getElementById('courts-list').innerHTML = '<div class="px-6 py-12 text-center text-slate-500">Belum ada lapangan.</div>';
+    adminSetHTML('courts-list', '<div class="px-6 py-12 text-center text-slate-500">Belum ada lapangan.</div>';
     return;
   }
   var html = '';
@@ -1350,7 +1360,7 @@ function adminRenderCourts() {
     html += '<button onclick="adminEditCourt(\'' + c.id + '\')" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800 transition-colors">Edit</button>';
     html += '</div></div>';
   });
-  document.getElementById('courts-list').innerHTML = html;
+  adminSetHTML('courts-list', html;
 }
 
 function adminEditCourt(id) {
@@ -1476,7 +1486,7 @@ function adminRenderFinance() {
   if (!Object.keys(courtGroups).length) {
     html = '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Tidak ada data.</td></tr>';
   }
-  document.getElementById('finance-table').innerHTML = html;
+  adminSetHTML('finance-table', html;
 }
 
 // Users
@@ -1486,7 +1496,7 @@ function adminRenderUsers() {
   document.getElementById('users-count').textContent = nonAdmin + ' user' + (nonAdmin !== 1 ? 's' : '') + ' • ' + adminCnt + ' admin';
   
   if (!adminUsers.length) {
-    document.getElementById('users-table').innerHTML = '<tr><td colspan="6" class="px-4 py-12 text-center text-slate-500">Belum ada user.</td></tr>';
+    adminSetHTML('users-table', '<tr><td colspan="6" class="px-4 py-12 text-center text-slate-500">Belum ada user.</td></tr>';
     return;
   }
   var html = '';
@@ -1505,7 +1515,7 @@ function adminRenderUsers() {
     html += '<td class="px-4 py-3 text-right"><button onclick="adminOpenUserModal(\'' + u.id + '\')" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800 transition-colors">Edit</button></td>';
     html += '</tr>';
   });
-  document.getElementById('users-table').innerHTML = html;
+  adminSetHTML('users-table', html;
 }
 
 function adminOpenUserModal(id) {
@@ -1611,7 +1621,7 @@ function adminPopulateCourtSelect(selectId) {
   adminCourts.forEach(function(c) {
     if (c.available) options += '<option value="' + c.id + '">' + adminEsc(c.name) + ' - ' + adminRupiah(c.price_per_hour) + '/jam</option>';
   });
-  sel.innerHTML = options;
+  if (sel) sel.innerHTML = options;
 }
 
 async function adminRenderMbTimes() {
@@ -1619,7 +1629,8 @@ async function adminRenderMbTimes() {
   var courtId = document.getElementById('mb-court').value;
   adminSelCourt = courtId;
   adminSelTime = null;
-  document.getElementById('mb-time').value = '';
+  var mbTimeInput = document.getElementById('mb-time');
+  if (mbTimeInput) mbTimeInput.value = '';
   
   adminBookedSlots = [];
   if (courtId && date) {
@@ -1636,7 +1647,7 @@ async function adminRenderMbTimes() {
   }
   
   var grid = document.getElementById('mb-times');
-  grid.innerHTML = '';
+  if (grid) grid.innerHTML = '';
   for (var h = 6; h < 24; h++) {
     var label = String(h).padStart(2, '0') + ':00';
     var booked = adminBookedSlots.indexOf(label) !== -1;
@@ -1678,15 +1689,15 @@ function adminSelectMbTime(time, btn) {
 }
 
 function adminUpdateMbSummary() {
-  var summary = document.getElementById('mb-summary');
-  var content = document.getElementById('mb-summary-content');
-  var total = document.getElementById('mb-total');
+  var summary = adminEl('mb-summary');
+  var contentEl = adminEl('mb-summary-content');
+  var totalEl = adminEl('mb-total');
   
-  var name = document.getElementById('mb-name').value.trim();
-  var email = document.getElementById('mb-email').value.trim();
-  var phone = document.getElementById('mb-phone').value.trim();
-  var date = document.getElementById('mb-date').value;
-  var courtId = document.getElementById('mb-court').value;
+  var name = adminEl('mb-name') ? adminEl('mb-name').value.trim() : '';
+  var email = adminEl('mb-email') ? adminEl('mb-email').value.trim() : '';
+  var phone = adminEl('mb-phone') ? adminEl('mb-phone').value.trim() : '';
+  var date = adminEl('mb-date') ? adminEl('mb-date').value : '';
+  var courtId = adminEl('mb-court') ? adminEl('mb-court').value : '';
   
   if (name && email && phone && date && courtId && adminSelTime) {
     var c = adminCourts.find(function(x) { return x.id === courtId; });
@@ -1694,16 +1705,16 @@ function adminUpdateMbSummary() {
     var amount = (c ? c.price_per_hour : 150000) * adminSelDuration;
     var endTime = String(endH).padStart(2, '0') + ':00';
     
-    content.innerHTML = '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Nama</span><span class="font-semibold text-slate-900 dark:text-white">' + adminEsc(name) + '</span></div>' +
+    if (contentEl) contentEl.innerHTML = '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Nama</span><span class="font-semibold text-slate-900 dark:text-white">' + adminEsc(name) + '</span></div>' +
       '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Email</span><span class="font-semibold text-slate-900 dark:text-white">' + adminEsc(email) + '</span></div>' +
       '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Telepon</span><span class="font-semibold text-slate-900 dark:text-white">' + adminEsc(phone) + '</span></div>' +
       '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Tanggal</span><span class="font-semibold text-slate-900 dark:text-white">' + date + '</span></div>' +
       '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Lapangan</span><span class="font-semibold text-slate-900 dark:text-white">' + adminEsc(c ? c.name : courtId) + '</span></div>' +
       '<div class="flex justify-between text-sm"><span class="text-slate-600 dark:text-slate-400">Waktu</span><span class="font-semibold text-slate-900 dark:text-white">' + adminSelTime + ' - ' + endTime + ' (' + adminSelDuration + ' jam)</span></div>';
-    total.textContent = adminRupiah(amount);
-    summary.classList.remove('hidden');
+    if (totalEl) totalEl.textContent = adminRupiah(amount);
+    if (summary) summary.classList.remove('hidden');
   } else {
-    summary.classList.add('hidden');
+    if (summary) summary.classList.add('hidden');
   }
 }
 
@@ -1847,7 +1858,7 @@ function adminRenderReport() {
   var totalPages = Math.ceil(total / adminReportSize) || 1;
   
   if (!page.length) {
-    document.getElementById('report-table').innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-slate-500">Tidak ada data.</td></tr>';
+    adminSetHTML('report-table', '<tr><td colspan="8" class="px-4 py-12 text-center text-slate-500">Tidak ada data.</td></tr>';
   } else {
     var html = '';
     page.forEach(function(b, i) {
@@ -1864,7 +1875,7 @@ function adminRenderReport() {
       html += '<td class="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">' + adminRupiah(b.amount) + '</td>';
       html += '</tr>';
     });
-    document.getElementById('report-table').innerHTML = html;
+    adminSetHTML('report-table', html;
   }
   
   document.getElementById('rep-count').textContent = total > 0 ? (Math.min(start + 1, total) + '-' + Math.min(start + adminReportSize, total) + ' dari ' + total) : '';
@@ -1914,21 +1925,21 @@ function adminExportExcel() {
 // Filters
 function adminPopulateFilters() {
   var sel = document.getElementById('filter-court');
-  sel.innerHTML = '<option value="all">Semua Lapangan</option>' + adminCourts.map(function(c) { return '<option value="' + c.id + '">' + adminEsc(c.name) + '</option>'; }).join('');
+  if (sel) sel.innerHTML = '<option value="all">Semua Lapangan</option>' + adminCourts.map(function(c) { return '<option value="' + c.id + '">' + adminEsc(c.name) + '</option>'; }).join('');
 }
 
 // Refresh
 async function adminRefresh() {
   var btn = document.getElementById('refreshBtn');
   var icon = document.getElementById('refreshIcon');
-  btn.disabled = true;
-  icon.classList.add('animate-spin');
+  if (btn) btn.disabled = true;
+  if (icon) icon.classList.add('animate-spin');
   try {
     await adminLoad();
     adminToast('Data di-refresh!');
   } finally {
-    btn.disabled = false;
-    icon.classList.remove('animate-spin');
+    if (btn) btn.disabled = false;
+    if (icon) icon.classList.remove('animate-spin');
   }
 }
 
@@ -1941,8 +1952,10 @@ function adminToast(msg, type) {
   type = type || 'success';
   var bgClass = type === 'error' ? 'bg-red-500' : type === 'warning' ? 'bg-amber-500' : 'bg-emerald-500';
   var t = document.getElementById('admin-toast');
-  t.innerHTML = '<div class="rounded-xl px-4 py-3 text-sm font-bold text-white shadow-xl ' + bgClass + ' animate-in slide-in-from-right">' + msg + '</div>';
-  setTimeout(function() { t.innerHTML = ''; }, 3000);
+  if (t) {
+    t.innerHTML = '<div class="rounded-xl px-4 py-3 text-sm font-bold text-white shadow-xl ' + bgClass + ' animate-in slide-in-from-right">' + adminEsc(msg) + '</div>';
+    setTimeout(function() { if (t) t.innerHTML = ''; }, 3000);
+  }
 }
 
 // Event listeners for manual booking
