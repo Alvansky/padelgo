@@ -1,17 +1,23 @@
 -- ============================================================================
 -- PadelGo Database Schema
 -- Frontend: Hugo (Vercel) | Backend: Supabase (PostgreSQL)
+-- Version: 2.0 | Last Updated: 2026-07-02
 -- ============================================================================
 -- Run this from Supabase SQL Editor. Intentionally rerunnable.
 -- ============================================================================
 
--- Drop existing objects (for clean reinstall - order matters!)
+-- ============================================================================
+-- SECTION 1: DROP EXISTING OBJECTS
+-- Order matters: triggers → policies → functions → tables
+-- ============================================================================
+
+-- Drop triggers
 DROP TRIGGER IF EXISTS bookings_validate ON public.bookings;
 DROP TRIGGER IF EXISTS profiles_touch_updated_at ON public.profiles;
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
 
--- Drop policies first (they depend on functions)
+-- Drop policies (they depend on functions/tables)
 DROP POLICY IF EXISTS "Users view own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users update own profile" ON public.profiles;
@@ -34,7 +40,7 @@ DROP POLICY IF EXISTS "Admins can upload court images" ON storage.objects;
 DROP POLICY IF EXISTS "Admins can update court images" ON storage.objects;
 DROP POLICY IF EXISTS "Admins can delete court images" ON storage.objects;
 
--- Now drop functions
+-- Drop functions
 DROP FUNCTION IF EXISTS public.validate_booking();
 DROP FUNCTION IF EXISTS public.touch_updated_at();
 DROP FUNCTION IF EXISTS public.handle_new_user();
@@ -44,10 +50,13 @@ DROP FUNCTION IF EXISTS public.get_booked_slots(TEXT, TEXT);
 DROP FUNCTION IF EXISTS public.storage_filepath_matches_user(TEXT);
 
 -- ============================================================================
--- TABLES
+-- SECTION 2: TABLES
 -- ============================================================================
 
--- Profiles table (extends auth.users)
+-- -------------------------------------------------------
+-- Table: profiles
+-- Extends auth.users with additional user information
+-- -------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   name TEXT,
@@ -59,11 +68,14 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Courts table
+-- -------------------------------------------------------
+-- Table: courts
+-- Stores padel court information and pricing
+-- -------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.courts (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  type TEXT NOT NULL,
+  type TEXT,
   price_per_hour INTEGER NOT NULL CHECK (price_per_hour > 0),
   surface TEXT,
   image_url TEXT,
@@ -71,7 +83,10 @@ CREATE TABLE IF NOT EXISTS public.courts (
   created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Bookings table
+-- -------------------------------------------------------
+-- Table: bookings
+-- Stores all booking/reservation records
+-- -------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.bookings (
   id TEXT PRIMARY KEY,
   user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
@@ -88,7 +103,7 @@ CREATE TABLE IF NOT EXISTS public.bookings (
 );
 
 -- ============================================================================
--- INDEXES (for performance)
+-- SECTION 3: INDEXES
 -- ============================================================================
 
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
@@ -99,10 +114,13 @@ CREATE INDEX IF NOT EXISTS idx_bookings_date ON public.bookings(date);
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON public.bookings(status);
 
 -- ============================================================================
--- HELPER FUNCTIONS
+-- SECTION 4: HELPER FUNCTIONS
 -- ============================================================================
 
--- Check if current user is admin
+-- -------------------------------------------------------
+-- Function: is_admin()
+-- Checks if the current user has admin role
+-- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -118,7 +136,10 @@ AS $$
   );
 $$;
 
--- Auto-update updated_at timestamp
+-- -------------------------------------------------------
+-- Function: touch_updated_at()
+-- Auto-updates the updated_at timestamp on row update
+-- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.touch_updated_at()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -130,7 +151,10 @@ BEGIN
 END;
 $$;
 
--- Create profile on new user signup
+-- -------------------------------------------------------
+-- Function: handle_new_user()
+-- Creates profile automatically when new user signs up
+-- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -140,7 +164,7 @@ AS $$
 DECLARE
   is_admin_email BOOLEAN;
 BEGIN
-  -- Check if this is the admin email
+  -- Check if this is an admin email
   is_admin_email := new.email ILIKE '%@admin@padelgo%' OR new.email = 'admin@padelgo.com';
 
   INSERT INTO public.profiles (id, name, email, avatar_url, role)
@@ -166,7 +190,10 @@ BEGIN
 END;
 $$;
 
--- Update profile on user metadata change
+-- -------------------------------------------------------
+-- Function: handle_updated_user()
+-- Updates profile when user metadata changes
+-- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.handle_updated_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -188,7 +215,11 @@ BEGIN
 END;
 $$;
 
--- Get booked slots for a court on specific date (public safe)
+-- -------------------------------------------------------
+-- Function: get_booked_slots()
+-- Returns booked time slots for a court on a specific date
+-- Used by frontend to show availability
+-- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.get_booked_slots(
   p_court_id TEXT,
   p_date TEXT
@@ -212,7 +243,11 @@ AS $$
   ORDER BY b.start_time;
 $$;
 
--- Validate booking before insert/update
+-- -------------------------------------------------------
+-- Function: validate_booking()
+-- Validates and auto-populates booking data before insert/update
+-- Prevents double-booking, validates times, etc.
+-- -------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.validate_booking()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -317,44 +352,40 @@ END;
 $$;
 
 -- ============================================================================
--- TRIGGERS
+-- SECTION 5: TRIGGERS
 -- ============================================================================
 
 -- Profile auto-update timestamp
 CREATE TRIGGER profiles_touch_updated_at
   BEFORE UPDATE ON public.profiles
-  FOR EACH ROW EXECUTE PROCEDURE public.touch_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
 -- Create profile on signup
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Update profile on metadata change
 CREATE TRIGGER on_auth_user_updated
   AFTER UPDATE OF email, raw_user_meta_data ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_updated_user();
+  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_user();
 
 -- Validate booking
 CREATE TRIGGER bookings_validate
   BEFORE INSERT OR UPDATE ON public.bookings
-  FOR EACH ROW EXECUTE PROCEDURE public.validate_booking();
+  FOR EACH ROW EXECUTE FUNCTION public.validate_booking();
 
 -- ============================================================================
--- ROW LEVEL SECURITY (RLS)
+-- SECTION 6: ROW LEVEL SECURITY (RLS)
 -- ============================================================================
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.courts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
 
--- Profiles policies
-DROP POLICY IF EXISTS "Users view own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Users update own profile" ON public.profiles;
-DROP POLICY IF EXISTS "Admins view all profiles" ON public.profiles;
-DROP POLICY IF EXISTS "Admins update all profiles" ON public.profiles;
-
+-- -------------------------------------------------------
+-- Profiles Policies
+-- -------------------------------------------------------
 CREATE POLICY "Users view own profile"
   ON public.profiles FOR SELECT
   USING (auth.uid() = id);
@@ -377,10 +408,9 @@ CREATE POLICY "Admins update all profiles"
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
--- Courts policies (public read, admin write)
-DROP POLICY IF EXISTS "Anyone view courts" ON public.courts;
-DROP POLICY IF EXISTS "Admins manage courts" ON public.courts;
-
+-- -------------------------------------------------------
+-- Courts Policies
+-- -------------------------------------------------------
 CREATE POLICY "Anyone view courts"
   ON public.courts FOR SELECT
   USING (true);
@@ -390,13 +420,9 @@ CREATE POLICY "Admins manage courts"
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
--- Bookings policies
-DROP POLICY IF EXISTS "Users view own bookings" ON public.bookings;
-DROP POLICY IF EXISTS "Users create bookings" ON public.bookings;
-DROP POLICY IF EXISTS "Users update own bookings" ON public.bookings;
-DROP POLICY IF EXISTS "Admins view all bookings" ON public.bookings;
-DROP POLICY IF EXISTS "Admins manage all bookings" ON public.bookings;
-
+-- -------------------------------------------------------
+-- Bookings Policies
+-- -------------------------------------------------------
 CREATE POLICY "Users view own bookings"
   ON public.bookings FOR SELECT
   USING (auth.uid() = user_id);
@@ -405,7 +431,6 @@ CREATE POLICY "Users create bookings"
   ON public.bookings FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
--- Users can only cancel their own non-cancelled bookings (handled by trigger)
 CREATE POLICY "Users update own bookings"
   ON public.bookings FOR UPDATE
   USING (auth.uid() = user_id);
@@ -420,17 +445,10 @@ CREATE POLICY "Admins manage all bookings"
   WITH CHECK (public.is_admin());
 
 -- ============================================================================
--- GRANTS
+-- SECTION 7: STORAGE BUCKETS & POLICIES
 -- ============================================================================
 
-GRANT EXECUTE ON FUNCTION public.get_booked_slots(TEXT, TEXT) TO anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
-
--- ============================================================================
--- STORAGE BUCKETS & POLICIES
--- ============================================================================
-
--- Helper function to check folder ownership (create first!)
+-- Helper function to check folder ownership
 CREATE OR REPLACE FUNCTION public.storage_filepath_matches_user(filepath TEXT)
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -443,22 +461,12 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.storage_filepath_matches_user(TEXT) TO authenticated;
 
--- Avatars bucket (2MB limit)
+-- -------------------------------------------------------
+-- Avatars Bucket (2MB limit)
+-- -------------------------------------------------------
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 SELECT 'avatars', 'avatars', true, 2097152, ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'avatars');
-
--- Court images bucket (5MB limit)
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-SELECT 'court-images', 'court-images', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp']
-WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'court-images');
-
--- Avatar storage policies
-DROP POLICY IF EXISTS "Users can upload avatar" ON storage.objects;
-DROP POLICY IF EXISTS "Users can view avatars" ON storage.objects;
-DROP POLICY IF EXISTS "Users can update avatar" ON storage.objects;
-DROP POLICY IF EXISTS "Users can delete avatar" ON storage.objects;
-DROP POLICY IF EXISTS "Anyone can view avatars" ON storage.objects;
 
 CREATE POLICY "Users can upload avatar"
   ON storage.objects FOR INSERT
@@ -496,11 +504,12 @@ CREATE POLICY "Anyone can view avatars"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'avatars');
 
--- Court images storage policies
-DROP POLICY IF EXISTS "Anyone can view court images" ON storage.objects;
-DROP POLICY IF EXISTS "Admins can upload court images" ON storage.objects;
-DROP POLICY IF EXISTS "Admins can update court images" ON storage.objects;
-DROP POLICY IF EXISTS "Admins can delete court images" ON storage.objects;
+-- -------------------------------------------------------
+-- Court Images Bucket (5MB limit)
+-- -------------------------------------------------------
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+SELECT 'court-images', 'court-images', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp']
+WHERE NOT EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'court-images');
 
 CREATE POLICY "Anyone can view court images"
   ON storage.objects FOR SELECT
@@ -535,15 +544,22 @@ CREATE POLICY "Admins can delete court images"
   );
 
 -- ============================================================================
--- SEED DATA
+-- SECTION 8: FUNCTION GRANTS
 -- ============================================================================
 
--- Seed courts
+GRANT EXECUTE ON FUNCTION public.get_booked_slots(TEXT, TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
+
+-- ============================================================================
+-- SECTION 9: SEED DATA
+-- ============================================================================
+
+-- Default courts
 INSERT INTO public.courts (id, name, type, price_per_hour, surface, image_url, available) VALUES
-  ('A1', 'Court A1', 'Premium indoor court', 150000, 'Artificial Grass', '/images/padel1.jpg', true),
-  ('A2', 'Court A2', 'Standard indoor court', 100000, 'Artificial Grass', '/images/padel2.jpg', true),
-  ('B1', 'Court B1', 'Premium glass court', 150000, 'Panoramic Glass', '/images/padel3.jpg', true),
-  ('B2', 'Court B2', 'Standard glass court', 100000, 'Panoramic Glass', '/images/padel4.jpg', true)
+  ('C1', 'Court 1 - Premium Indoor', 'Premium indoor court', 150000, 'Artificial Grass', '/images/padel1.jpg', true),
+  ('C2', 'Court 2 - Standard Indoor', 'Standard indoor court', 100000, 'Artificial Grass', '/images/padel2.jpg', true),
+  ('C3', 'Court 3 - Premium Glass', 'Premium glass court', 150000, 'Panoramic Glass', '/images/padel3.jpg', true),
+  ('C4', 'Court 4 - Standard Glass', 'Standard glass court', 100000, 'Panoramic Glass', '/images/padel4.jpg', true)
 ON CONFLICT (id) DO UPDATE SET
   name = excluded.name,
   type = excluded.type,
@@ -553,15 +569,14 @@ ON CONFLICT (id) DO UPDATE SET
   available = excluded.available;
 
 -- ============================================================================
--- ADMIN ACCOUNT SETUP
+-- SECTION 10: ADMIN ACCOUNT SETUP
 -- ============================================================================
--- Admin account will be created automatically when user signs up with:
--- Email: admin@padelgo.com
+-- Admin account is created automatically when user signs up with:
+-- Email: admin@padelgo.com OR any email containing @admin@padelgo
 --
--- To create the admin manually (if user already exists):
--- 1. Create user in Supabase Dashboard > Authentication > Add User
--- 2. Email: admin@padelgo.com
--- 3. The trigger will automatically set role='admin' on first profile creation
--- 4. OR run this SQL manually:
---    UPDATE public.profiles SET role = 'admin' WHERE email = 'admin@padelgo.com';
+-- To manually set a user as admin:
+-- 1. Go to Supabase Dashboard > Authentication > Users
+-- 2. Find the user you want to make admin
+-- 3. Run this SQL:
+--    UPDATE public.profiles SET role = 'admin' WHERE email = 'user@example.com';
 -- ============================================================================

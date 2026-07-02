@@ -6,56 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: dark)">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' /api https: https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self' /api;">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-        colors: { brand: { 600: '#0f766e', 700: '#0f5f59', 900: '#12312f' } }
-      }
-    }
-  };
-</script>
-<script src="/js/shared.js"></script>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self';">
+<link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<style>
-  html { color-scheme: light; }
-  html.dark { color-scheme: dark; }
-  body { letter-spacing: 0; -webkit-tap-highlight-color: transparent; }
-
-  /* Smooth scrolling */
-  html { scroll-behavior: smooth; }
-
-  /* Better touch targets */
-  button, a, [role="button"] { min-height: 44px; min-width: 44px; }
-
-  /* Better scrollbar for horizontal scroll */
-  ::-webkit-scrollbar { height: 6px; width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-  .dark ::-webkit-scrollbar-thumb { background: #475569; }
-
-  /* Prevent body scroll when modal is open */
-  body.modal-open { overflow: hidden; }
-
-  /* Safe area padding for notched devices */
-  .safe-top { padding-top: env(safe-area-inset-top); }
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
-  /* Mobile-optimized transitions */
-  @media (max-width: 640px) {
-    .transition { transition-duration: 150ms; }
-  }
-
-  /* Better focus states for mobile */
-  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
-    outline: 2px solid #0f766e;
-    outline-offset: 2px;
-  }
-  .dark button:focus-visible, .dark a:focus-visible, .dark input:focus-visible, .dark select:focus-visible {
-    outline-color: #5eead4;
-  }
-</style>
+<script src="/js/shared.js"></script>
